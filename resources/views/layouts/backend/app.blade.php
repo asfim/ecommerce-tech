@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +18,12 @@
         .stat-card { background:#fff; border-radius:10px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,.06); }
         .stat-card h2 { font-weight:800; margin:0; }
         .stat-card p { color:#888; margin:0; font-size:13px; }
+        .sidebar { width:240px; background:#111; color:#fff; min-height:100vh; position:fixed; left:0; top:0; padding:20px 0; }
+        .sidebar .brand { font-size:18px; font-weight:800; padding:0 20px 20px; border-bottom:1px solid #333; margin-bottom:16px; }
+        .sidebar a { display:block; padding:10px 20px; color:#aaa; font-size:13px; text-decoration:none; }
+        .sidebar a:hover, .sidebar a.active { color:#fff; background:#222; text-decoration:none; }
+        .sidebar a i { width:20px; text-align:center; margin-right:8px; }
+        .main { margin-left:240px; padding-left:20px; padding-top: 20px; position:relative; }
     </style>
     @stack('styles')
 </head>

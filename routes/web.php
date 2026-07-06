@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminAttributeController;
+use App\Http\Controllers\Admin\AdminAttributeValueController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -39,5 +41,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('categories', AdminCategoryController::class);
         Route::resource('brands', AdminBrandController::class);
         Route::resource('products', AdminProductController::class);
+        Route::get('attribute-values', [AdminAttributeValueController::class, 'globalIndex'])->name('attribute-values.index');
+        Route::resource('attributes', AdminAttributeController::class);
+        Route::resource('attributes.values', AdminAttributeValueController::class);
     });
 });
