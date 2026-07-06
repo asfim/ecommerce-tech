@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminAttributeValueController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -46,6 +47,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('permission:manage-categories,admin')->group(function () {
             Route::resource('categories', AdminCategoryController::class);
             Route::resource('sub-categories', AdminSubCategoryController::class);
+        });
+
+        Route::middleware('role:Super Admin,admin')->group(function () {
+            Route::get('settings/homepage', [AdminHomepageSettingController::class, 'index'])->name('settings.homepage');
+            Route::post('settings/homepage/{section}', [AdminHomepageSettingController::class, 'update'])->name('settings.homepage.update');
         });
 
         Route::middleware('permission:manage-brands,admin')->group(function () {

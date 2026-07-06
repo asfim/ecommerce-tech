@@ -40,5 +40,10 @@
       <a href="{{ route('admin.activity-logs.index') }}" class="ps-4 {{ request()->routeIs('admin.activity-logs.index') ? 'active' : '' }}"><i class="bi bi-list-columns-reverse"></i> Activity Logs</a>
     </div>
   @endrole
-  <a href="#"><i class="bi bi-gear"></i> Settings</a>
+  @role('Super Admin')
+    <a href="#" data-bs-toggle="collapse" data-bs-target="#settingsSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-gear"></i> Settings</a>
+    <div class="collapse {{ request()->routeIs('admin.settings.*') ? 'show' : '' }}" id="settingsSubmenu">
+      <a href="{{ route('admin.settings.homepage') }}" class="ps-4 {{ request()->routeIs('admin.settings.homepage') ? 'active' : '' }}"><i class="bi bi-house"></i> Homepage Settings</a>
+    </div>
+  @endrole
 </div>
