@@ -1,4 +1,4 @@
-﻿@extends('layouts.backend.app')
+@extends('layouts.backend.app')
 
 @section('title', 'Products')
 
@@ -35,23 +35,31 @@
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-  <table class="table table-bordered">
+  <table class="table table-bordered align-middle">
     <thead>
       <tr>
-        <th>#</th>
+        <th style="width: 60px;">#</th>
+        <th style="width: 70px;">Image</th>
         <th>Name</th>
         <th>Category</th>
         <th>Brand</th>
         <th>Price</th>
         <th>Stock</th>
         <th>Status</th>
-        <th>Actions</th>
+        <th style="width: 100px;">Actions</th>
       </tr>
     </thead>
     <tbody>
       @foreach($products as $product)
         <tr>
           <td>{{ $product->id }}</td>
+          <td>
+            @if($product->image)
+              <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="width: 40px; height: 40px; object-fit: cover;">
+            @else
+              <img src="https://placehold.co/40x40/eee/aaa?text=No+Img" class="rounded border" style="width: 40px; height: 40px; object-fit: cover;">
+            @endif
+          </td>
           <td>{{ $product->name }}</td>
           <td>{{ $product->category->name ?? '-' }}</td>
           <td>{{ $product->brand->name ?? '-' }}</td>

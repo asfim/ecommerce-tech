@@ -1,4 +1,4 @@
-﻿@extends('layouts.backend.app')
+@extends('layouts.backend.app')
 
 @section('title', 'Add Product')
 
@@ -27,6 +27,16 @@
 </div>
 
 <div class="stat-card">
+  @if($errors->any())
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        @foreach($errors->all() as $error)
+          <li>{{ $error }}</li>
+        @endforeach
+      </ul>
+    </div>
+  @endif
+
   <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
     @csrf
     <div class="row">
@@ -60,19 +70,23 @@
         </select>
       </div>
       <div class="col-md-4 mb-3">
-        <label class="form-label">Image</label>
+        <label class="form-label">Main Image</label>
         <input type="file" name="image" class="form-control">
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Price</label>
         <input type="number" name="price" step="0.01" class="form-control" value="{{ old('price') }}" required>
       </div>
-      <div class="col-md-6 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Stock</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required>
+      </div>
+      <div class="col-md-4 mb-3">
+        <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
+        <input type="file" name="images[]" class="form-control" multiple>
       </div>
     </div>
 
@@ -82,23 +96,48 @@
     </div>
 
     <hr>
-    <h5>Variants</h5>
-    <div class="form-check form-switch mb-3">
-      <input class="form-check-input" type="checkbox" id="hasVariants" name="has_variants" value="1" {{ old('has_variants') ? 'checked' : '' }}>
-      <label class="form-check-label" for="hasVariants">Enable Variants</label>
+    <h5 class="fw-bold mb-3"><i class="bi bi-palette me-2 text-primary"></i>Attributes</h5>
+
+    {{-- Attribute + Checkbox Picker --}}
+    <div class="card border-0 bg-light p-3 mb-3 rounded-3">
+      <div class="row g-3 align-items-start">
+
+        {{-- Step 1: Choose attribute --}}
+        <div class="col-md-4">
+          <label class="form-label fw-semibold small">1. Select Attribute</label>
+          <select id="attributeSelect" class="form-select form-select-sm">
+            <option value="">— Choose —</option>
+            @foreach($attributes as $attribute)
+              <option value="{{ $attribute->id }}" data-name="{{ $attribute->name }}">{{ $attribute->name }}</option>
+            @endforeach
+          </select>
+        </div>
+
+        {{-- Step 2: Checkbox values (shown dynamically) --}}
+        <div class="col-md-8">
+          <label class="form-label fw-semibold small">2. Select Values</label>
+          <div id="valueCheckboxes" class="p-2 rounded border bg-white" style="min-height:44px;">
+            <span class="text-muted small" id="valuePlaceholder">Select an attribute first…</span>
+          </div>
+        </div>
+
+      </div>
     </div>
 
-    <div id="variantsSection" style="display:none;">
-      <div id="variantsContainer">
-        <div class="variant-row">
-          <input type="text" name="variant_labels[]" class="form-control" placeholder="Label (e.g. Color)" style="width:150px;">
-          <input type="text" name="variant_values[]" class="form-control" placeholder="Value (e.g. Red)" style="width:200px;">
-          <input type="color" name="variant_colors[]" class="form-control form-control-color colorPicker" style="width:50px; display:none;" value="#000000">
-          <button type="button" class="btn btn-sm btn-danger remove-variant"><i class="bi bi-trash"></i></button>
-        </div>
-      </div>
-      <button type="button" class="btn btn-sm btn-secondary mt-2" id="addVariant"><i class="bi bi-plus"></i> Add Variant</button>
-    </div>
+    {{-- Summary table --}}
+    <table class="table table-bordered table-sm align-middle mb-3" id="attributeChipsTable" style="display:none;">
+      <thead class="table-light">
+        <tr>
+          <th style="width:160px;">Attribute</th>
+          <th>Selected Values</th>
+          <th style="width:50px;"></th>
+        </tr>
+      </thead>
+      <tbody id="attributeChipsTbody"></tbody>
+    </table>
+
+    {{-- Hidden inputs (sent with form) --}}
+    <div id="variantsContainer"></div>
 
     <hr class="mt-4">
     <button type="submit" class="btn btn-primary">Save Product</button>
@@ -109,53 +148,174 @@
 
 @push('styles')
 <style>
-  .variant-row { display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-  .color-preview { width:32px; height:32px; border-radius:6px; border:1px solid #ccc; cursor:pointer; }
+  .attr-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e8f0fe;
+    color: #1a73e8;
+    border: 1px solid #c5d8fc;
+    border-radius: 20px;
+    padding: 2px 10px;
+    font-size: 12px;
+    font-weight: 500;
+    margin: 2px 3px;
+  }
+  #valueCheckboxes label {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin: 3px 8px 3px 0;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+  }
+  #valueCheckboxes input[type=checkbox] {
+    cursor: pointer;
+    width: 15px;
+    height: 15px;
+    accent-color: #1a73e8;
+  }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-  document.getElementById('productName').addEventListener('input', function() {
-    document.getElementById('productSlug').value = this.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  // ─── Slug Auto-generate ────────────────────────────────────────────
+  document.getElementById('productName').addEventListener('input', function () {
+    document.getElementById('productSlug').value = this.value
+      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   });
 
-  const hasVariants = document.getElementById('hasVariants');
-  const variantsSection = document.getElementById('variantsSection');
-  hasVariants.addEventListener('change', function() {
-    variantsSection.style.display = this.checked ? 'block' : 'none';
-  });
+  // ─── Attribute Data map ────────────────────────────────────────────
+  const attributeData = @json(
+    $attributes->mapWithKeys(fn($attr) => [
+      $attr->id => $attr->values->map(fn($v) => ['id' => $v->id, 'value' => $v->value])->values()
+    ])
+  );
 
-  document.getElementById('addVariant').addEventListener('click', function() {
-    const row = document.createElement('div');
-    row.className = 'variant-row';
-    row.innerHTML = `
-      <input type="text" name="variant_labels[]" class="form-control" placeholder="Label (e.g. Color)" style="width:150px;">
-      <input type="text" name="variant_values[]" class="form-control" placeholder="Value (e.g. Red)" style="width:200px;">
-      <input type="color" name="variant_colors[]" class="form-control form-control-color colorPicker" style="width:50px; display:none;" value="#000000">
-      <button type="button" class="btn btn-sm btn-danger remove-variant"><i class="bi bi-trash"></i></button>
-    `;
-    document.getElementById('variantsContainer').appendChild(row);
-    bindRowEvents(row);
-  });
+  const attributeSelect   = document.getElementById('attributeSelect');
+  const valueCheckboxes   = document.getElementById('valueCheckboxes');
+  const valuePlaceholder  = document.getElementById('valuePlaceholder');
+  const tbody             = document.getElementById('attributeChipsTbody');
+  const table             = document.getElementById('attributeChipsTable');
+  const container         = document.getElementById('variantsContainer');
 
-  document.querySelectorAll('.remove-variant').forEach(btn => {
-    btn.addEventListener('click', function() {
-      this.closest('.variant-row').remove();
+  // Global state for selected variants: { "Color": ["Red", "Blue"], "Size": ["L"] }
+  let selectedVariants = {};
+
+  // ─── Sync global state to UI and hidden inputs ──────────────────────
+  function syncVariants() {
+    container.innerHTML = '';
+    tbody.innerHTML = '';
+
+    const keys = Object.keys(selectedVariants);
+
+    if (keys.length === 0) {
+      table.style.display = 'none';
+      return;
+    }
+
+    keys.forEach(attrName => {
+      const vals = selectedVariants[attrName];
+      if (!vals || vals.length === 0) return;
+
+      // 1. Add hidden inputs
+      vals.forEach(v => {
+        container.insertAdjacentHTML('beforeend',
+          `<input type="hidden" name="variant_labels[]" value="${attrName}">` +
+          `<input type="hidden" name="variant_values[]" value="${v}">`
+        );
+      });
+
+      // 2. Add table row with chips
+      const chipsHtml = vals.map(v =>
+        `<span class="attr-chip"><i class="bi bi-check2"></i>${v}</span>`
+      ).join('');
+
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${attrName}</strong></td>
+        <td>${chipsHtml}</td>
+        <td class="text-center">
+          <button type="button" class="btn btn-outline-danger btn-sm" title="Remove">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+
+      tr.querySelector('button').addEventListener('click', function () {
+        delete selectedVariants[attrName];
+        
+        const currentAttrName = attributeSelect.options[attributeSelect.selectedIndex]?.dataset?.name;
+        if (currentAttrName === attrName) {
+          [...valueCheckboxes.querySelectorAll('input[type=checkbox]')].forEach(chk => chk.checked = false);
+        }
+
+        syncVariants();
+      });
     });
-  });
 
-  function bindRowEvents(row) {
-    row.querySelector('.remove-variant').addEventListener('click', function() {
-      this.closest('.variant-row').remove();
-    });
-    const labelInput = row.querySelector('input[name="variant_labels[]"]');
-    const colorInput = row.querySelector('.colorPicker');
-    labelInput.addEventListener('input', function() {
-      colorInput.style.display = this.value.toLowerCase() === 'color' ? 'block' : 'none';
-    });
+    table.style.display = '';
   }
 
-  document.querySelectorAll('.variant-row').forEach(bindRowEvents);
+  // ─── Show checkboxes when attribute selected ───────────────────────
+  attributeSelect.addEventListener('change', function () {
+    const attrId = this.value;
+    const attrName = this.options[this.selectedIndex]?.dataset?.name;
+    valueCheckboxes.innerHTML = '';
+
+    if (!attrId || !attributeData[attrId] || attributeData[attrId].length === 0) {
+      valueCheckboxes.appendChild(Object.assign(document.createElement('span'), {
+        className: 'text-muted small',
+        textContent: attrId ? 'No values for this attribute.' : 'Select an attribute first…'
+      }));
+      return;
+    }
+
+    attributeData[attrId].forEach(function (item) {
+      const uid = 'chk_' + attrId + '_' + item.id;
+      const label = document.createElement('label');
+      label.htmlFor = uid;
+
+      const chk = document.createElement('input');
+      chk.type = 'checkbox';
+      chk.id   = uid;
+      chk.value = item.value;
+
+      if (selectedVariants[attrName] && selectedVariants[attrName].includes(item.value)) {
+        chk.checked = true;
+      }
+
+      chk.addEventListener('change', function () {
+        const checked = [...valueCheckboxes.querySelectorAll('input[type=checkbox]:checked')];
+        if (checked.length > 0) {
+          selectedVariants[attrName] = checked.map(c => c.value);
+        } else {
+          delete selectedVariants[attrName];
+        }
+        syncVariants();
+      });
+
+      label.appendChild(chk);
+      label.appendChild(document.createTextNode(' ' + item.value));
+      valueCheckboxes.appendChild(label);
+    });
+  });
+
+  // ─── Restore old() on validation failure ──────────────────────────
+  (function () {
+    const labels = @json(old('variant_labels', []));
+    const values = @json(old('variant_values', []));
+    if (!labels.length) return;
+
+    labels.forEach((l, i) => {
+      (selectedVariants[l] = selectedVariants[l] || []).push(values[i]);
+    });
+
+    syncVariants();
+  })();
 </script>
 @endpush
+

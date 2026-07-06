@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
@@ -21,8 +22,9 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $brands = Brand::all();
+        $attributes = Attribute::with('values')->get();
 
-        return view('backend.products.create', compact('categories', 'brands'));
+        return view('backend.products.create', compact('categories', 'brands', 'attributes'));
     }
 
     public function store(Request $request)
@@ -35,14 +37,15 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:2048',
             'is_active' => 'boolean',
-            'has_variants' => 'boolean',
             'variant_labels' => 'array',
             'variant_values' => 'array',
         ]);
 
         $variants = [];
-        if ($request->has('has_variants') && ! empty($request->variant_labels)) {
+        if (! empty($request->variant_labels)) {
             foreach ($request->variant_labels as $index => $label) {
                 if (! empty($label) && isset($request->variant_values[$index])) {
                     $variant = [
@@ -62,6 +65,14 @@ class ProductController extends Controller
             $validated['image'] = $request->file('image')->store('products', 'public');
         }
 
+        $images = [];
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $file) {
+                $images[] = $file->store('products/gallery', 'public');
+            }
+        }
+        $validated['images'] = $images ?: null;
+
         Product::create($validated);
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
@@ -71,8 +82,9 @@ class ProductController extends Controller
     {
         $categories = Category::all();
         $brands = Brand::all();
+        $attributes = Attribute::with('values')->get();
 
-        return view('backend.products.edit', compact('product', 'categories', 'brands'));
+        return view('backend.products.edit', compact('product', 'categories', 'brands', 'attributes'));
     }
 
     public function update(Request $request, Product $product)
@@ -85,14 +97,15 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'image' => 'nullable|image|max:2048',
+            'images' => 'nullable|array',
+            'images.*' => 'image|max:2048',
             'is_active' => 'boolean',
-            'has_variants' => 'boolean',
             'variant_labels' => 'array',
             'variant_values' => 'array',
         ]);
 
         $variants = [];
-        if ($request->has('has_variants') && ! empty($request->variant_labels)) {
+        if (! empty($request->variant_labels)) {
             foreach ($request->variant_labels as $index => $label) {
                 if (! empty($label) && isset($request->variant_values[$index])) {
                     $variant = [
@@ -110,6 +123,36 @@ class ProductController extends Controller
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
+        } else {
+            unset($validated['image']);
+        }
+
+        $images = $product->images ?? [];
+        $galleryChanged = false;
+
+        if ($request->hasFile('images')) {
+            $newImages = [];
+            foreach ($request->file('images') as $file) {
+                $newImages[] = $file->store('products/gallery', 'public');
+            }
+            $images = array_merge($images, $newImages);
+            $galleryChanged = true;
+        }
+
+        if ($request->has('delete_images')) {
+            foreach ($request->delete_images as $delImg) {
+                if (($key = array_search($delImg, $images)) !== false) {
+                    unset($images[$key]);
+                }
+            }
+            $images = array_values($images);
+            $galleryChanged = true;
+        }
+
+        if ($galleryChanged) {
+            $validated['images'] = $images ?: null;
+        } else {
+            unset($validated['images']);
         }
 
         $product->update($validated);
