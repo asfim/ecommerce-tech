@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="clearfix mb-4">
-  <div class="dropdown float-end">
+  <div class="dropdown float-end" style="padding-right: 10px;">
     <a href="#" class="user-chip dropdown-toggle" data-bs-toggle="dropdown">
       <img src="https://placehold.co/28x28/1a73e8/fff?text={{ strtoupper(substr(Auth::guard('admin')->user()->email, 0, 1)) }}" class="rounded-circle">
       <span>
