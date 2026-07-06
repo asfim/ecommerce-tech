@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
@@ -74,6 +75,8 @@ class ProductController extends Controller
         $validated['images'] = $images ?: null;
 
         Product::create($validated);
+
+        ActivityLog::log('product_created', "Created product: {$validated['name']}");
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
@@ -157,12 +160,17 @@ class ProductController extends Controller
 
         $product->update($validated);
 
+        ActivityLog::log('product_updated', "Updated product: {$product->name}");
+
         return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
     }
 
     public function destroy(Product $product)
     {
+        $name = $product->name;
         $product->delete();
+
+        ActivityLog::log('product_deleted', "Deleted product: {$name}");
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
     }
