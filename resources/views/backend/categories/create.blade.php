@@ -1,52 +1,38 @@
-﻿@extends('layouts.backend.app')
+@extends('layouts.backend.app')
 
 @section('title', 'Add Category')
 
 @section('content')
 <div class="clearfix mb-4">
-  <div class="dropdown float-end">
-    <a href="#" class="user-chip dropdown-toggle" data-bs-toggle="dropdown">
-      <img src="https://placehold.co/28x28/1a73e8/fff?text={{ strtoupper(substr(Auth::guard('admin')->user()->email, 0, 1)) }}" class="rounded-circle">
-      <span>
-        <span class="name d-block">{{ Auth::guard('admin')->user()->email }}</span>
-        <span class="role">eCommerce</span>
-      </span>
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end">
-      <li><a class="dropdown-item" href="{{ route('home') }}"><i class="bi bi-globe me-2"></i>Visit Site</a></li>
-      <li><hr class="dropdown-divider"></li>
-      <li>
-        <form method="POST" action="{{ route('admin.logout') }}">
-          @csrf
-          <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-        </form>
-      </li>
-    </ul>
-  </div>
   <h4>Add Category</h4>
 </div>
 
 <div class="stat-card">
-  <form method="POST" action="{{ route('admin.categories.store') }}" enctype="multipart/form-data">
+  @if($errors->any())
+    <div class="alert alert-danger">
+      <ul class="mb-0">
+        @foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+      </ul>
+    </div>
+  @endif
+
+  <form method="POST" action="{{ route('admin.categories.store') }}">
     @csrf
-    <div class="mb-3">
-      <label class="form-label">Name</label>
-      <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
-      @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+        @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
+      </div>
+      <div class="col-md-6 mb-3 d-flex align-items-end">
+        <div class="form-check form-switch">
+          <input type="checkbox" name="is_active" value="1" class="form-check-input" id="isActive"
+                 {{ old('is_active', true) ? 'checked' : '' }}>
+          <label class="form-check-label fw-semibold" for="isActive">Active</label>
+        </div>
+      </div>
     </div>
-    <div class="mb-3">
-      <label class="form-label">Description</label>
-      <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
-    </div>
-    <div class="mb-3">
-      <label class="form-label">Image</label>
-      <input type="file" name="image" class="form-control">
-    </div>
-    <div class="mb-3 form-check">
-      <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', true) ? 'checked' : '' }}>
-      <label class="form-check-label">Active</label>
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+    <button type="submit" class="btn btn-primary">Save Category</button>
     <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Cancel</a>
   </form>
 </div>

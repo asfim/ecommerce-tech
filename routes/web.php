@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
+use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Backend\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Backend\DashboardController as AdminDashboardController;
@@ -44,6 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:manage-categories,admin')->group(function () {
             Route::resource('categories', AdminCategoryController::class);
+            Route::resource('sub-categories', AdminSubCategoryController::class);
         });
 
         Route::middleware('permission:manage-brands,admin')->group(function () {
