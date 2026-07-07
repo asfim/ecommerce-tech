@@ -64,15 +64,20 @@
 
         .promo3{ height:170px; border-radius:6px; overflow:hidden; position:relative; border: 1px solid #ddd; }
         .promo3 img{ width:100%; height:100%; object-fit:cover; }
+        /* .hotcat-item{
+            border-radius: 6px;
+            border:  solid #cccccc;
 
-        .auction-panel{ background:#d8cdb8; border-radius:6px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; position:relative; }
-        .auction-panel img{ width:150px; margin-top:10px; }
-        .auction-panel .cap{ font-size:2rem; font-weight:800; letter-spacing:6px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.3); writing-mode:vertical-rl; position:absolute; left:20px; top:20px; }
-        .auction-list-panel{ background:#e6dfd0; border-radius:6px; }
-        .auction-item{ display:flex; gap:10px; align-items:center; padding:8px; background:#fff; border-radius:6px; margin-bottom:8px; }
-        .auction-item img{ width:50px; height:50px; object-fit:contain; }
-        .auction-item .t{ font-size:11.5px; font-weight:600; }
-        .auction-item .bid{ font-size:10.5px; color:var(--muted); }
+        } */
+
+        .newarrival-banner{ background:#d8cdb8; border-radius:6px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; position:relative; }
+        .newarrival-banner img{ width:150px; margin-top:10px; }
+        .newarrival-banner .cap{ font-size:2rem; font-weight:800; letter-spacing:6px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.3); writing-mode:vertical-rl; position:absolute; left:20px; top:20px; }
+        .newarrival-list-panel{ background:#e6dfd0; border-radius:6px; }
+        .newarrival-item{ display:flex; gap:10px; align-items:center; padding:8px; background:#fff; border-radius:6px; margin-bottom:8px; }
+        .newarrival-item img{ width:50px; height:50px; object-fit:contain; }
+        .newarrival-item .t{ font-size:11.5px; font-weight:600; }
+        .newarrival-item .bid{ font-size:10.5px; color:var(--muted); }
         .btn-bid{ background:#c9a45c; color:#fff; font-size:10px; padding:3px 10px; border-radius:3px; border:none; }
 
         .classified-sec{ background:#f5f5f5; padding:26px 0; }

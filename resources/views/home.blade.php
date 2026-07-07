@@ -168,39 +168,37 @@
     </div>
   </div>
 
-  <!-- Auction -->
+  <!-- New Arrival -->
   <div class="row g-3 mb-4">
     <div class="col-4">
-      <div class="auction-panel">
-        <span class="cap">AUCTION</span>
-        <div class="badge bg-dark mt-auto mb-2">Just Bid It !</div>
+      <div class="newarrival-banner">
         <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80">
       </div>
     </div>
     <div class="col-8">
-      <div class="auction-list-panel p-3">
+      <div class="newarrival-list-panel p-3">
         <div class="d-flex justify-content-between mb-2"><b>New Arrival</b><small class="text-muted">Products (109)</small></div>
         <div class="row g-2">
           <div class="col-6">
-            <div class="auction-item">
+            <div class="newarrival-item">
               <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100&q=80">
               <div class="flex-grow-1"><div class="t">Apple 2024 MacBook Air 15-inch Laptop with M3 chip 16.3-inch</div><div class="bid"><b>$1,499.00</b></div><button class="btn-bid mt-1">Buy Now</button></div>
             </div>
           </div>
           <div class="col-6">
-            <div class="auction-item">
+            <div class="newarrival-item">
               <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=100&q=80">
               <div class="flex-grow-1"><div class="t">Flash Furniture Whitney Mid-Back Desk Chair - Black Leatherso...</div><div class="bid"><b>$132.00</b></div><button class="btn-bid mt-1">Buy Now</button></div>
             </div>
           </div>
           <div class="col-6">
-            <div class="auction-item">
+            <div class="newarrival-item">
               <img src="https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=100&q=80">
               <div class="flex-grow-1"><div class="t">Graco Modes Nest Travel System, Includes Baby Stroller with Height</div><div class="bid"><b>$399.00</b></div><button class="btn-bid mt-1">Buy Now</button></div>
             </div>
           </div>
           <div class="col-6">
-            <div class="auction-item">
+            <div class="newarrival-item">
               <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&q=80">
               <div class="flex-grow-1"><div class="t">Rolmium 32LB/52LB Adjustable Dumbbells, 5 Weight Options</div><div class="bid"><b>$128.00</b></div><button class="btn-bid mt-1">Buy Now</button></div>
             </div>
