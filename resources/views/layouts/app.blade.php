@@ -62,7 +62,7 @@
         .mini-prod .t{ font-size:11px; color:#444; min-height:28px; }
         .mini-prod .p{ font-size:12px; font-weight:700; }
 
-        .promo3{ height:170px; border-radius:6px; overflow:hidden; position:relative; }
+        .promo3{ height:170px; border-radius:6px; overflow:hidden; position:relative; border: 1px solid #ddd; }
         .promo3 img{ width:100%; height:100%; object-fit:cover; }
 
         .auction-panel{ background:#d8cdb8; border-radius:6px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; position:relative; }

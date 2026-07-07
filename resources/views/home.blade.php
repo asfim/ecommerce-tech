@@ -140,13 +140,31 @@
   <!-- Promo 3 banners -->
   <div class="row g-3 mb-4">
     <div class="col-4">
-      <div class="promo3"><img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&q=80"></div>
+      <div class="promo3">
+        @if(!empty($bestSellingBanners[0]))
+          <img src="{{ asset('storage/' . $bestSellingBanners[0]) }}">
+        @else
+          <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&q=80">
+        @endif
+      </div>
     </div>
     <div class="col-4">
-      <div class="promo3"><img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&q=80"></div>
+      <div class="promo3">
+        @if(!empty($bestSellingBanners[1]))
+          <img src="{{ asset('storage/' . $bestSellingBanners[1]) }}">
+        @else
+          <img src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=500&q=80">
+        @endif
+      </div>
     </div>
     <div class="col-4">
-      <div class="promo3"><img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&q=80"></div>
+      <div class="promo3">
+        @if(!empty($bestSellingBanners[2]))
+          <img src="{{ asset('storage/' . $bestSellingBanners[2]) }}">
+        @else
+          <img src="https://images.unsplash.com/photo-1541643600914-78b084683601?w=500&q=80">
+        @endif
+      </div>
     </div>
   </div>
 

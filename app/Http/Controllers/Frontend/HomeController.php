@@ -13,6 +13,7 @@ class HomeController extends Controller
     public function index(): View
     {
         $heroBanners = HomepageSetting::get('hero_banners', []);
+        $bestSellingBanners = HomepageSetting::get('best_selling_banners', []);
         $hotCategories = Category::where('is_active', true)->take(8)->get();
         $trendingCategories = Category::where('is_trending', true)->get();
         $featuredProducts = Product::where('is_featured', true)
@@ -20,6 +21,6 @@ class HomeController extends Controller
             ->latest()
             ->get();
 
-        return view('home', compact('heroBanners', 'hotCategories', 'trendingCategories', 'featuredProducts'));
+        return view('home', compact('heroBanners', 'hotCategories', 'trendingCategories', 'featuredProducts', 'bestSellingBanners'));
     }
 }
