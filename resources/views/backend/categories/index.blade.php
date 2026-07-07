@@ -1,4 +1,4 @@
-﻿@extends('layouts.backend.app')
+@extends('layouts.backend.app')
 
 @section('title', 'Categories')
 
@@ -39,8 +39,9 @@
     <thead>
       <tr>
         <th>#</th>
+        <th>Image</th>
         <th>Name</th>
-        <th>Description</th>
+
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -49,8 +50,14 @@
       @foreach($categories as $category)
         <tr>
           <td>{{ $category->id }}</td>
+          <td>
+            @if($category->image)
+              <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="rounded" style="width:50px; height:50px; object-fit:cover;">
+            @else
+              <span class="text-muted">—</span>
+            @endif
+          </td>
           <td>{{ $category->name }}</td>
-          <td>{{ Str::limit($category->description, 50) }}</td>
           <td>
             <span class="badge bg-{{ $category->is_active ? 'success' : 'secondary' }}">
               {{ $category->is_active ? 'Active' : 'Inactive' }}
