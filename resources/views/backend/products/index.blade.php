@@ -55,6 +55,7 @@
         <th>Price</th>
         <th>Stock</th>
         <th>Status</th>
+        <th>Featured</th>
         <th style="width: 100px;">Actions</th>
       </tr>
     </thead>
@@ -80,6 +81,11 @@
             </span>
           </td>
           <td>
+            <div class="form-check form-switch">
+              <input class="form-check-input featured-toggle" type="checkbox" data-id="{{ $product->id }}" {{ $product->is_featured ? 'checked' : '' }}>
+            </div>
+          </td>
+          <td>
             <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
             <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure?')">
               @csrf @method('DELETE')
@@ -102,6 +108,28 @@
     url.searchParams.set('per_page', this.value);
     url.searchParams.delete('page');
     window.location.href = url.toString();
+  });
+
+  document.querySelectorAll('.featured-toggle').forEach(function(toggle) {
+    toggle.addEventListener('change', function() {
+      const productId = this.dataset.id;
+      fetch(`/admin/products/${productId}/toggle-featured`, {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+        // toggle reflects server state
+      })
+      .catch(() => {
+        // revert on error
+        this.checked = !this.checked;
+      });
+    });
   });
 </script>
 @endsection

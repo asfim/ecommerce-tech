@@ -8,6 +8,7 @@ use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -180,5 +181,15 @@ class ProductController extends Controller
         ActivityLog::log('product_deleted', "Deleted product: {$name}");
 
         return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+    }
+
+    public function toggleFeatured(Product $product): JsonResponse
+    {
+        $product->update(['is_featured' => ! $product->is_featured]);
+
+        return response()->json([
+            'is_featured' => $product->is_featured,
+            'message' => $product->is_featured ? 'Product marked as featured.' : 'Product removed from featured.',
+        ]);
     }
 }

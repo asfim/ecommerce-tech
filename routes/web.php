@@ -60,6 +60,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:manage-products,admin')->group(function () {
             Route::resource('products', AdminProductController::class);
+            Route::patch('products/{product}/toggle-featured', [AdminProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
         });
 
         Route::middleware('permission:manage-attributes,admin')->group(function () {

@@ -54,19 +54,29 @@
     <div class="featured-strip">
       <div class="row align-items-center">
         <div class="col-2"><b>Featured Products</b></div>
-        <div class="col-3 fs-item">
-          <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=150&q=80">
-          <div><div class="t">Maverick UV Protected Ladies Sunglass</div><div class="p">$449.00 <span class="old">$500.00</span></div></div>
+        <div class="col-9" style="overflow:hidden;">
+          <div id="featuredSlider" style="display:flex;transition:transform .4s ease;gap:0;">
+            @forelse($featuredProducts as $fp)
+              <div class="fs-item" style="min-width:33.333%;flex:0 0 33.333%;display:flex;align-items:center;gap:10px;padding:0 8px;">
+                @if($fp->image)
+                  <img src="{{ asset('storage/' . $fp->image) }}" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                @else
+                  <img src="https://placehold.co/50x50/eee/aaa?text=No+Img" style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                @endif
+                <div>
+                  <div class="t">{{ Str::limit($fp->name, 35) }}</div>
+                  <div class="p">${{ number_format($fp->price, 2) }}</div>
+                </div>
+              </div>
+            @empty
+              <div class="text-muted small px-2">No featured products yet.</div>
+            @endforelse
+          </div>
         </div>
-        <div class="col-3 fs-item">
-          <img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=150&q=80">
-          <div><div class="t">Shining Star Ladies Purse</div><div class="p">$449.00</div></div>
+        <div class="col-1 text-end d-flex justify-content-end gap-1">
+          <span class="arrow d-inline-flex" id="featuredPrev" style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i class="bi bi-chevron-left"></i></span>
+          <span class="arrow d-inline-flex" id="featuredNext" style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i class="bi bi-chevron-right"></i></span>
         </div>
-        <div class="col-3 fs-item">
-          <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&q=80">
-          <div><div class="t">Apple AirPods Max Sky Blue New</div><div class="p">$449.00</div></div>
-        </div>
-        <div class="col-1 text-end"><span class="arrow d-inline-flex" style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></span></div>
       </div>
     </div>
   </div>
@@ -300,4 +310,40 @@
     <a href="#" class="btn btn-outline-dark px-5">Load more</a>
   </div>
 </div>
+
+@push('scripts')
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('featuredSlider');
+    const prevBtn = document.getElementById('featuredPrev');
+    const nextBtn = document.getElementById('featuredNext');
+    if (!slider || !prevBtn || !nextBtn) return;
+
+    const items = slider.querySelectorAll('.fs-item');
+    const totalItems = items.length;
+    const visibleItems = 3;
+    let currentIndex = 0;
+    const maxIndex = Math.max(0, totalItems - visibleItems);
+
+    function updateSlider() {
+      const offset = currentIndex * (100 / visibleItems);
+      slider.style.transform = `translateX(-${offset}%)`;
+    }
+
+    prevBtn.addEventListener('click', function() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        updateSlider();
+      }
+    });
+
+    nextBtn.addEventListener('click', function() {
+      if (currentIndex < maxIndex) {
+        currentIndex++;
+        updateSlider();
+      }
+    });
+  });
+</script>
+@endpush
 @endsection
