@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Category extends Model
 {
-    protected $fillable = ['name', 'description', 'image', 'is_active'];
+    protected $fillable = ['name', 'description', 'image', 'is_active', 'is_trending'];
 
     protected function casts(): array
     {
         return [
             'is_active' => 'boolean',
+            'is_trending' => 'boolean',
         ];
     }
 

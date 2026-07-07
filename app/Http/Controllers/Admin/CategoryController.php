@@ -93,4 +93,14 @@ class CategoryController extends Controller
             'message' => $category->is_active ? 'Category activated.' : 'Category deactivated.',
         ]);
     }
+
+    public function toggleTrending(Category $category): JsonResponse
+    {
+        $category->update(['is_trending' => ! $category->is_trending]);
+
+        return response()->json([
+            'is_trending' => $category->is_trending,
+            'message' => $category->is_trending ? 'Category marked as trending.' : 'Category removed from trending.',
+        ]);
+    }
 }

@@ -88,17 +88,27 @@
     <div style="min-width:220px;">
       <h6>Trending Categories</h6>
       <p>Categories catching eyes &amp; winning hearts across our marketplace</p>
-      <a href="#" class="btn btn-primary btn-sm rounded-pill px-3">All Categories</a>
     </div>
-    <div class="row flex-grow-1 g-2 text-center">
-      <div class="col tcat-item"><img src="https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=150&q=80"><div class="name">Women's Corner</div></div>
-      <div class="col tcat-item"><img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&q=80"><div class="name">Men's Corner</div></div>
-      <div class="col tcat-item"><img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?w=150&q=80"><div class="name">Baby Items</div></div>
-      <div class="col tcat-item"><img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=150&q=80"><div class="name">Kid's Zone</div></div>
-      <div class="col tcat-item"><img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=150&q=80"><div class="name">Smartphones &amp;...</div></div>
-      <div class="col tcat-item"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&q=80"><div class="name">Watches</div></div>
+    <div style="overflow: hidden; flex-grow: 1;">
+      <div id="trendingSlider" style="display: flex; gap: 15px; transition: transform .4s ease;">
+        @forelse($trendingCategories as $tc)
+          <div class="tcat-item" style="min-width: calc(16.666% - 12.5px); flex: 0 0 calc(16.666% - 12.5px); text-align: center;">
+            @if($tc->image)
+              <img src="{{ asset('storage/' . $tc->image) }}" alt="{{ $tc->name }}" style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
+            @else
+              <img src="https://placehold.co/74x74/eee/aaa?text={{ urlencode(Str::limit($tc->name, 8, '')) }}" alt="{{ $tc->name }}" style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
+            @endif
+            <div class="name" style="font-size:11.5px;">{{ $tc->name }}</div>
+          </div>
+        @empty
+          <div class="text-muted small px-2">No trending categories yet.</div>
+        @endforelse
+      </div>
     </div>
-    <i class="bi bi-chevron-right fs-4"></i>
+    <div class="d-flex gap-1 align-items-center">
+      <span class="arrow d-inline-flex" id="trendingPrev" style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i class="bi bi-chevron-left"></i></span>
+      <span class="arrow d-inline-flex" id="trendingNext" style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i class="bi bi-chevron-right"></i></span>
+    </div>
   </div>
 
   <!-- Best selling / Today's deal -->
@@ -343,6 +353,70 @@
         updateSlider();
       }
     });
+  });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.getElementById('trendingSlider');
+    const prevBtn = document.getElementById('trendingPrev');
+    const nextBtn = document.getElementById('trendingNext');
+    if (!slider || !prevBtn || !nextBtn) return;
+
+    const items = slider.querySelectorAll('.tcat-item');
+    const totalItems = items.length;
+    const visibleItems = 6;
+    let currentIndex = 0;
+    const maxIndex = Math.max(0, totalItems - visibleItems);
+
+    function updateSlider() {
+      // Calculate offset based on item width and margins/gaps.
+      // Since they are inside display: flex with gap: 15px,
+      // translating by (100 / visibleItems)% per item plus accounting for gap
+      // can be simplified or just using percentage-based translation.
+      // Since min-width of items is calc(16.666% - 12.5px) and gap is 15px,
+      // moving by item index is cleanest with container scroll or computed style offsets.
+      // Alternatively, translating by a percentage of container:
+      // each item step = (100% of container + gap total) / visibleItems = (100 + gap_factor) / 6.
+      // With simple translateX, since parent has overflow hidden:
+      // Offset can be: (100 / 6) * currentIndex + (currentIndex * gapOffset)
+      // Or simply: scrollLeft / CSS scroll-behavior: smooth.
+      // Let's use standard container translate:
+      // The offset in px: itemWidth + gap = (containerWidth - 5*15)/6 + 15 = containerWidth/6 + 2.5px.
+      // Alternatively, we can translate by:
+      // index * (100 / visibleItems)%
+      // This is perfectly fine if layout uses gap and items scale accordingly.
+      // Let's translate by: currentIndex * (100 + 15) / 6 % or scroll.
+      // Scroll is actually extremely reliable and works with gaps automatically!
+      // Let's just use scrollTo/scrollBy or element.scrollLeft.
+      // Let's write standard CSS transform or scrollLeft:
+      // scrollLeft is super smooth and handles gaps natively!
+    }
+
+    function scrollSlider() {
+      if (totalItems <= visibleItems) return;
+      const itemWidth = items[0].getBoundingClientRect().width;
+      const gap = 15;
+      slider.parentElement.scrollTo({
+        left: currentIndex * (itemWidth + gap),
+        behavior: 'smooth'
+      });
+    }
+
+    prevBtn.addEventListener('click', function() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        scrollSlider();
+      }
+    });
+
+    nextBtn.addEventListener('click', function() {
+      if (currentIndex < maxIndex) {
+        currentIndex++;
+        scrollSlider();
+      }
+    });
+
+    // Make sure parent container has style: overflow: hidden; scroll-behavior: smooth;
+    slider.parentElement.style.scrollBehavior = 'smooth';
   });
 </script>
 @endpush

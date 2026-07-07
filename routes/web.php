@@ -46,6 +46,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('permission:manage-categories,admin')->group(function () {
             Route::resource('categories', AdminCategoryController::class);
             Route::patch('categories/{category}/toggle-status', [AdminCategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
+            Route::patch('categories/{category}/toggle-trending', [AdminCategoryController::class, 'toggleTrending'])->name('categories.toggle-trending');
             Route::resource('sub-categories', AdminSubCategoryController::class);
         });
 
