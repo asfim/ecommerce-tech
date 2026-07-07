@@ -28,6 +28,15 @@
 
 <div class="stat-card">
   <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <label class="form-label mb-0 fw-semibold small">Show</label>
+      <select id="perPageSelect" class="form-select form-select-sm" style="width: auto;">
+        @foreach(['all' => 'All', 10 => '10', 20 => '20', 50 => '50', 100 => '100'] as $value => $label)
+          <option value="{{ $value }}" {{ (string) $perPage === (string) $value ? 'selected' : '' }}>{{ $label }}</option>
+        @endforeach
+      </select>
+      <label class="form-label mb-0 fw-semibold small">entries</label>
+    </div>
     <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Product</a>
   </div>
 
@@ -82,6 +91,18 @@
     </tbody>
   </table>
 
-  {{ $products->links() }}
+  @if($perPage !== 'all' && $products instanceof \Illuminate\Pagination\LengthAwarePaginator)
+    {{ $products->links() }}
+  @endif
 </div>
+
+<script>
+  document.getElementById('perPageSelect').addEventListener('change', function() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('per_page', this.value);
+    url.searchParams.delete('page');
+    window.location.href = url.toString();
+  });
+</script>
 @endsection
+

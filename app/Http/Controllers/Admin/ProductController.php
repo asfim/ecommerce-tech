@@ -12,11 +12,18 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with(['category', 'brand'])->latest()->paginate(10);
+        $perPage = $request->query('per_page', 10);
+        $query = Product::with(['category', 'brand'])->latest();
 
-        return view('backend.products.index', compact('products'));
+        if ($perPage === 'all') {
+            $products = $query->get();
+        } else {
+            $products = $query->paginate((int) $perPage)->appends(['per_page' => $perPage]);
+        }
+
+        return view('backend.products.index', compact('products', 'perPage'));
     }
 
     public function create()
