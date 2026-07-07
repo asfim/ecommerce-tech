@@ -5,8 +5,8 @@ use App\Http\Controllers\Admin\AdminAttributeController;
 use App\Http\Controllers\Admin\AdminAttributeValueController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
-use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
+use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -15,12 +15,11 @@ use App\Http\Controllers\Backend\DashboardController as AdminDashboardController
 use App\Http\Controllers\Frontend\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\Frontend\Auth\RegisterController as UserRegisterController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
+use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 /* ========== Frontend (User) ========== */
 Route::prefix('account')->name('user.')->group(function () {
@@ -46,6 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:manage-categories,admin')->group(function () {
             Route::resource('categories', AdminCategoryController::class);
+            Route::patch('categories/{category}/toggle-status', [AdminCategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
             Route::resource('sub-categories', AdminSubCategoryController::class);
         });
 

@@ -9,13 +9,21 @@
     <div class="row g-3">
       <div class="col-4">
         <div class="brand-banner">
-          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="fashion model">
+          @if(!empty($heroBanners[0]))
+            <img src="{{ asset('storage/' . $heroBanners[0]) }}" alt="fashion model">
+          @else
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="fashion model">
+          @endif
           <div class="cap">Unleash<br>Your<br>Brand</div>
         </div>
       </div>
       <div class="col-4">
         <div class="season-banner">
-          <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="end of season model" style="opacity:.5;">
+          @if(!empty($heroBanners[1]))
+            <img src="{{ asset('storage/' . $heroBanners[1]) }}" alt="end of season model" style="opacity:.5;">
+          @else
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="end of season model" style="opacity:.5;">
+          @endif
           <div class="cap">
             <div class="small">🔥 End of Season</div>
             <h4 class="fw-bold">End of Season<br>Sale</h4>
@@ -27,14 +35,16 @@
         <div class="hotcat-panel">
           <h6><i class="bi bi-fire text-danger"></i> Hot Categories</h6>
           <div class="row g-2 mt-1">
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=150&q=80"><div class="name">Mobiles</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=150&q=80"><div class="name">Women</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=150&q=80"><div class="name">Laptops</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1592078615290-033ee584e267?w=150&q=80"><div class="name">Furniture</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1503919545889-aef636e10ad4?w=150&q=80"><div class="name">Kids &amp; Toys</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=150&q=80"><div class="name">Sports</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=150&q=80"><div class="name">Accessories</div></div>
-            <div class="col-3 hotcat-item"><img src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?w=150&q=80"><div class="name">Bikes</div></div>
+            @foreach($hotCategories as $cat)
+              <div class="col-3 hotcat-item">
+                @if($cat->image)
+                  <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}">
+                @else
+                  <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($cat->name, 8, '')) }}" alt="{{ $cat->name }}">
+                @endif
+                <div class="name">{{ $cat->name }}</div>
+              </div>
+            @endforeach
           </div>
         </div>
       </div>
@@ -241,7 +251,7 @@
     </div>
   </div>
 
-  <!-- 1000s of shops banner -->
+  {{-- <!-- 1000s of shops banner -->
   <div class="shops-banner">
     <div>
       <h3>1000s of Shops with their best for You</h3>
@@ -253,7 +263,7 @@
       <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=200&q=80">
       <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=200&q=80">
     </div>
-  </div>
+  </div> --}}
 
   <!-- Product grid -->
   <div class="row g-3 mb-3">

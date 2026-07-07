@@ -49,7 +49,7 @@
     <tbody>
       @foreach($categories as $category)
         <tr>
-          <td>{{ $category->id }}</td>
+          <td>{{ $loop->iteration }}</td>
           <td>
             @if($category->image)
               <img src="{{ asset('storage/' . $category->image) }}" alt="{{ $category->name }}" class="rounded" style="width:50px; height:50px; object-fit:cover;">
@@ -59,9 +59,11 @@
           </td>
           <td>{{ $category->name }}</td>
           <td>
-            <span class="badge bg-{{ $category->is_active ? 'success' : 'secondary' }}">
-              {{ $category->is_active ? 'Active' : 'Inactive' }}
-            </span>
+            <div class="form-check form-switch mb-0">
+              <input type="checkbox" class="form-check-input toggle-status" role="switch"
+                     data-url="{{ route('admin.categories.toggle-status', $category) }}"
+                     {{ $category->is_active ? 'checked' : '' }}>
+            </div>
           </td>
           <td>
             <a href="{{ route('admin.categories.edit', $category) }}" class="btn btn-sm btn-warning"><i class="bi bi-pencil"></i></a>
@@ -77,4 +79,29 @@
 
   {{ $categories->links() }}
 </div>
+
+<script>
+  document.querySelectorAll('.toggle-status').forEach(function(toggle) {
+    toggle.addEventListener('change', function() {
+      const url = this.dataset.url;
+      const checkbox = this;
+
+      fetch(url, {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        checkbox.checked = data.is_active;
+      })
+      .catch(() => {
+        checkbox.checked = !checkbox.checked;
+      });
+    });
+  });
+</script>
 @endsection

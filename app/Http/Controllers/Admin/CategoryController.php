@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -81,5 +82,15 @@ class CategoryController extends Controller
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category deleted successfully.');
+    }
+
+    public function toggleStatus(Category $category): JsonResponse
+    {
+        $category->update(['is_active' => ! $category->is_active]);
+
+        return response()->json([
+            'is_active' => $category->is_active,
+            'message' => $category->is_active ? 'Category activated.' : 'Category deactivated.',
+        ]);
     }
 }
