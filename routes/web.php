@@ -16,11 +16,15 @@ use App\Http\Controllers\Frontend\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\Frontend\Auth\RegisterController as UserRegisterController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\OrderController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
+Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
+Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
+Route::get('/order/invoice/{invoiceNo}', [OrderController::class, 'invoice'])->name('order.invoice');
 
 /* ========== Frontend (User) ========== */
 Route::prefix('account')->name('user.')->group(function () {

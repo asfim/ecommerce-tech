@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'eCommerce - Fashion Store')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
@@ -425,67 +426,20 @@
                 }
             });
 
-            // Create Modal Elements in Body
-            const backdrop = document.createElement('div');
-            backdrop.className = 'checkout-modal-backdrop';
-            backdrop.innerHTML = `
-              <div class="checkout-modal">
-                <div class="checkout-header">
-                  <h5><i class="bi bi-shield-check text-primary me-2"></i>Secure Checkout</h5>
-                  <button type="button" class="btn-close close-checkout" style="font-size:12px;"></button>
-                </div>
-                <div class="checkout-body">
-                  <p class="text-muted small mb-3">Please fill out your details to complete your order.</p>
-                  <div class="mb-3">
-                    <label class="form-label small fw-semibold">Product Name</label>
-                    <input type="text" id="checkoutProdName" class="form-control form-control-sm" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small fw-semibold">Total Price</label>
-                    <input type="text" id="checkoutProdPrice" class="form-control form-control-sm text-primary fw-bold" readonly>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small fw-semibold">Shipping Address</label>
-                    <textarea id="checkoutAddress" class="form-control form-control-sm" rows="2" placeholder="123 Main St, Dhaka" required></textarea>
-                  </div>
-                  <div class="mb-3">
-                    <label class="form-label small fw-semibold">Phone Number</label>
-                    <input type="tel" id="checkoutPhone" class="form-control form-control-sm" placeholder="+8801xxxxxxxxx" required>
-                  </div>
-                </div>
-                <div class="checkout-footer">
-                  <button type="button" class="btn btn-sm btn-outline-secondary close-checkout">Cancel</button>
-                  <button type="button" id="submitOrderBtn" class="btn btn-sm btn-primary px-3">Place Order</button>
-                </div>
-              </div>
-            `;
-            document.body.appendChild(backdrop);
-
-            const checkoutModal = backdrop.querySelector('.checkout-modal');
-            const checkoutProdName = backdrop.querySelector('#checkoutProdName');
-            const checkoutProdPrice = backdrop.querySelector('#checkoutProdPrice');
-            const checkoutAddress = backdrop.querySelector('#checkoutAddress');
-            const checkoutPhone = backdrop.querySelector('#checkoutPhone');
-
-            function openCheckout(productName, productPrice) {
-                checkoutProdName.value = productName;
-                checkoutProdPrice.value = `$${parseFloat(productPrice).toFixed(2)}`;
-                checkoutAddress.value = '';
-                checkoutPhone.value = '';
-                backdrop.classList.add('show');
+            function checkoutSingleItem(productId, productName, productPrice, productImage, quantity = 1, variants = null) {
+                const item = {
+                    id: productId,
+                    name: productName,
+                    price: parseFloat(productPrice),
+                    image: productImage,
+                    quantity: quantity,
+                    variants: variants || {}
+                };
+                localStorage.setItem('checkout_items', JSON.stringify([item]));
+                window.location.href = "/checkout";
             }
 
-            window.openCheckoutGlobal = openCheckout;
-
-            function closeCheckout() {
-                backdrop.classList.remove('show');
-            }
-
-            backdrop.addEventListener('click', function(e) {
-                if (e.target === backdrop || e.target.closest('.close-checkout')) {
-                    closeCheckout();
-                }
-            });
+            window.checkoutSingleItemGlobal = checkoutSingleItem;
 
             // Bind event listeners for checkout from dropdown
             document.addEventListener('click', function(e) {
@@ -493,9 +447,8 @@
                 if (btn) {
                     e.preventDefault();
                     if (cart.length === 0) return;
-                    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-                    openCheckout(`Cart Order (${totalQty} items)`, total);
+                    localStorage.removeItem('checkout_items'); // Fallback to cart
+                    window.location.href = "/checkout";
                 }
             });
 
@@ -504,52 +457,14 @@
                 const btn = e.target.closest('.btn-bid');
                 if (btn) {
                     e.preventDefault();
-                    const card = btn.closest('.newarrival-item');
-                    if (card) {
-                        const name = card.querySelector('.t').textContent.trim();
-                        const priceText = card.querySelector('.bid b').textContent.replace('$', '').replace(/,/g, '').trim();
-                        openCheckout(name, parseFloat(priceText));
+                    const id = btn.dataset.id;
+                    const name = btn.dataset.name;
+                    const price = btn.dataset.price;
+                    const image = btn.dataset.image;
+                    if (id && name && price) {
+                        checkoutSingleItem(id, name, price, image, 1, null);
                     }
                 }
-            });
-
-            // Complete Purchase
-            backdrop.querySelector('#submitOrderBtn').addEventListener('click', function() {
-                if (!checkoutAddress.value || !checkoutPhone.value) {
-                    alert('Please fill out all shipping details.');
-                    return;
-                }
-
-                const prodName = checkoutProdName.value;
-                closeCheckout();
-
-                // Clear cart if checking out the whole cart
-                if (prodName.startsWith('Cart Order')) {
-                    cart = [];
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    updateCartBadge();
-                    updateCartDropdown();
-                }
-
-                // Show Order Success Toast
-                const successToast = document.createElement('div');
-                successToast.className = 'custom-cart-toast';
-                successToast.style.borderColor = '#2e7d32'; // green
-                successToast.innerHTML = `
-                    <div class="d-flex align-items-center gap-2">
-                      <i class="bi bi-check2-circle text-success fs-4"></i>
-                      <div class="toast-content">
-                        <h6 style="color: #2e7d32;">Order Placed!</h6>
-                        <p>Thank you for buying ${prodName}!</p>
-                      </div>
-                    </div>
-                `;
-                document.body.appendChild(successToast);
-                setTimeout(() => successToast.classList.add('show'), 10);
-                setTimeout(() => {
-                    successToast.classList.remove('show');
-                    setTimeout(() => successToast.remove(), 400);
-                }, 4000);
             });
 
             // Run badge and dropdown update on load

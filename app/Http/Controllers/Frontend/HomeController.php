@@ -64,4 +64,9 @@ class HomeController extends Controller
 
         return view('product-details', compact('product', 'relatedProducts'));
     }
+
+    public function checkout(): View
+    {
+        return view('checkout');
+    }
 }

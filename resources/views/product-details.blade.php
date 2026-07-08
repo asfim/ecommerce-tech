@@ -381,6 +381,7 @@
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"
+                        data-image="{{ $allImages[0] }}"
                         style="font-size: 15px; font-weight: 600; border-radius: 8px;">
                         Buy Now
                     </button>
@@ -810,20 +811,15 @@
     if (detailBuyNowBtn) {
         detailBuyNowBtn.addEventListener('click', function(e) {
             e.preventDefault();
+            const id = this.dataset.id;
             const name = this.dataset.name;
             const price = this.dataset.price;
+            const image = this.dataset.image;
             const qty = parseInt(qtyInput.value) || 1;
-            const totalPrice = parseFloat(price) * qty;
             const variants = getSelectedVariants();
 
-            let nameWithVariants = name;
-            if (Object.keys(variants).length > 0) {
-                const details = Object.entries(variants).map(([k, v]) => `${k}: ${v}`).join(', ');
-                nameWithVariants = `${name} (${details})`;
-            }
-
-            if (window.openCheckoutGlobal) {
-                window.openCheckoutGlobal(`${nameWithVariants} (Qty: ${qty})`, totalPrice);
+            if (window.checkoutSingleItemGlobal) {
+                window.checkoutSingleItemGlobal(id, name, price, image, qty, variants);
             }
         });
     }

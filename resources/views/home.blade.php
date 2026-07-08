@@ -264,7 +264,12 @@
                                                                 data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}">
                                                                 <i class="bi bi-cart-plus"></i> Add
                                                             </button>
-                                                            <button class="btn btn-sm btn-primary py-0 px-2 d-inline-flex align-items-center justify-content-center" style="height: 24px; font-size:11px; border-radius:10px;">Buy Now</button>
+                                                            <button class="btn btn-sm btn-primary py-0 px-2 d-inline-flex align-items-center justify-content-center btn-bid"
+                                                                style="height: 24px; font-size:11px; border-radius:10px;"
+                                                                data-id="{{ $np->id }}"
+                                                                data-name="{{ $np->name }}"
+                                                                data-price="{{ $np->price }}"
+                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}">Buy Now</button>
                                                         </div>
                                                     </div>
                                                 </div>
