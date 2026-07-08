@@ -62,16 +62,16 @@
         .mini-prod .t{ font-size:11px; color:#444; min-height:28px; }
         .mini-prod .p{ font-size:12px; font-weight:700; }
 
-        .promo3{ height:170px; border-radius:6px; overflow:hidden; position:relative; border: 1px solid #ddd; }
-        .promo3 img{ width:100%; height:100%; object-fit:cover; }
+        .promo3{ height:220px; border-radius:6px; overflow:hidden; position:relative; border: 1px solid #ddd; background:#f5f5f5; }
+        .promo3 img{ width:100%; height:100%; object-fit:contain; }
         /* .hotcat-item{
             border-radius: 6px;
             border:  solid #cccccc;
 
         } */
 
-        .newarrival-banner{ background:#d8cdb8; border-radius:6px; height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; position:relative; }
-        .newarrival-banner img{ width:150px; margin-top:10px; }
+        .newarrival-banner{ background:#d8cdb8; border-radius:6px; min-height:250px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 20px; text-align:center; position:relative; }
+        .newarrival-banner img{ max-width:100%; max-height:100%; object-fit:contain; }
         .newarrival-banner .cap{ font-size:2rem; font-weight:800; letter-spacing:6px; color:#fff; text-shadow:0 2px 4px rgba(0,0,0,.3); writing-mode:vertical-rl; position:absolute; left:20px; top:20px; }
         .newarrival-list-panel{ background:#e6dfd0; border-radius:6px; }
         .newarrival-item{ display:flex; gap:10px; align-items:center; padding:8px; background:#fff; border-radius:6px; margin-bottom:8px; }

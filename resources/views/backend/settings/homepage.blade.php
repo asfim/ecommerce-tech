@@ -10,10 +10,30 @@
 @php
   $tab = request('tab', 'hero_banners');
   $tabs = [
-    'hero_banners'           => ['label' => 'Hero Section Banner',     'max' => 2, 'icon' => 'bi-image'],
-    'best_selling_banners'   => ['label' => 'Best Selling Banner',     'max' => 3, 'icon' => 'bi-stars'],
-    'new_arrivals_banner'    => ['label' => 'New Arrivals Banner',     'max' => 1, 'icon' => 'bi-bag-plus'],
-    'newest_products_banner' => ['label' => 'Newest Products Banner',  'max' => 1, 'icon' => 'bi-lightning'],
+    'hero_banners'           => [
+      'label' => 'Hero Section Banner',
+      'max' => 2,
+      'icon' => 'bi-image',
+      'recommendation' => 'Recommended size: 394 x 260 px (Aspect ratio ~ 3:2)'
+    ],
+    'best_selling_banners'   => [
+      'label' => 'Best Selling Banner',
+      'max' => 3,
+      'icon' => 'bi-stars',
+      'recommendation' => 'Recommended size: 394 x 220 px (Aspect ratio ~ 16:9)'
+    ],
+    'new_arrivals_banner'    => [
+      'label' => 'New Arrivals Banner',
+      'max' => 1,
+      'icon' => 'bi-bag-plus',
+      'recommendation' => 'Recommended size: 394 x 250 px (Aspect ratio ~ 1.6:1 / 3:2)'
+    ],
+    'discounted_products_banner' => [
+      'label' => 'Discounted Products',
+      'max' => 1,
+      'icon' => 'bi-lightning',
+      'recommendation' => 'Recommended size: 285 x 200 px (Aspect ratio ~ 4:3 / 3:2)'
+    ],
   ];
 @endphp
 
@@ -85,7 +105,10 @@
                        accept="image/*"
                        {{ $info['max'] - count($current) > 1 ? 'multiple' : '' }}
                        required>
-                <div class="form-text">Accepted: JPG, PNG, WebP. Recommended ratio: 16:5 for banners.</div>
+                <div class="form-text d-flex align-items-center gap-1 mt-2 text-secondary">
+                  <i class="bi bi-info-circle-fill text-primary"></i>
+                  <span>Accepted: JPG, PNG, WebP. <strong>{{ $info['recommendation'] }}</strong></span>
+                </div>
               </div>
               <button type="submit" class="btn btn-primary btn-sm">
                 <i class="bi bi-upload me-1"></i> Save Images

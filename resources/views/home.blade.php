@@ -14,21 +14,16 @@
           @else
             <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="fashion model">
           @endif
-          <div class="cap">Unleash<br>Your<br>Brand</div>
         </div>
       </div>
       <div class="col-4">
         <div class="season-banner">
           @if(!empty($heroBanners[1]))
-            <img src="{{ asset('storage/' . $heroBanners[1]) }}" alt="end of season model" style="opacity:.5;">
+            <img src="{{ asset('storage/' . $heroBanners[1]) }}" alt="end of season model">
           @else
-            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="end of season model" style="opacity:.5;">
+            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80" alt="end of season model">
           @endif
-          <div class="cap">
-            <div class="small">🔥 End of Season</div>
-            <h4 class="fw-bold">End of Season<br>Sale</h4>
-            <p class="small">For limited time and stock is limited</p>
-          </div>
+
         </div>
       </div>
       <div class="col-4">
@@ -172,7 +167,11 @@
   <div class="row g-3 mb-4">
     <div class="col-4">
       <div class="newarrival-banner">
-        <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80">
+        @if(!empty($newArrivalsBanner[0]))
+          <img src="{{ asset('storage/' . $newArrivalsBanner[0]) }}">
+        @else
+          <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80">
+        @endif
       </div>
     </div>
     <div class="col-8">
@@ -209,70 +208,20 @@
   </div>
 </div>
 
-<!-- Classified Ads -->
-<div class="classified-sec">
-  <div class="wrap">
-    <div class="d-flex justify-content-between mb-3">
-      <div><b>Classified Ads</b><div class="text-muted small">Products (108)</div></div>
-      <span class="arrow" style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;display:flex;align-items:center;justify-content:center;"><i class="bi bi-chevron-right"></i></span>
-    </div>
-    <div class="row g-3">
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&q=80">
-        <div class="t small">Cinca Urban-Adult Retro Graphic Clogs, 5lp</div>
-        <div class="p">$39.28</div>
-        <span class="badge-used">Used</span>
-      </div>
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1517341860632-4ffdbb63d5b0?w=200&q=80">
-        <div class="t small">Timex Women's TW2R98700 Stretch</div>
-        <div class="p">$39.28</div>
-        <span class="badge-used">Used</span>
-      </div>
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=200&q=80">
-        <div class="t small">Adikanra Papell Women's Halter Art Deco Beaded</div>
-        <div class="p">$39.28</div>
-        <span class="badge-new">New</span>
-      </div>
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1620064916298-2f8c8ba9f1a8?w=200&q=80">
-        <div class="t small">Acer Aspire 3 A315-74P-R7VH Slim Laptop, 15.6"</div>
-        <div class="p">$39.28</div>
-        <span class="badge-used">Used</span>
-      </div>
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1547082299-de196ea013d6?w=200&q=80">
-        <div class="t small">Minolta Pro Shot 16 Mega Pixel HD Digital Camera</div>
-        <div class="p">$39.28</div>
-        <span class="badge-new">New</span>
-      </div>
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?w=200&q=80">
-        <div class="t small">Acer Aspire 3 A315-74P-R7VH Slim Laptop, 15.6"</div>
-        <div class="p">$39.28</div>
-        <span class="badge-used">Used</span>
-      </div>
-      <div class="col classified-card">
-        <img src="https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=200&q=80">
-        <div class="t small">Minolta Pro Shot 16 Mega Pixel HD Digital Camera</div>
-        <div class="p">$39.28</div>
-        <span class="badge-new">New</span>
-      </div>
-    </div>
-  </div>
-</div>
-
 <div class="wrap">
-  <!-- Preorder -->
+  <!-- Discounted Products -->
   <div class="preorder-panel my-4">
-    <div class="panel-title px-0">Newest Preorder Products <span class="arrow"><i class="bi bi-chevron-right"></i></span></div>
+    <div class="panel-title px-0">Discounted Products <span class="arrow"><i class="bi bi-chevron-right"></i></span></div>
     <div class="row g-3">
       <div class="col-3">
         <div class="preorder-hero">
           <span class="badge-limit">Don't Miss Out</span>
-          <h5 class="fw-bold mt-3">Limited Pre-Orders<br>Available</h5>
-          <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" class="img-fluid rounded mt-2">
+          <h5 class="fw-bold mt-3">Limited Discounted<br>Products Available</h5>
+          @if(!empty($discountedProductsBanner[0]))
+            <img src="{{ asset('storage/' . $discountedProductsBanner[0]) }}" class="img-fluid rounded mt-2">
+          @else
+            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80" class="img-fluid rounded mt-2">
+          @endif
         </div>
       </div>
       <div class="col-9">
@@ -286,20 +235,6 @@
       </div>
     </div>
   </div>
-
-  {{-- <!-- 1000s of shops banner -->
-  <div class="shops-banner">
-    <div>
-      <h3>1000s of Shops with their best for You</h3>
-      <p class="text-muted mb-3" style="max-width:420px;">All of our sellers are passionate to bring new trends and quality products</p>
-      <a href="#" class="btn btn-primary rounded-pill px-4">Click to visit the best</a>
-    </div>
-    <div class="d-flex gap-2">
-      <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=200&q=80">
-      <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=200&q=80">
-      <img src="https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?w=200&q=80">
-    </div>
-  </div> --}}
 
   <!-- Product grid -->
   <div class="row g-3 mb-3">

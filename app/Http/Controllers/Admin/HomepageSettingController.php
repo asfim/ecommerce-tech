@@ -10,10 +10,10 @@ class HomepageSettingController extends Controller
 {
     // Section definitions: key => max images
     private array $sections = [
-        'hero_banners'           => 2,
-        'best_selling_banners'   => 3,
-        'new_arrivals_banner'    => 1,
-        'newest_products_banner' => 1,
+        'hero_banners' => 2,
+        'best_selling_banners' => 3,
+        'new_arrivals_banner' => 1,
+        'discounted_products_banner' => 1,
     ];
 
     public function index()
@@ -32,9 +32,9 @@ class HomepageSettingController extends Controller
             abort(404);
         }
 
-        $maxImages  = $this->sections[$section];
-        $existing   = HomepageSetting::get($section, []);
-        $images     = is_array($existing) ? $existing : [];
+        $maxImages = $this->sections[$section];
+        $existing = HomepageSetting::get($section, []);
+        $images = is_array($existing) ? $existing : [];
 
         // Handle deletions first
         if ($request->has('delete_images')) {
@@ -53,7 +53,7 @@ class HomepageSettingController extends Controller
                 if (count($images) >= $maxImages) {
                     break; // enforce max
                 }
-                $path     = $file->store('homepage', 'public');
+                $path = $file->store('homepage', 'public');
                 $images[] = $path;
             }
         }
