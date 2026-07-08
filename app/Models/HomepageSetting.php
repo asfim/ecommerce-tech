@@ -23,9 +23,6 @@ class HomepageSetting extends Model
 
     /**
      * Get a setting value by key, with optional default.
-     *
-     * @param  string  $key
-     * @param  mixed  $default
      */
     public static function get(string $key, mixed $default = null): mixed
     {

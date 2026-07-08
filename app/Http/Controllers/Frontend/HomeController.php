@@ -32,6 +32,7 @@ class HomeController extends Controller
             ->latest()
             ->take(5)
             ->get();
+        $products = Product::where('is_active', true)->latest()->get();
 
         return view('home', compact(
             'heroBanners',
@@ -42,7 +43,8 @@ class HomeController extends Controller
             'newArrivalsBanner',
             'discountedProductsBanner',
             'bestSellingProducts',
-            'discountedProducts'
+            'discountedProducts',
+            'products'
         ));
     }
 }
