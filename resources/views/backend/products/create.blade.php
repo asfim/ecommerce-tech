@@ -51,16 +51,22 @@
     </div>
 
     <div class="row">
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Category</label>
-        <select name="category_id" class="form-select" required>
+        <select name="category_id" id="categorySelect" class="form-select" required>
           <option value="">Select Category</option>
           @foreach($categories as $category)
             <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
           @endforeach
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
+        <label class="form-label">Subcategory</label>
+        <select name="sub_category_id" id="subCategorySelect" class="form-select">
+          <option value="">Select Subcategory</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3">
         <label class="form-label">Brand</label>
         <select name="brand_id" class="form-select" required>
           <option value="">Select Brand</option>
@@ -69,7 +75,7 @@
           @endforeach
         </select>
       </div>
-      <div class="col-md-4 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Main Image</label>
         <input type="file" name="image" class="form-control">
       </div>
@@ -91,6 +97,21 @@
       <div class="col-md-3 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
         <input type="file" name="images[]" class="form-control" multiple>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Discount Type</label>
+        <select name="discount_type" class="form-select">
+          <option value="">No Discount</option>
+          <option value="percent" {{ old('discount_type') == 'percent' ? 'selected' : '' }}>Percentage (%)</option>
+          <option value="fixed" {{ old('discount_type') == 'fixed' ? 'selected' : '' }}>Fixed Amount ($)</option>
+        </select>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Discount Value</label>
+        <input type="number" name="discount_value" step="0.01" class="form-control" value="{{ old('discount_value', 0) }}">
       </div>
     </div>
 
@@ -185,6 +206,37 @@
 
 @push('scripts')
 <script>
+  // ─── Dynamic Subcategories Filtering ───────────────────────────────
+  const subCategoriesData = @json($subCategories);
+  const categorySelect = document.getElementById('categorySelect');
+  const subCategorySelect = document.getElementById('subCategorySelect');
+
+  categorySelect.addEventListener('change', function () {
+    const selectedCategoryId = this.value;
+    subCategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+
+    if (selectedCategoryId) {
+      const filtered = subCategoriesData.filter(sub => sub.category_id == selectedCategoryId);
+      filtered.forEach(sub => {
+        const option = document.createElement('option');
+        option.value = sub.id;
+        option.textContent = sub.name;
+        subCategorySelect.appendChild(option);
+      });
+    }
+  });
+
+  // Restore old() on validation failure
+  (function () {
+    const oldSubCategoryId = @json(old('sub_category_id'));
+    if (categorySelect.value) {
+      categorySelect.dispatchEvent(new Event('change'));
+      if (oldSubCategoryId) {
+        subCategorySelect.value = oldSubCategoryId;
+      }
+    }
+  })();
+
   // ─── Slug Auto-generate ────────────────────────────────────────────
   document.getElementById('productName').addEventListener('input', function () {
     document.getElementById('productSlug').value = this.value

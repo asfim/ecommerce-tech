@@ -8,6 +8,7 @@ use App\Models\Attribute;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\SubCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -30,10 +31,11 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
+        $subCategories = SubCategory::where('is_active', true)->get();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
 
-        return view('backend.products.create', compact('categories', 'brands', 'attributes'));
+        return view('backend.products.create', compact('categories', 'subCategories', 'brands', 'attributes'));
     }
 
     public function store(Request $request)
@@ -42,13 +44,16 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:products',
             'category_id' => 'required|exists:categories,id',
+            'sub_category_id' => 'nullable|exists:sub_categories,id',
             'brand_id' => 'required|exists:brands,id',
             'price' => 'required|numeric|min:0',
+            'discount_type' => 'nullable|string|in:percent,fixed',
+            'discount_value' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'sales_count' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:10240',
             'images' => 'nullable|array',
-            'images.*' => 'image|max:2048',
+            'images.*' => 'image|max:10240',
             'is_active' => 'boolean',
             'variant_labels' => 'array',
             'variant_values' => 'array',
@@ -71,6 +76,7 @@ class ProductController extends Controller
         }
         $validated['variants'] = $variants ?: null;
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
+        $validated['discount_value'] = $validated['discount_value'] ?? 0;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -94,10 +100,11 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
+        $subCategories = SubCategory::where('is_active', true)->get();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
 
-        return view('backend.products.edit', compact('product', 'categories', 'brands', 'attributes'));
+        return view('backend.products.edit', compact('product', 'categories', 'subCategories', 'brands', 'attributes'));
     }
 
     public function update(Request $request, Product $product)
@@ -106,13 +113,16 @@ class ProductController extends Controller
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:products,slug,'.$product->id,
             'category_id' => 'required|exists:categories,id',
+            'sub_category_id' => 'nullable|exists:sub_categories,id',
             'brand_id' => 'required|exists:brands,id',
             'price' => 'required|numeric|min:0',
+            'discount_type' => 'nullable|string|in:percent,fixed',
+            'discount_value' => 'nullable|numeric|min:0',
             'stock' => 'required|integer|min:0',
             'sales_count' => 'nullable|integer|min:0',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:10240',
             'images' => 'nullable|array',
-            'images.*' => 'image|max:2048',
+            'images.*' => 'image|max:10240',
             'is_active' => 'boolean',
             'variant_labels' => 'array',
             'variant_values' => 'array',
@@ -135,6 +145,7 @@ class ProductController extends Controller
         }
         $validated['variants'] = $variants ?: null;
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
+        $validated['discount_value'] = $validated['discount_value'] ?? 0;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');

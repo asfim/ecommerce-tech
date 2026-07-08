@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $fillable = ['name', 'category_id', 'brand_id', 'price', 'stock', 'sales_count', 'slug', 'variants', 'image', 'images', 'is_active', 'is_featured'];
+    protected $fillable = ['name', 'category_id', 'sub_category_id', 'brand_id', 'price', 'discount_type', 'discount_value', 'stock', 'sales_count', 'slug', 'variants', 'image', 'images', 'is_active', 'is_featured'];
 
     protected function casts(): array
     {
@@ -21,6 +21,11 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function subCategory()
+    {
+        return $this->belongsTo(SubCategory::class, 'sub_category_id');
     }
 
     public function brand()
