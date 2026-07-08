@@ -30,26 +30,76 @@
     <div class="col-md-3">
         <div class="stat-card">
             <p>Total Orders</p>
-            <h2>12</h2>
+            <h2>{{ $totalOrders }}</h2>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card">
             <p>Wishlist</p>
-            <h2>5</h2>
+            <h2>0</h2>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card">
             <p>Coupons</p>
-            <h2>3</h2>
+            <h2>0</h2>
         </div>
     </div>
     <div class="col-md-3">
         <div class="stat-card">
             <p>Reviews</p>
-            <h2>8</h2>
+            <h2>0</h2>
         </div>
     </div>
 </div>
+
+@if($totalOrders > 0)
+<div class="mt-4">
+    <h5 class="mb-3">Recent Orders</h5>
+    @php
+        $recentOrders = \App\Models\Order::where('user_id', auth()->id())->latest()->take(5)->get();
+    @endphp
+    <div class="stat-card">
+        <table class="table table-bordered align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th style="width:120px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($recentOrders as $order)
+                    <tr>
+                        <td><span class="badge bg-dark font-monospace">{{ $order->invoice_no }}</span></td>
+                        <td class="fw-bold">৳{{ number_format($order->total, 2) }}</td>
+                        <td>
+                            @if($order->order_status === 'pending')
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            @elseif($order->order_status === 'confirmed')
+                                <span class="badge bg-primary">Confirmed</span>
+                            @elseif($order->order_status === 'delivered')
+                                <span class="badge bg-success">Delivered</span>
+                            @elseif($order->order_status === 'cancelled')
+                                <span class="badge bg-danger">Cancelled</span>
+                            @endif
+                        </td>
+                        <td class="text-muted small">{{ $order->created_at->format('d M Y') }}</td>
+                        <td>
+                            <a href="{{ route('user.orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                        </td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+        <div class="text-center mt-3">
+            <a href="{{ route('user.orders.index') }}" class="btn btn-sm btn-outline-dark">View All Orders</a>
+        </div>
+    </div>
+</div>
+@endif
 @endsection

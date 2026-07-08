@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\AdminAttributeValueController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\Backend\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Backend\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Frontend\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\Frontend\Auth\RegisterController as UserRegisterController;
+use App\Http\Controllers\Frontend\CustomerOrderController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\OrderController;
@@ -36,6 +38,8 @@ Route::prefix('account')->name('user.')->group(function () {
 
     Route::middleware('auth')->group(function () {
         Route::get('dashboard', [UserDashboardController::class, 'index'])->name('dashboard');
+        Route::get('orders', [CustomerOrderController::class, 'index'])->name('orders.index');
+        Route::get('orders/{order}', [CustomerOrderController::class, 'show'])->name('orders.show');
     });
 });
 
@@ -68,6 +72,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('products', AdminProductController::class);
             Route::patch('products/{product}/toggle-featured', [AdminProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
             Route::patch('products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggle-active');
+        });
+
+        Route::middleware('permission:manage-orders,admin')->group(function () {
+            Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
+            Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
+            Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
         });
 
         Route::middleware('permission:manage-attributes,admin')->group(function () {

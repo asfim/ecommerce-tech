@@ -26,10 +26,13 @@
       <a href="{{ route('admin.brands.index') }}" class="ps-4 {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}"><i class="bi bi-tags"></i> Brands</a>
     @endcan
     @can('manage-attributes')
-      <a href="{{ route('admin.attributes.index') }}" class="ps-4 {{ request()->routeIs(['admin.attributes.index', 'admin.attributes.create', 'admin.attributes.edit']) ? 'active' : '' }}"><i class="bi bi-palette"></i> Attributes</a>
-      <a href="{{ route('admin.attribute-values.index') }}" class="ps-4 {{ request()->routeIs(['admin.attribute-values.index', 'admin.attributes.values.*']) ? 'active' : '' }}"><i class="bi bi-list-ul"></i> Attribute Values</a>
+      <a href="{{ route('admin.attributes.index') }}" class="ps-4 {{ request()->routeIs('admin.attributes.index', 'admin.attributes.create', 'admin.attributes.edit') ? 'active' : '' }}"><i class="bi bi-palette"></i> Attributes</a>
+      <a href="{{ route('admin.attribute-values.index') }}" class="ps-4 {{ request()->routeIs('admin.attribute-values.index', 'admin.attributes.values.*') ? 'active' : '' }}"><i class="bi bi-list-ul"></i> Attribute Values</a>
     @endcan
   </div>
+  @can('manage-orders')
+    <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Orders</a>
+  @endcan
   @role('Super Admin')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#staffSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-shield-lock"></i> Staff Management</a>
     <div class="collapse {{ request()->routeIs(['admin.users.*', 'admin.roles.*', 'admin.permissions.*', 'admin.activity-logs.*']) ? 'show' : '' }}" id="staffSubmenu">

@@ -35,6 +35,7 @@ class OrderController extends Controller
 
         $order = DB::transaction(function () use ($validated) {
             $order = Order::create([
+                'user_id' => auth()->id(),
                 'invoice_no' => Order::generateInvoiceNo(),
                 'customer_name' => $validated['customer_name'],
                 'customer_phone' => $validated['customer_phone'],

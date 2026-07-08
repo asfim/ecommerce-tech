@@ -3,11 +3,13 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
     protected $fillable = [
+        'user_id',
         'invoice_no',
         'customer_name',
         'customer_phone',
@@ -21,6 +23,14 @@ class Order extends Model
         'tax',
         'total',
     ];
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * @return HasMany<OrderItem, $this>

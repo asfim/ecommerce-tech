@@ -19,7 +19,7 @@
     </a>
   </div>
   <a href="{{ route('user.dashboard') }}" class="{{ request()->routeIs('user.dashboard') ? 'active' : '' }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-  <a href="#"><i class="bi bi-box-seam"></i> Orders</a>
+  <a href="{{ route('user.orders.index') }}" class="{{ request()->routeIs('user.orders.*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Orders</a>
   <a href="#"><i class="bi bi-heart"></i> Wishlist</a>
   <a href="#"><i class="bi bi-gear"></i> Settings</a>
 </div>
