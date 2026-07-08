@@ -12,9 +12,23 @@
             --dark:#1c1c1c;
             --muted:#8a8a8a;
         }
-        body{ font-family:'Segoe UI',Arial,sans-serif; color:#222; font-size:14px; min-width:1300px; background:#fff; }
-        a{ text-decoration:none; }
-        .wrap{ max-width:1260px; margin:0 auto; padding:0 15px; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #222;
+            font-size: 14px;
+            background: #fff;
+            overflow-x: hidden;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .wrap {
+            max-width: 1260px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
         .topline{ height:6px; background:#111; }
         .header-row{ padding:14px 0; border-bottom:1px solid #eee; }
         .logo-box{ width:34px;height:34px;background:#111;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700; }

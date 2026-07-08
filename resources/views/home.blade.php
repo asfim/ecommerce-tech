@@ -7,7 +7,7 @@
     <div class="hero-sec">
         <div class="wrap">
             <div class="row g-3">
-                <div class="col-4">
+                <div class="col-12 col-md-6 col-lg-4">
                     <div class="brand-banner">
                         @if (!empty($heroBanners[0]))
                             <img src="{{ asset('storage/' . $heroBanners[0]) }}" alt="fashion model">
@@ -17,7 +17,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-12 col-md-6 col-lg-4">
                     <div class="season-banner">
                         @if (!empty($heroBanners[1]))
                             <img src="{{ asset('storage/' . $heroBanners[1]) }}" alt="end of season model">
@@ -28,7 +28,7 @@
 
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-12 col-lg-4">
                     <div class="hotcat-panel">
                         <h6><i class="bi bi-fire text-danger"></i> Hot Categories</h6>
                         <div class="row g-2 mt-1">
@@ -50,13 +50,12 @@
 
             <!-- Featured products strip -->
             <div class="featured-strip">
-                <div class="row align-items-center">
-                    <div class="col-2"><b>Featured Products</b></div>
-                    <div class="col-9" style="overflow:hidden;">
+                <div class="row align-items-center g-2">
+                    <div class="col-12 col-md-3"><b>Featured Products</b></div>
+                    <div class="col-10 col-md-8" style="overflow:hidden;">
                         <div id="featuredSlider" style="display:flex;transition:transform .4s ease;gap:0;">
                             @forelse($featuredProducts as $fp)
-                                <div class="fs-item"
-                                    style="min-width:33.333%;flex:0 0 33.333%;display:flex;align-items:center;gap:10px;padding:0 8px;">
+                                <div class="fs-item" style="display:flex;align-items:center;gap:10px;">
                                     @if ($fp->image)
                                         <img src="{{ asset('storage/' . $fp->image) }}"
                                             style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
@@ -64,9 +63,19 @@
                                         <img src="https://placehold.co/50x50/eee/aaa?text=No+Img"
                                             style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
                                     @endif
-                                    <div>
-                                        <div class="t">{{ Str::limit($fp->name, 35) }}</div>
-                                        <div class="p">${{ number_format($fp->price, 2) }}</div>
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div>
+                                            <div class="t">{{ Str::limit($fp->name, 35) }}</div>
+                                            <div class="p">${{ number_format($fp->price, 2) }}</div>
+                                        </div>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary rounded-circle p-0 d-inline-flex align-items-center justify-content-center add-to-cart-btn"
+                                            style="width:24px;height:24px;min-width:24px;" data-id="{{ $fp->id }}"
+                                            data-name="{{ $fp->name }}" data-price="{{ $fp->price }}"
+                                            data-image="{{ $fp->image ? asset('storage/' . $fp->image) : 'https://placehold.co/50x50/eee/aaa?text=No+Img' }}"
+                                            title="Add to Cart">
+                                            <i class="bi bi-plus-lg" style="font-size:10px;"></i>
+                                        </button>
                                     </div>
                                 </div>
                             @empty
@@ -74,7 +83,7 @@
                             @endforelse
                         </div>
                     </div>
-                    <div class="col-1 text-end d-flex justify-content-end gap-1">
+                    <div class="col-2 col-md-1 text-end d-flex justify-content-end gap-1">
                         <span class="arrow d-inline-flex" id="featuredPrev"
                             style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
                                 class="bi bi-chevron-left"></i></span>
@@ -97,8 +106,7 @@
             <div style="overflow: hidden; flex-grow: 1;">
                 <div id="trendingSlider" style="display: flex; gap: 15px; transition: transform .4s ease;">
                     @forelse($trendingCategories as $tc)
-                        <div class="tcat-item"
-                            style="min-width: calc(16.666% - 12.5px); flex: 0 0 calc(16.666% - 12.5px); text-align: center;">
+                        <div class="tcat-item">
                             @if ($tc->image)
                                 <img src="{{ asset('storage/' . $tc->image) }}" alt="{{ $tc->name }}"
                                     style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
@@ -126,11 +134,11 @@
 
         <!-- Best selling / Today's deal -->
         <div class="row g-3 mb-4">
-            <div class="col-9">
+            <div class="col-12 col-lg-9">
                 <div class="bestselling-panel h-100">
                     <div class="panel-title">Best Selling <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                     </div>
-                    <div class="row g-2 px-3 pb-3">
+                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2 px-3 pb-3">
                         @forelse($bestSellingProducts as $bp)
                             <div class="col mini-prod">
                                 <div class="mini-img-wrap">
@@ -159,7 +167,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-3">
+            <div class="col-12 col-lg-3">
                 <div class="todaydeal-panel h-100">
                     <div class="panel-title">Todays Deal <span class="arrow"><i class="bi bi-chevron-right"></i></span>
                     </div>
@@ -176,7 +184,7 @@
 
         <!-- Promo 3 banners -->
         <div class="row g-3 mb-4">
-            <div class="col-4">
+            <div class="col-12 col-md-4">
                 <div class="promo3">
                     @if (!empty($bestSellingBanners[0]))
                         <img src="{{ asset('storage/' . $bestSellingBanners[0]) }}">
@@ -185,7 +193,7 @@
                     @endif
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-md-4">
                 <div class="promo3">
                     @if (!empty($bestSellingBanners[1]))
                         <img src="{{ asset('storage/' . $bestSellingBanners[1]) }}">
@@ -194,7 +202,7 @@
                     @endif
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-12 col-md-4">
                 <div class="promo3">
                     @if (!empty($bestSellingBanners[2]))
                         <img src="{{ asset('storage/' . $bestSellingBanners[2]) }}">
@@ -207,7 +215,7 @@
 
         <!-- New Arrival -->
         <div class="row g-3 mb-4">
-            <div class="col-4">
+            <div class="col-12 col-md-4">
                 <div class="newarrival-banner">
                     @if (!empty($newArrivalsBanner[0]))
                         <img src="{{ asset('storage/' . $newArrivalsBanner[0]) }}">
@@ -216,12 +224,12 @@
                     @endif
                 </div>
             </div>
-            <div class="col-8">
+            <div class="col-12 col-md-8">
                 <div class="newarrival-list-panel p-3">
                     <div class="d-flex justify-content-between mb-2"><b>New Arrival</b><small class="text-muted">Products
                             (109)</small></div>
                     <div class="row g-2">
-                        <div class="col-6">
+                        <div class="col-12 col-sm-6">
                             <div class="newarrival-item">
                                 <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100&q=80">
                                 <div class="flex-grow-1">
@@ -231,7 +239,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-sm-6">
                             <div class="newarrival-item">
                                 <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=100&q=80">
                                 <div class="flex-grow-1">
@@ -241,7 +249,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-sm-6">
                             <div class="newarrival-item">
                                 <img src="https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=100&q=80">
                                 <div class="flex-grow-1">
@@ -251,7 +259,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-6">
+                        <div class="col-12 col-sm-6">
                             <div class="newarrival-item">
                                 <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&q=80">
                                 <div class="flex-grow-1">
@@ -281,7 +289,7 @@
                 </div>
             </div>
             <div class="row g-3">
-                <div class="col-3">
+                <div class="col-12 col-lg-3">
                     <div class="preorder-hero">
                         <span class="badge-limit">Don't Miss Out</span>
                         <h5 class="fw-bold mt-3">Limited Discounted<br>Products Available</h5>
@@ -294,7 +302,7 @@
                         @endif
                     </div>
                 </div>
-                <div class="col-9">
+                <div class="col-12 col-lg-9">
                     <div style="overflow: hidden;">
                         <div id="discountedSlider" style="display: flex; gap: 15px; transition: transform .4s ease;">
                             @forelse($discountedProducts as $dp)
@@ -363,7 +371,7 @@
                         }
                     }
                 @endphp
-                <div class="col-2">
+                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                     <div class="prod-card">
                         <div class="prod-img-wrap">
                             @if ($hasDiscount)
@@ -467,9 +475,9 @@
             }
 
             .prod-img-wrap img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
                 transition: transform 0.3s ease;
             }
 
@@ -544,9 +552,121 @@
             }
 
             .mini-prod:hover {
-                transform: translateY(-4px);
+                /* transform: translateY(-4px); */
                 border-color: #0066b9 !important;
                 box-shadow: 0 8px 20px rgba(0, 102, 185, 0.12) !important;
+            }
+
+            /* Trending Categories hover */
+            .tcat-item {
+                transition: all 0.3s ease;
+                cursor: pointer;
+                padding: 8px;
+                border-radius: 12px;
+            }
+
+            .tcat-item:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                background: #fff;
+            }
+
+            .tcat-item:hover .name {
+                color: #0066b9;
+                font-weight: 700;
+            }
+
+            /* Featured Products hover */
+            /* Featured Products hover & responsiveness */
+            .fs-item {
+                padding: 10px;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+                min-width: 100%;
+                flex: 0 0 100%;
+            }
+
+            @media (min-width: 576px) {
+                .fs-item {
+                    min-width: 50%;
+                    flex: 0 0 50%;
+                }
+            }
+
+            @media (min-width: 992px) {
+                .fs-item {
+                    min-width: 33.333%;
+                    flex: 0 0 33.333%;
+                }
+            }
+
+            .fs-item:hover {
+                background: #fff;
+                box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+                transform: translateY(-3px);
+            }
+
+            .fs-item:hover .t {
+                color: #0066b9;
+            }
+
+            .fs-item .t {
+                transition: color 0.2s ease;
+            }
+
+            /* Responsive overrides for sliders and custom rows */
+            @media (max-width: 768px) {
+                .trending-box {
+                    flex-direction: column;
+                    text-align: center;
+                    align-items: stretch;
+                }
+
+                .trending-box>div:first-child {
+                    margin-bottom: 10px;
+                }
+            }
+
+            /* Trending categories items responsiveness */
+            .tcat-item {
+                min-width: calc(33.333% - 10px);
+                flex: 0 0 calc(33.333% - 10px);
+                text-align: center;
+            }
+
+            @media (min-width: 576px) {
+                .tcat-item {
+                    min-width: calc(25% - 11.25px);
+                    flex: 0 0 calc(25% - 11.25px);
+                }
+            }
+
+            @media (min-width: 992px) {
+                .tcat-item {
+                    min-width: calc(16.666% - 12.5px);
+                    flex: 0 0 calc(16.666% - 12.5px);
+                }
+            }
+
+            /* Discounted products items responsiveness inside slider */
+            #discountedSlider .mini-prod {
+                min-width: calc(50% - 7.5px);
+                flex: 0 0 calc(50% - 7.5px);
+            }
+
+            @media (min-width: 576px) {
+                #discountedSlider .mini-prod {
+                    min-width: calc(33.333% - 10px);
+                    flex: 0 0 calc(33.333% - 10px);
+                }
+            }
+
+            @media (min-width: 992px) {
+                #discountedSlider .mini-prod {
+                    min-width: calc(25% - 11.25px);
+                    flex: 0 0 calc(25% - 11.25px);
+                }
             }
 
             .mini-img-wrap {
@@ -564,9 +684,9 @@
             }
 
             .mini-img-wrap img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
+                max-width: 100%;
+                max-height: 100%;
+                object-fit: contain;
                 transition: transform 0.3s ease;
             }
 
@@ -733,11 +853,20 @@
 
                 const items = slider.querySelectorAll('.fs-item');
                 const totalItems = items.length;
-                const visibleItems = 3;
+                let visibleItems = 3;
                 let currentIndex = 0;
-                const maxIndex = Math.max(0, totalItems - visibleItems);
+                let maxIndex = Math.max(0, totalItems - visibleItems);
+
+                function getVisibleItems() {
+                    if (window.innerWidth < 576) return 1;
+                    if (window.innerWidth < 992) return 2;
+                    return 3;
+                }
 
                 function updateSlider() {
+                    visibleItems = getVisibleItems();
+                    maxIndex = Math.max(0, totalItems - visibleItems);
+                    if (currentIndex > maxIndex) currentIndex = maxIndex;
                     const offset = currentIndex * (100 / visibleItems);
                     slider.style.transform = `translateX(-${offset}%)`;
                 }
@@ -750,11 +879,17 @@
                 });
 
                 nextBtn.addEventListener('click', function() {
+                    visibleItems = getVisibleItems();
+                    maxIndex = Math.max(0, totalItems - visibleItems);
                     if (currentIndex < maxIndex) {
                         currentIndex++;
                         updateSlider();
                     }
                 });
+
+                // Call initially and on resize
+                updateSlider();
+                window.addEventListener('resize', updateSlider);
             });
 
             document.addEventListener('DOMContentLoaded', function() {
@@ -765,35 +900,20 @@
 
                 const items = slider.querySelectorAll('.tcat-item');
                 const totalItems = items.length;
-                const visibleItems = 6;
+                let visibleItems = 6;
                 let currentIndex = 0;
-                const maxIndex = Math.max(0, totalItems - visibleItems);
+                let maxIndex = Math.max(0, totalItems - visibleItems);
 
-                function updateSlider() {
-                    // Calculate offset based on item width and margins/gaps.
-                    // Since they are inside display: flex with gap: 15px,
-                    // translating by (100 / visibleItems)% per item plus accounting for gap
-                    // can be simplified or just using percentage-based translation.
-                    // Since min-width of items is calc(16.666% - 12.5px) and gap is 15px,
-                    // moving by item index is cleanest with container scroll or computed style offsets.
-                    // Alternatively, translating by a percentage of container:
-                    // each item step = (100% of container + gap total) / visibleItems = (100 + gap_factor) / 6.
-                    // With simple translateX, since parent has overflow hidden:
-                    // Offset can be: (100 / 6) * currentIndex + (currentIndex * gapOffset)
-                    // Or simply: scrollLeft / CSS scroll-behavior: smooth.
-                    // Let's use standard container translate:
-                    // The offset in px: itemWidth + gap = (containerWidth - 5*15)/6 + 15 = containerWidth/6 + 2.5px.
-                    // Alternatively, we can translate by:
-                    // index * (100 / visibleItems)%
-                    // This is perfectly fine if layout uses gap and items scale accordingly.
-                    // Let's translate by: currentIndex * (100 + 15) / 6 % or scroll.
-                    // Scroll is actually extremely reliable and works with gaps automatically!
-                    // Let's just use scrollTo/scrollBy or element.scrollLeft.
-                    // Let's write standard CSS transform or scrollLeft:
-                    // scrollLeft is super smooth and handles gaps natively!
+                function getVisibleItems() {
+                    if (window.innerWidth < 576) return 3;
+                    if (window.innerWidth < 992) return 4;
+                    return 6;
                 }
 
                 function scrollSlider() {
+                    visibleItems = getVisibleItems();
+                    maxIndex = Math.max(0, totalItems - visibleItems);
+                    if (currentIndex > maxIndex) currentIndex = maxIndex;
                     if (totalItems <= visibleItems) return;
                     const itemWidth = items[0].getBoundingClientRect().width;
                     const gap = 15;
@@ -811,10 +931,16 @@
                 });
 
                 nextBtn.addEventListener('click', function() {
+                    visibleItems = getVisibleItems();
+                    maxIndex = Math.max(0, totalItems - visibleItems);
                     if (currentIndex < maxIndex) {
                         currentIndex++;
                         scrollSlider();
                     }
+                });
+
+                window.addEventListener('resize', function() {
+                    scrollSlider();
                 });
 
                 // Make sure parent container has style: overflow: hidden; scroll-behavior: smooth;
@@ -829,11 +955,20 @@
 
                 const items = slider.querySelectorAll('.mini-prod');
                 const totalItems = items.length;
-                const visibleItems = 4;
+                let visibleItems = 4;
                 let currentIndex = 0;
-                const maxIndex = Math.max(0, totalItems - visibleItems);
+                let maxIndex = Math.max(0, totalItems - visibleItems);
+
+                function getVisibleItems() {
+                    if (window.innerWidth < 576) return 2;
+                    if (window.innerWidth < 992) return 3;
+                    return 4;
+                }
 
                 function scrollSlider() {
+                    visibleItems = getVisibleItems();
+                    maxIndex = Math.max(0, totalItems - visibleItems);
+                    if (currentIndex > maxIndex) currentIndex = maxIndex;
                     if (totalItems <= visibleItems) return;
                     const itemWidth = items[0].getBoundingClientRect().width;
                     const gap = 15;
@@ -851,10 +986,16 @@
                 });
 
                 nextBtn.addEventListener('click', function() {
+                    visibleItems = getVisibleItems();
+                    maxIndex = Math.max(0, totalItems - visibleItems);
                     if (currentIndex < maxIndex) {
                         currentIndex++;
                         scrollSlider();
                     }
+                });
+
+                window.addEventListener('resize', function() {
+                    scrollSlider();
                 });
 
                 slider.parentElement.style.scrollBehavior = 'smooth';
