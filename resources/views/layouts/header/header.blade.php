@@ -456,7 +456,14 @@
 
             <div class="d-flex align-items-center gap-2">
                 <a href="#" class="icon-btn"><i class="bi bi-heart"></i><span class="badge-num">3</span></a>
-                <a href="#" class="icon-btn"><i class="bi bi-bag"></i><span class="badge-num">7</span></a>
+                <div class="dropdown">
+                    <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownDesktop" style="text-decoration:none;">
+                        <i class="bi bi-bag"></i><span class="badge-num">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end p-3 cart-dropdown-menu" aria-labelledby="cartDropdownDesktop" style="width: 320px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
+                        <!-- Dynamically rendered cart items -->
+                    </ul>
+                </div>
                 @if(auth()->guard('admin')->check())
                     <div class="position-relative">
                         <a href="#" class="user-chip dropdown-toggle" data-bs-toggle="dropdown">
@@ -575,7 +582,14 @@
                 </button>
 
                 <!-- Add to Cart Icon (Bag Icon) -->
-                <a href="#" class="icon-btn" id="cartHeaderBtn"><i class="bi bi-bag"></i><span class="badge-num">7</span></a>
+                <div class="dropdown">
+                    <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownMobile" style="text-decoration:none;">
+                        <i class="bi bi-bag"></i><span class="badge-num">0</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-start p-3 cart-dropdown-menu" aria-labelledby="cartDropdownMobile" style="width: 300px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
+                        <!-- Dynamically rendered cart items -->
+                    </ul>
+                </div>
 
                 <!-- Auth Icon with Dropdown -->
                 <div class="dropdown">

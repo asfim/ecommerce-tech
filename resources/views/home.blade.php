@@ -1030,13 +1030,65 @@
 
                 function updateCartBadge() {
                     const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                    const cartBadge = document.querySelector('a.icon-btn:has(i.bi-bag) .badge-num');
-                    if (cartBadge) {
-                        cartBadge.textContent = totalItems;
-                        cartBadge.classList.remove('badge-bounce');
-                        void cartBadge.offsetWidth; // Trigger reflow
-                        cartBadge.classList.add('badge-bounce');
-                    }
+                    const badges = document.querySelectorAll('a.icon-btn .badge-num');
+                    badges.forEach(badge => {
+                        badge.textContent = totalItems;
+                        badge.classList.remove('badge-bounce');
+                        void badge.offsetWidth; // Trigger reflow
+                        badge.classList.add('badge-bounce');
+                    });
+                }
+
+                function updateCartDropdown() {
+                    const dropdownMenus = document.querySelectorAll('.cart-dropdown-menu');
+                    dropdownMenus.forEach(menu => {
+                        if (cart.length === 0) {
+                            menu.innerHTML = `
+                                <div class="text-center py-4">
+                                    <i class="bi bi-cart-x text-muted" style="font-size: 32px;"></i>
+                                    <p class="text-muted small mb-0 mt-2">Your cart is empty</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                        let itemsHtml = '';
+                        let total = 0;
+
+                        cart.forEach(item => {
+                            const itemTotal = item.price * item.quantity;
+                            total += itemTotal;
+                            itemsHtml += `
+                                <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom dropdown-cart-item">
+                                    <img src="${item.image}" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #fff;" class="border">
+                                    <div class="flex-grow-1" style="min-width: 0;">
+                                        <div class="fw-semibold small text-truncate" title="${item.name}">${item.name}</div>
+                                        <div class="text-muted small">${item.quantity} x $${item.price.toFixed(2)}</div>
+                                    </div>
+                                    <button type="button" class="btn btn-sm text-danger p-0 remove-dropdown-item" data-id="${item.id}" style="border: none; background: transparent;">
+                                        <i class="bi bi-trash" style="font-size: 14px;"></i>
+                                    </button>
+                                </div>
+                            `;
+                        });
+
+                        menu.innerHTML = `
+                            <div class="px-1 py-1">
+                                <h6 class="fw-bold mb-3 small d-flex justify-content-between">
+                                    <span>Shopping Cart</span>
+                                    <span class="text-primary">(${cart.reduce((sum, item) => sum + item.quantity, 0)} Items)</span>
+                                </h6>
+                                <div style="max-height: 200px; overflow-y: auto;" class="pe-1">
+                                    ${itemsHtml}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center my-3 pt-2 border-top">
+                                    <span class="fw-bold text-dark small">Total:</span>
+                                    <span class="fw-bold text-primary">$${total.toFixed(2)}</span>
+                                </div>
+                                <button type="button" class="btn btn-primary btn-sm w-100 py-2 fw-semibold checkout-dropdown-btn" style="border-radius: 6px;">Buy Now</button>
+                            </div>
+                        `;
+                    });
                 }
 
                 function showNotification(productName, productImage) {
@@ -1074,6 +1126,7 @@
                     }
                     localStorage.setItem('cart', JSON.stringify(cart));
                     updateCartBadge();
+                    updateCartDropdown();
                     showNotification(productName, productImage);
                 }
 
@@ -1087,6 +1140,19 @@
                         const price = btn.dataset.price;
                         const image = btn.dataset.image;
                         addToCart(id, name, price, image);
+                    }
+                });
+
+                // Bind event listener to remove item inside dropdown
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('.remove-dropdown-item');
+                    if (btn) {
+                        e.preventDefault();
+                        const id = btn.dataset.id;
+                        cart = cart.filter(item => item.id != id);
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        updateCartBadge();
+                        updateCartDropdown();
                     }
                 });
 
@@ -1150,16 +1216,31 @@
                     }
                 });
 
-                // // Bind event listeners for "Buy Now"
-                // document.addEventListener('click', function(e) {
-                //   const btn = e.target.closest('.buy-now-btn');
-                //   if (btn) {
-                //     e.preventDefault();
-                //     const name = btn.dataset.name;
-                //     const price = btn.dataset.price;
-                //     openCheckout(name, price);
-                //   }
-                // });
+                // Bind event listeners for checkout from dropdown
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('.checkout-dropdown-btn');
+                    if (btn) {
+                        e.preventDefault();
+                        if (cart.length === 0) return;
+                        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                        const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+                        openCheckout(`Cart Order (${totalQty} items)`, total);
+                    }
+                });
+
+                // Bind event listeners for page-level Buy Now buttons
+                document.addEventListener('click', function(e) {
+                    const btn = e.target.closest('.btn-bid');
+                    if (btn) {
+                        e.preventDefault();
+                        const card = btn.closest('.newarrival-item');
+                        if (card) {
+                            const name = card.querySelector('.t').textContent.trim();
+                            const priceText = card.querySelector('.bid b').textContent.replace('$', '').replace(/,/g, '').trim();
+                            openCheckout(name, parseFloat(priceText));
+                        }
+                    }
+                });
 
                 // Complete Purchase
                 backdrop.querySelector('#submitOrderBtn').addEventListener('click', function() {
@@ -1170,6 +1251,14 @@
 
                     const prodName = checkoutProdName.value;
                     closeCheckout();
+
+                    // Clear cart if checking out the whole cart
+                    if (prodName.startsWith('Cart Order')) {
+                        cart = [];
+                        localStorage.setItem('cart', JSON.stringify(cart));
+                        updateCartBadge();
+                        updateCartDropdown();
+                    }
 
                     // Show Order Success Toast
                     const successToast = document.createElement('div');
@@ -1192,8 +1281,9 @@
                     }, 4000);
                 });
 
-                // Run badge update on load
+                // Run badge and dropdown update on load
                 updateCartBadge();
+                updateCartDropdown();
             })();
         </script>
     @endpush
