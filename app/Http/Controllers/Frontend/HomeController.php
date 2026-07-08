@@ -52,4 +52,16 @@ class HomeController extends Controller
             'products'
         ));
     }
+
+    public function productDetails(string $slug): View
+    {
+        $product = Product::where('slug', $slug)->firstOrFail();
+        $relatedProducts = Product::where('category_id', $product->category_id)
+            ->where('id', '!=', $product->id)
+            ->where('is_active', true)
+            ->take(4)
+            ->get();
+
+        return view('product-details', compact('product', 'relatedProducts'));
+    }
 }

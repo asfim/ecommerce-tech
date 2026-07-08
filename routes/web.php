@@ -20,6 +20,7 @@ use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
 
 /* ========== Frontend (User) ========== */
 Route::prefix('account')->name('user.')->group(function () {

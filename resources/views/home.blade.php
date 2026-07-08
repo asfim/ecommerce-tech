@@ -57,15 +57,21 @@
                             @forelse($featuredProducts as $fp)
                                 <div class="fs-item" style="display:flex;align-items:center;gap:10px;">
                                     @if ($fp->image)
-                                        <img src="{{ asset('storage/' . $fp->image) }}"
-                                            style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                        <a href="{{ route('product.details', $fp->slug) }}">
+                                            <img src="{{ asset('storage/' . $fp->image) }}"
+                                                style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                        </a>
                                     @else
-                                        <img src="https://placehold.co/50x50/eee/aaa?text=No+Img"
-                                            style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                        <a href="{{ route('product.details', $fp->slug) }}">
+                                            <img src="https://placehold.co/50x50/eee/aaa?text=No+Img"
+                                                style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                        </a>
                                     @endif
                                     <div class="d-flex align-items-center justify-content-between w-100">
                                         <div>
-                                            <div class="t">{{ Str::limit($fp->name, 35) }}</div>
+                                            <a href="{{ route('product.details', $fp->slug) }}" class="text-dark hover-blue">
+                                                <div class="t">{{ Str::limit($fp->name, 35) }}</div>
+                                            </a>
                                             <div class="p">${{ number_format($fp->price, 2) }}</div>
                                         </div>
                                         <button type="button"
@@ -141,15 +147,17 @@
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-2 px-3 pb-3">
                         @forelse($bestSellingProducts as $bp)
                             <div class="col mini-prod">
-                                <div class="mini-img-wrap">
-                                    @if ($bp->image)
-                                        <img src="{{ asset('storage/' . $bp->image) }}">
-                                    @else
-                                        <img
-                                            src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($bp->name, 8, '')) }}">
-                                    @endif
-                                </div>
-                                <div class="t">{{ Str::limit($bp->name, 35) }}</div>
+                                <a href="{{ route('product.details', $bp->slug) }}" class="text-decoration-none">
+                                    <div class="mini-img-wrap">
+                                        @if ($bp->image)
+                                            <img src="{{ asset('storage/' . $bp->image) }}">
+                                        @else
+                                            <img
+                                                src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($bp->name, 8, '')) }}">
+                                        @endif
+                                    </div>
+                                    <div class="t text-dark hover-blue">{{ Str::limit($bp->name, 35) }}</div>
+                                </a>
                                 <div class="p">${{ number_format($bp->price, 2) }}</div>
                                 <div class="mt-2">
                                     <button type="button" class="btn btn-dark w-100 add-to-cart-btn py-1 px-2 mb-1"
@@ -235,12 +243,18 @@
                                             <div class="col-12 col-sm-6">
                                                 <div class="newarrival-item">
                                                     @if ($np->image)
-                                                        <img src="{{ asset('storage/' . $np->image) }}">
+                                                        <a href="{{ route('product.details', $np->slug) }}">
+                                                            <img src="{{ asset('storage/' . $np->image) }}">
+                                                        </a>
                                                     @else
-                                                        <img src="https://placehold.co/100x100/eee/aaa?text=No+Img">
+                                                        <a href="{{ route('product.details', $np->slug) }}">
+                                                            <img src="https://placehold.co/100x100/eee/aaa?text=No+Img">
+                                                        </a>
                                                     @endif
                                                     <div class="flex-grow-1">
-                                                        <div class="t">{{ Str::limit($np->name, 45) }}</div>
+                                                        <a href="{{ route('product.details', $np->slug) }}" class="text-dark hover-blue">
+                                                            <div class="t">{{ Str::limit($np->name, 45) }}</div>
+                                                        </a>
                                                         <div class="bid"><b>${{ number_format($np->price, 2) }}</b></div>
                                                         <div class="d-flex gap-1 mt-1">
                                                             <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
@@ -313,15 +327,17 @@
                                 @endphp
                                 <div class="mini-prod"
                                     style="min-width: calc(25% - 11.25px); flex: 0 0 calc(25% - 11.25px);">
-                                    <div class="mini-img-wrap">
-                                        @if ($dp->image)
-                                            <img src="{{ asset('storage/' . $dp->image) }}">
-                                        @else
-                                            <img
-                                                src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($dp->name, 8, '')) }}">
-                                        @endif
-                                    </div>
-                                    <div class="t">{{ Str::limit($dp->name, 35) }}</div>
+                                    <a href="{{ route('product.details', $dp->slug) }}" class="text-decoration-none">
+                                        <div class="mini-img-wrap">
+                                            @if ($dp->image)
+                                                <img src="{{ asset('storage/' . $dp->image) }}">
+                                            @else
+                                                <img
+                                                    src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($dp->name, 8, '')) }}">
+                                            @endif
+                                        </div>
+                                        <div class="t text-dark hover-blue">{{ Str::limit($dp->name, 35) }}</div>
+                                    </a>
                                     <div class="p">
                                         @if ($hasDiscount)
                                             ${{ number_format($discountedPrice, 2) }}
@@ -367,37 +383,41 @@
                 @endphp
                 <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                     <div class="prod-card">
-                        <div class="prod-img-wrap">
-                            @if ($hasDiscount)
-                                @if ($product->discount_type === 'percent')
-                                    <span class="badge-new-arrival">-{{ round($product->discount_value) }}%</span>
+                        <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
+                            <div class="prod-img-wrap">
+                                @if ($hasDiscount)
+                                    @if ($product->discount_type === 'percent')
+                                        <span class="badge-new-arrival">-{{ round($product->discount_value) }}%</span>
+                                    @else
+                                        <span
+                                            class="badge-new-arrival">-${{ number_format($product->discount_value, 0) }}</span>
+                                    @endif
                                 @else
-                                    <span
-                                        class="badge-new-arrival">-${{ number_format($product->discount_value, 0) }}</span>
+                                    <span class="badge-new-arrival">NEW</span>
                                 @endif
-                            @else
-                                <span class="badge-new-arrival">NEW</span>
-                            @endif
 
-                            @if ($product->stock <= 5 && $product->stock > 0)
-                                <span class="badge bg-primary position-absolute"
-                                    style="top:10px;right:10px;font-size:9px;">Limited Stock</span>
-                            @elseif($product->stock == 0)
-                                <span class="badge bg-danger position-absolute"
-                                    style="top:10px;right:10px;font-size:9px;">Out of Stock</span>
-                            @endif
+                                @if ($product->stock <= 5 && $product->stock > 0)
+                                    <span class="badge bg-primary position-absolute"
+                                        style="top:10px;right:10px;font-size:9px;">Limited Stock</span>
+                                @elseif($product->stock == 0)
+                                    <span class="badge bg-danger position-absolute"
+                                        style="top:10px;right:10px;font-size:9px;">Out of Stock</span>
+                                @endif
 
-                            @if ($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}">
-                            @else
-                                <img
-                                    src="https://placehold.co/200x200/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}">
-                            @endif
-                        </div>
+                                @if ($product->image)
+                                    <img src="{{ asset('storage/' . $product->image) }}">
+                                @else
+                                    <img
+                                        src="https://placehold.co/200x200/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}">
+                                @endif
+                            </div>
+                        </a>
 
                         <div class="prod-info">
                             <div>
-                                <div class="t">{{ Str::limit($product->name, 35) }}</div>
+                                <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
+                                    <div class="t text-dark hover-blue">{{ Str::limit($product->name, 35) }}</div>
+                                </a>
                                 <div class="p">
                                     @if ($hasDiscount)
                                         ${{ number_format($discountedPrice, 2) }}
@@ -431,6 +451,13 @@
 
     @push('styles')
         <style>
+            .hover-blue {
+                transition: color 0.2s ease;
+            }
+            .hover-blue:hover {
+                color: #1a73e8 !important;
+            }
+
             /* Premium product card styles and transitions (aligned with user request image) */
             .prod-card {
                 position: relative;
@@ -1023,268 +1050,6 @@
                     }
                 });
             });
-
-            // ─── Frontend Cart & Checkout System ───────────────────────────────
-            (function() {
-                let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-
-                function updateCartBadge() {
-                    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-                    const badges = document.querySelectorAll('a.icon-btn .badge-num');
-                    badges.forEach(badge => {
-                        badge.textContent = totalItems;
-                        badge.classList.remove('badge-bounce');
-                        void badge.offsetWidth; // Trigger reflow
-                        badge.classList.add('badge-bounce');
-                    });
-                }
-
-                function updateCartDropdown() {
-                    const dropdownMenus = document.querySelectorAll('.cart-dropdown-menu');
-                    dropdownMenus.forEach(menu => {
-                        if (cart.length === 0) {
-                            menu.innerHTML = `
-                                <div class="text-center py-4">
-                                    <i class="bi bi-cart-x text-muted" style="font-size: 32px;"></i>
-                                    <p class="text-muted small mb-0 mt-2">Your cart is empty</p>
-                                </div>
-                            `;
-                            return;
-                        }
-
-                        let itemsHtml = '';
-                        let total = 0;
-
-                        cart.forEach(item => {
-                            const itemTotal = item.price * item.quantity;
-                            total += itemTotal;
-                            itemsHtml += `
-                                <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom dropdown-cart-item">
-                                    <img src="${item.image}" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #fff;" class="border">
-                                    <div class="flex-grow-1" style="min-width: 0;">
-                                        <div class="fw-semibold small text-truncate" title="${item.name}">${item.name}</div>
-                                        <div class="text-muted small">${item.quantity} x $${item.price.toFixed(2)}</div>
-                                    </div>
-                                    <button type="button" class="btn btn-sm text-danger p-0 remove-dropdown-item" data-id="${item.id}" style="border: none; background: transparent;">
-                                        <i class="bi bi-trash" style="font-size: 14px;"></i>
-                                    </button>
-                                </div>
-                            `;
-                        });
-
-                        menu.innerHTML = `
-                            <div class="px-1 py-1">
-                                <h6 class="fw-bold mb-3 small d-flex justify-content-between">
-                                    <span>Shopping Cart</span>
-                                    <span class="text-primary">(${cart.reduce((sum, item) => sum + item.quantity, 0)} Items)</span>
-                                </h6>
-                                <div style="max-height: 200px; overflow-y: auto;" class="pe-1">
-                                    ${itemsHtml}
-                                </div>
-                                <div class="d-flex justify-content-between align-items-center my-3 pt-2 border-top">
-                                    <span class="fw-bold text-dark small">Total:</span>
-                                    <span class="fw-bold text-primary">$${total.toFixed(2)}</span>
-                                </div>
-                                <button type="button" class="btn btn-primary btn-sm w-100 py-2 fw-semibold checkout-dropdown-btn" style="border-radius: 6px;">Buy Now</button>
-                            </div>
-                        `;
-                    });
-                }
-
-                function showNotification(productName, productImage) {
-                    const toast = document.createElement('div');
-                    toast.className = 'custom-cart-toast';
-                    toast.innerHTML = `
-        <img src="${productImage}" alt="${productName}">
-        <div class="toast-content">
-          <h6>Added to Cart!</h6>
-          <p>${productName}</p>
-        </div>
-      `;
-                    document.body.appendChild(toast);
-
-                    setTimeout(() => toast.classList.add('show'), 10);
-
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                        setTimeout(() => toast.remove(), 400);
-                    }, 3000);
-                }
-
-                function addToCart(productId, productName, productPrice, productImage) {
-                    const existing = cart.find(item => item.id == productId);
-                    if (existing) {
-                        existing.quantity += 1;
-                    } else {
-                        cart.push({
-                            id: productId,
-                            name: productName,
-                            price: parseFloat(productPrice),
-                            image: productImage,
-                            quantity: 1
-                        });
-                    }
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    updateCartBadge();
-                    updateCartDropdown();
-                    showNotification(productName, productImage);
-                }
-
-                // Bind event listeners for "Add to Cart"
-                document.addEventListener('click', function(e) {
-                    const btn = e.target.closest('.add-to-cart-btn');
-                    if (btn) {
-                        e.preventDefault();
-                        const id = btn.dataset.id;
-                        const name = btn.dataset.name;
-                        const price = btn.dataset.price;
-                        const image = btn.dataset.image;
-                        addToCart(id, name, price, image);
-                    }
-                });
-
-                // Bind event listener to remove item inside dropdown
-                document.addEventListener('click', function(e) {
-                    const btn = e.target.closest('.remove-dropdown-item');
-                    if (btn) {
-                        e.preventDefault();
-                        const id = btn.dataset.id;
-                        cart = cart.filter(item => item.id != id);
-                        localStorage.setItem('cart', JSON.stringify(cart));
-                        updateCartBadge();
-                        updateCartDropdown();
-                    }
-                });
-
-                // Create Modal Elements in Body
-                const backdrop = document.createElement('div');
-                backdrop.className = 'checkout-modal-backdrop';
-                backdrop.innerHTML = `
-      <div class="checkout-modal">
-        <div class="checkout-header">
-          <h5><i class="bi bi-shield-check text-primary me-2"></i>Secure Checkout</h5>
-          <button type="button" class="btn-close close-checkout" style="font-size:12px;"></button>
-        </div>
-        <div class="checkout-body">
-          <p class="text-muted small mb-3">Please fill out your details to complete your order.</p>
-          <div class="mb-3">
-            <label class="form-label small fw-semibold">Product Name</label>
-            <input type="text" id="checkoutProdName" class="form-control form-control-sm" readonly>
-          </div>
-          <div class="mb-3">
-            <label class="form-label small fw-semibold">Total Price</label>
-            <input type="text" id="checkoutProdPrice" class="form-control form-control-sm text-primary fw-bold" readonly>
-          </div>
-          <div class="mb-3">
-            <label class="form-label small fw-semibold">Shipping Address</label>
-            <textarea id="checkoutAddress" class="form-control form-control-sm" rows="2" placeholder="123 Main St, Dhaka" required></textarea>
-          </div>
-          <div class="mb-3">
-            <label class="form-label small fw-semibold">Phone Number</label>
-            <input type="tel" id="checkoutPhone" class="form-control form-control-sm" placeholder="+8801xxxxxxxxx" required>
-          </div>
-        </div>
-        <div class="checkout-footer">
-          <button type="button" class="btn btn-sm btn-outline-secondary close-checkout">Cancel</button>
-          <button type="button" id="submitOrderBtn" class="btn btn-sm btn-primary px-3">Place Order</button>
-        </div>
-      </div>
-    `;
-                document.body.appendChild(backdrop);
-
-                const checkoutModal = backdrop.querySelector('.checkout-modal');
-                const checkoutProdName = backdrop.querySelector('#checkoutProdName');
-                const checkoutProdPrice = backdrop.querySelector('#checkoutProdPrice');
-                const checkoutAddress = backdrop.querySelector('#checkoutAddress');
-                const checkoutPhone = backdrop.querySelector('#checkoutPhone');
-
-                function openCheckout(productName, productPrice) {
-                    checkoutProdName.value = productName;
-                    checkoutProdPrice.value = `$${parseFloat(productPrice).toFixed(2)}`;
-                    checkoutAddress.value = '';
-                    checkoutPhone.value = '';
-                    backdrop.classList.add('show');
-                }
-
-                function closeCheckout() {
-                    backdrop.classList.remove('show');
-                }
-
-                backdrop.addEventListener('click', function(e) {
-                    if (e.target === backdrop || e.target.closest('.close-checkout')) {
-                        closeCheckout();
-                    }
-                });
-
-                // Bind event listeners for checkout from dropdown
-                document.addEventListener('click', function(e) {
-                    const btn = e.target.closest('.checkout-dropdown-btn');
-                    if (btn) {
-                        e.preventDefault();
-                        if (cart.length === 0) return;
-                        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-                        const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-                        openCheckout(`Cart Order (${totalQty} items)`, total);
-                    }
-                });
-
-                // Bind event listeners for page-level Buy Now buttons
-                document.addEventListener('click', function(e) {
-                    const btn = e.target.closest('.btn-bid');
-                    if (btn) {
-                        e.preventDefault();
-                        const card = btn.closest('.newarrival-item');
-                        if (card) {
-                            const name = card.querySelector('.t').textContent.trim();
-                            const priceText = card.querySelector('.bid b').textContent.replace('$', '').replace(/,/g, '').trim();
-                            openCheckout(name, parseFloat(priceText));
-                        }
-                    }
-                });
-
-                // Complete Purchase
-                backdrop.querySelector('#submitOrderBtn').addEventListener('click', function() {
-                    if (!checkoutAddress.value || !checkoutPhone.value) {
-                        alert('Please fill out all shipping details.');
-                        return;
-                    }
-
-                    const prodName = checkoutProdName.value;
-                    closeCheckout();
-
-                    // Clear cart if checking out the whole cart
-                    if (prodName.startsWith('Cart Order')) {
-                        cart = [];
-                        localStorage.setItem('cart', JSON.stringify(cart));
-                        updateCartBadge();
-                        updateCartDropdown();
-                    }
-
-                    // Show Order Success Toast
-                    const successToast = document.createElement('div');
-                    successToast.className = 'custom-cart-toast';
-                    successToast.style.borderColor = '#2e7d32'; // green
-                    successToast.innerHTML = `
-        <div class="d-flex align-items-center gap-2">
-          <i class="bi bi-check2-circle text-success fs-4"></i>
-          <div class="toast-content">
-            <h6 style="color: #2e7d32;">Order Placed!</h6>
-            <p>Thank you for buying ${prodName}!</p>
-          </div>
-        </div>
-      `;
-                    document.body.appendChild(successToast);
-                    setTimeout(() => successToast.classList.add('show'), 10);
-                    setTimeout(() => {
-                        successToast.classList.remove('show');
-                        setTimeout(() => successToast.remove(), 400);
-                    }, 4000);
-                });
-
-                // Run badge and dropdown update on load
-                updateCartBadge();
-                updateCartDropdown();
-            })();
         </script>
     @endpush
 @endsection

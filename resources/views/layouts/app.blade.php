@@ -128,6 +128,134 @@
         footer.main-footer a:hover{ color:#fff; }
         footer.main-footer h6{ color:#fff; font-weight:700; margin-bottom:12px; font-size:13px; text-transform:uppercase; }
         .social-ic{ width:30px;height:30px;border-radius:50%;background:#2a2a2a;display:inline-flex;align-items:center;justify-content:center;color:#fff;margin-right:6px; }
+
+        /* Custom Toast Notifications */
+        .custom-cart-toast {
+            position: fixed;
+            bottom: 24px;
+            right: -350px;
+            background: #fff;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            width: 320px;
+            border-left: 4px solid #1a73e8;
+            transition: right 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+        }
+
+        .custom-cart-toast.show {
+            right: 24px;
+        }
+
+        .custom-cart-toast img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 6px;
+            background: #f8f9fa;
+            border: 1px solid #eee;
+        }
+
+        .custom-cart-toast .toast-content h6 {
+            margin: 0;
+            font-size: 13px;
+            font-weight: 700;
+            color: #1a73e8;
+        }
+
+        .custom-cart-toast .toast-content p {
+            margin: 2px 0 0 0;
+            font-size: 11.5px;
+            color: #555;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 210px;
+        }
+
+        /* Cart Badge Bounce Animation */
+        .badge-bounce {
+            animation: badge-bounce 0.4s ease;
+        }
+
+        @keyframes badge-bounce {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.4);
+            }
+        }
+
+        /* Checkout Modal */
+        .checkout-modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .checkout-modal-backdrop.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .checkout-modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-20px);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        .checkout-modal-backdrop.show .checkout-modal {
+            transform: translateY(0);
+        }
+
+        .checkout-header {
+            background: #f8f9fa;
+            padding: 16px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .checkout-header h5 {
+            margin: 0;
+            font-weight: 700;
+            color: #1c1c1c;
+        }
+
+        .checkout-body {
+            padding: 20px;
+        }
+
+        .checkout-footer {
+            padding: 14px 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            background: #f8f9fa;
+        }
     </style>
     @stack('styles')
 </head>
@@ -142,6 +270,293 @@
     @include('layouts.footer.footer')
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ─── Frontend Cart & Checkout System ───────────────────────────────
+        (function() {
+            let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+            function updateCartBadge() {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const badges = document.querySelectorAll('a.icon-btn .badge-num');
+                badges.forEach(badge => {
+                    badge.textContent = totalItems;
+                    badge.classList.remove('badge-bounce');
+                    void badge.offsetWidth; // Trigger reflow
+                    badge.classList.add('badge-bounce');
+                });
+            }
+
+            function updateCartDropdown() {
+                const dropdownMenus = document.querySelectorAll('.cart-dropdown-menu');
+                dropdownMenus.forEach(menu => {
+                    if (cart.length === 0) {
+                        menu.innerHTML = `
+                            <div class="text-center py-4">
+                                <i class="bi bi-cart-x text-muted" style="font-size: 32px;"></i>
+                                <p class="text-muted small mb-0 mt-2">Your cart is empty</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    let itemsHtml = '';
+                    let total = 0;
+
+                    cart.forEach(item => {
+                        const itemTotal = item.price * item.quantity;
+                        total += itemTotal;
+
+                        let variantsHtml = '';
+                        if (item.variants && Object.keys(item.variants).length > 0) {
+                            const details = Object.entries(item.variants).map(([k, v]) => `${k}: ${v}`).join(', ');
+                            variantsHtml = `<div class="text-muted" style="font-size: 10px; margin-top: 1px;">${details}</div>`;
+                        }
+
+                        itemsHtml += `
+                            <div class="d-flex align-items-center gap-2 mb-2 pb-2 border-bottom dropdown-cart-item">
+                                <img src="${item.image}" style="width: 40px; height: 40px; object-fit: contain; border-radius: 4px; background: #fff;" class="border">
+                                <div class="flex-grow-1" style="min-width: 0;">
+                                    <div class="fw-semibold small text-truncate" title="${item.name}">${item.name}</div>
+                                    ${variantsHtml}
+                                    <div class="text-muted small">${item.quantity} x $${item.price.toFixed(2)}</div>
+                                </div>
+                                <button type="button" class="btn btn-sm text-danger p-0 remove-dropdown-item" data-id="${item.id}" data-variants='${JSON.stringify(item.variants || {})}' style="border: none; background: transparent;">
+                                    <i class="bi bi-trash" style="font-size: 14px;"></i>
+                                </button>
+                            </div>
+                        `;
+                    });
+
+                    menu.innerHTML = `
+                        <div class="px-1 py-1">
+                            <h6 class="fw-bold mb-3 small d-flex justify-content-between">
+                                <span>Shopping Cart</span>
+                                <span class="text-primary">(${cart.reduce((sum, item) => sum + item.quantity, 0)} Items)</span>
+                            </h6>
+                            <div style="max-height: 200px; overflow-y: auto;" class="pe-1">
+                                ${itemsHtml}
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center my-3 pt-2 border-top">
+                                <span class="fw-bold text-dark small">Total:</span>
+                                <span class="fw-bold text-primary">$${total.toFixed(2)}</span>
+                            </div>
+                            <button type="button" class="btn btn-primary btn-sm w-100 py-2 fw-semibold checkout-dropdown-btn" style="border-radius: 6px;">Buy Now</button>
+                        </div>
+                    `;
+                });
+            }
+
+            function showNotification(productName, productImage) {
+                const toast = document.createElement('div');
+                toast.className = 'custom-cart-toast';
+                toast.innerHTML = `
+                    <img src="${productImage}" alt="${productName}">
+                    <div class="toast-content">
+                      <h6>Added to Cart!</h6>
+                      <p>${productName}</p>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+
+                setTimeout(() => toast.classList.add('show'), 10);
+
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                    setTimeout(() => toast.remove(), 400);
+                }, 3000);
+            }
+
+            function addToCart(productId, productName, productPrice, productImage, quantity = 1, variants = null) {
+                const existing = cart.find(item => {
+                    if (item.id != productId) return false;
+                    return JSON.stringify(item.variants || {}) === JSON.stringify(variants || {});
+                });
+
+                if (existing) {
+                    existing.quantity += quantity;
+                } else {
+                    cart.push({
+                        id: productId,
+                        name: productName,
+                        price: parseFloat(productPrice),
+                        image: productImage,
+                        quantity: quantity,
+                        variants: variants || {}
+                    });
+                }
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartBadge();
+                updateCartDropdown();
+                showNotification(productName, productImage);
+            }
+
+            // Expose globally so other pages can add to cart programmatically
+            window.addToCartGlobal = addToCart;
+            window.updateCartDropdown = updateCartDropdown;
+            window.updateCartBadge = updateCartBadge;
+
+            // Bind event listeners for "Add to Cart"
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.add-to-cart-btn');
+                if (btn) {
+                    e.preventDefault();
+                    const id = btn.dataset.id;
+                    const name = btn.dataset.name;
+                    const price = btn.dataset.price;
+                    const image = btn.dataset.image;
+                    addToCart(id, name, price, image, 1, null);
+                }
+            });
+
+            // Bind event listener to remove item inside dropdown
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.remove-dropdown-item');
+                if (btn) {
+                    e.preventDefault();
+                    const id = btn.dataset.id;
+                    const itemVariants = JSON.parse(btn.dataset.variants || '{}');
+                    cart = cart.filter(item => {
+                        if (item.id != id) return true;
+                        return JSON.stringify(item.variants || {}) !== JSON.stringify(itemVariants);
+                    });
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartBadge();
+                    updateCartDropdown();
+                }
+            });
+
+            // Create Modal Elements in Body
+            const backdrop = document.createElement('div');
+            backdrop.className = 'checkout-modal-backdrop';
+            backdrop.innerHTML = `
+              <div class="checkout-modal">
+                <div class="checkout-header">
+                  <h5><i class="bi bi-shield-check text-primary me-2"></i>Secure Checkout</h5>
+                  <button type="button" class="btn-close close-checkout" style="font-size:12px;"></button>
+                </div>
+                <div class="checkout-body">
+                  <p class="text-muted small mb-3">Please fill out your details to complete your order.</p>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Product Name</label>
+                    <input type="text" id="checkoutProdName" class="form-control form-control-sm" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Total Price</label>
+                    <input type="text" id="checkoutProdPrice" class="form-control form-control-sm text-primary fw-bold" readonly>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Shipping Address</label>
+                    <textarea id="checkoutAddress" class="form-control form-control-sm" rows="2" placeholder="123 Main St, Dhaka" required></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label small fw-semibold">Phone Number</label>
+                    <input type="tel" id="checkoutPhone" class="form-control form-control-sm" placeholder="+8801xxxxxxxxx" required>
+                  </div>
+                </div>
+                <div class="checkout-footer">
+                  <button type="button" class="btn btn-sm btn-outline-secondary close-checkout">Cancel</button>
+                  <button type="button" id="submitOrderBtn" class="btn btn-sm btn-primary px-3">Place Order</button>
+                </div>
+              </div>
+            `;
+            document.body.appendChild(backdrop);
+
+            const checkoutModal = backdrop.querySelector('.checkout-modal');
+            const checkoutProdName = backdrop.querySelector('#checkoutProdName');
+            const checkoutProdPrice = backdrop.querySelector('#checkoutProdPrice');
+            const checkoutAddress = backdrop.querySelector('#checkoutAddress');
+            const checkoutPhone = backdrop.querySelector('#checkoutPhone');
+
+            function openCheckout(productName, productPrice) {
+                checkoutProdName.value = productName;
+                checkoutProdPrice.value = `$${parseFloat(productPrice).toFixed(2)}`;
+                checkoutAddress.value = '';
+                checkoutPhone.value = '';
+                backdrop.classList.add('show');
+            }
+
+            window.openCheckoutGlobal = openCheckout;
+
+            function closeCheckout() {
+                backdrop.classList.remove('show');
+            }
+
+            backdrop.addEventListener('click', function(e) {
+                if (e.target === backdrop || e.target.closest('.close-checkout')) {
+                    closeCheckout();
+                }
+            });
+
+            // Bind event listeners for checkout from dropdown
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.checkout-dropdown-btn');
+                if (btn) {
+                    e.preventDefault();
+                    if (cart.length === 0) return;
+                    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                    const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+                    openCheckout(`Cart Order (${totalQty} items)`, total);
+                }
+            });
+
+            // Bind event listeners for page-level Buy Now buttons
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('.btn-bid');
+                if (btn) {
+                    e.preventDefault();
+                    const card = btn.closest('.newarrival-item');
+                    if (card) {
+                        const name = card.querySelector('.t').textContent.trim();
+                        const priceText = card.querySelector('.bid b').textContent.replace('$', '').replace(/,/g, '').trim();
+                        openCheckout(name, parseFloat(priceText));
+                    }
+                }
+            });
+
+            // Complete Purchase
+            backdrop.querySelector('#submitOrderBtn').addEventListener('click', function() {
+                if (!checkoutAddress.value || !checkoutPhone.value) {
+                    alert('Please fill out all shipping details.');
+                    return;
+                }
+
+                const prodName = checkoutProdName.value;
+                closeCheckout();
+
+                // Clear cart if checking out the whole cart
+                if (prodName.startsWith('Cart Order')) {
+                    cart = [];
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    updateCartBadge();
+                    updateCartDropdown();
+                }
+
+                // Show Order Success Toast
+                const successToast = document.createElement('div');
+                successToast.className = 'custom-cart-toast';
+                successToast.style.borderColor = '#2e7d32'; // green
+                successToast.innerHTML = `
+                    <div class="d-flex align-items-center gap-2">
+                      <i class="bi bi-check2-circle text-success fs-4"></i>
+                      <div class="toast-content">
+                        <h6 style="color: #2e7d32;">Order Placed!</h6>
+                        <p>Thank you for buying ${prodName}!</p>
+                      </div>
+                    </div>
+                `;
+                document.body.appendChild(successToast);
+                setTimeout(() => successToast.classList.add('show'), 10);
+                setTimeout(() => {
+                    successToast.classList.remove('show');
+                    setTimeout(() => successToast.remove(), 400);
+                }, 4000);
+            });
+
+            // Run badge and dropdown update on load
+            updateCartBadge();
+            updateCartDropdown();
+        })();
+    </script>
     @stack('scripts')
 </body>
 </html>
