@@ -234,11 +234,19 @@
       </div>
       <div class="col-9">
         <div class="row g-3">
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=150&q=80"><div class="t">Shining Star Ladies Purse</div><div class="rating">★★★★★</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&q=80"><div class="t">Apple MacBook Air 2022 with M2, 24GB Ram &amp;...</div><div class="rating">★★★★★</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1610557892470-55d587cef9c4?w=150&q=80"><div class="t">Shining Star Ladies Purse</div><div class="rating">★★★★★</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=150&q=80"><div class="t">Apple MacBook Air 2022 with M2, 24GB Ram...</div><div class="rating">★★★★★</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1611930022073-b7a4ba5fcccd?w=150&q=80"><div class="t">Shining Star Ladies Purse</div><div class="rating">★★★★★</div></div>
+          @forelse($discountedProducts as $dp)
+            <div class="col mini-prod">
+              @if($dp->image)
+                <img src="{{ asset('storage/' . $dp->image) }}">
+              @else
+                <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($dp->name, 8, '')) }}">
+              @endif
+              <div class="t">{{ Str::limit($dp->name, 35) }}</div>
+              <div class="rating">★★★★★</div>
+            </div>
+          @empty
+            <div class="text-muted small px-3">No discounted products yet.</div>
+          @endforelse
         </div>
       </div>
     </div>

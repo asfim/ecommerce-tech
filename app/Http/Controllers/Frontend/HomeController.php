@@ -26,7 +26,23 @@ class HomeController extends Controller
             ->orderBy('sales_count', 'desc')
             ->take(5)
             ->get();
+        $discountedProducts = Product::where('is_active', true)
+            ->whereNotNull('discount_type')
+            ->where('discount_value', '>', 0)
+            ->latest()
+            ->take(5)
+            ->get();
 
-        return view('home', compact('heroBanners', 'hotCategories', 'trendingCategories', 'featuredProducts', 'bestSellingBanners', 'newArrivalsBanner', 'discountedProductsBanner', 'bestSellingProducts'));
+        return view('home', compact(
+            'heroBanners',
+            'hotCategories',
+            'trendingCategories',
+            'featuredProducts',
+            'bestSellingBanners',
+            'newArrivalsBanner',
+            'discountedProductsBanner',
+            'bestSellingProducts',
+            'discountedProducts'
+        ));
     }
 }
