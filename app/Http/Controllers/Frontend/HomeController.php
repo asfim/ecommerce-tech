@@ -32,6 +32,10 @@ class HomeController extends Controller
             ->latest()
             ->take(5)
             ->get();
+        $newArrivalProducts = Product::where('is_active', true)
+            ->latest()
+            ->take(12)
+            ->get();
         $products = Product::where('is_active', true)->latest()->get();
 
         return view('home', compact(
@@ -44,6 +48,7 @@ class HomeController extends Controller
             'discountedProductsBanner',
             'bestSellingProducts',
             'discountedProducts',
+            'newArrivalProducts',
             'products'
         ));
     }

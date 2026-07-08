@@ -132,13 +132,13 @@
             </div>
         </div>
 
-        <!-- Best selling / Today's deal -->
+         
         <div class="row g-3 mb-4">
-            <div class="col-12 col-lg-9">
+            <div class="col-12">
                 <div class="bestselling-panel h-100">
-                    <div class="panel-title">Best Selling <span class="arrow"><i class="bi bi-chevron-right"></i></span>
+                    <div class="panel-title">Best Selling
                     </div>
-                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 g-2 px-3 pb-3">
+                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-2 px-3 pb-3">
                         @forelse($bestSellingProducts as $bp)
                             <div class="col mini-prod">
                                 <div class="mini-img-wrap">
@@ -167,19 +167,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-12 col-lg-3">
-                <div class="todaydeal-panel h-100">
-                    <div class="panel-title">Todays Deal <span class="arrow"><i class="bi bi-chevron-right"></i></span>
-                    </div>
-                    <div class="text-center px-3 pb-3">
-                        <img src="https://images.unsplash.com/photo-1588058365548-9ae5966c1e77?w=200&q=80"
-                            style="width:100px;height:100px;object-fit:contain;">
-                        <div class="t small mt-2">Apple TV 4K Ethernet + WiFi</div>
-                        <div class="p">$111.00 <span
-                                class="old text-decoration-line-through text-muted">$500.00</span></div>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
         <!-- Promo 3 banners -->
@@ -225,48 +213,54 @@
                 </div>
             </div>
             <div class="col-12 col-md-8">
-                <div class="newarrival-list-panel p-3">
-                    <div class="d-flex justify-content-between mb-2"><b>New Arrival</b><small class="text-muted">Products
-                            (109)</small></div>
-                    <div class="row g-2">
-                        <div class="col-12 col-sm-6">
-                            <div class="newarrival-item">
-                                <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=100&q=80">
-                                <div class="flex-grow-1">
-                                    <div class="t">Apple 2024 MacBook Air 15-inch Laptop with M3 chip 16.3-inch</div>
-                                    <div class="bid"><b>$1,499.00</b></div><button class="btn-bid mt-1">Buy
-                                        Now</button>
-                                </div>
-                            </div>
+                <div class="newarrival-list-panel p-3 h-100 d-flex flex-column justify-content-between" style="overflow: hidden;">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <b>New Arrival</b>
+                        <div class="d-flex gap-2 align-items-center">
+                            <small class="text-muted">Products ({{ $newArrivalProducts->count() }})</small>
+                            <span class="arrow d-inline-flex" id="newArrivalPrev"
+                                style="width:24px;height:24px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;font-size:10px;"><i
+                                    class="bi bi-chevron-left"></i></span>
+                            <span class="arrow d-inline-flex" id="newArrivalNext"
+                                style="width:24px;height:24px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;font-size:10px;"><i
+                                    class="bi bi-chevron-right"></i></span>
                         </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="newarrival-item">
-                                <img src="https://images.unsplash.com/photo-1517649763962-0c623066013b?w=100&q=80">
-                                <div class="flex-grow-1">
-                                    <div class="t">Flash Furniture Whitney Mid-Back Desk Chair - Black Leatherso...
+                    </div>
+                    <div style="overflow: hidden; width: 100%;">
+                        <div id="newArrivalSlider" style="display: flex; transition: transform .4s ease;">
+                            @forelse($newArrivalProducts->chunk(4) as $chunk)
+                                <div class="newarrival-slide" style="min-width: 100%; flex: 0 0 100%;">
+                                    <div class="row g-2">
+                                        @foreach($chunk as $np)
+                                            <div class="col-12 col-sm-6">
+                                                <div class="newarrival-item">
+                                                    @if ($np->image)
+                                                        <img src="{{ asset('storage/' . $np->image) }}">
+                                                    @else
+                                                        <img src="https://placehold.co/100x100/eee/aaa?text=No+Img">
+                                                    @endif
+                                                    <div class="flex-grow-1">
+                                                        <div class="t">{{ Str::limit($np->name, 45) }}</div>
+                                                        <div class="bid"><b>${{ number_format($np->price, 2) }}</b></div>
+                                                        <div class="d-flex gap-1 mt-1">
+                                                            <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
+                                                                style="height: 24px; font-size:11px; border-radius:10px;"
+                                                                data-id="{{ $np->id }}" data-name="{{ $np->name }}"
+                                                                data-price="{{ $np->price }}"
+                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}">
+                                                                <i class="bi bi-cart-plus"></i> Add
+                                                            </button>
+                                                            <button class="btn btn-sm btn-primary py-0 px-2 d-inline-flex align-items-center justify-content-center" style="height: 24px; font-size:11px; border-radius:10px;">Buy Now</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <div class="bid"><b>$132.00</b></div><button class="btn-bid mt-1">Buy Now</button>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="newarrival-item">
-                                <img src="https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=100&q=80">
-                                <div class="flex-grow-1">
-                                    <div class="t">Graco Modes Nest Travel System, Includes Baby Stroller with Height
-                                    </div>
-                                    <div class="bid"><b>$399.00</b></div><button class="btn-bid mt-1">Buy Now</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12 col-sm-6">
-                            <div class="newarrival-item">
-                                <img src="https://images.unsplash.com/photo-1583394838336-acd977736f90?w=100&q=80">
-                                <div class="flex-grow-1">
-                                    <div class="t">Rolmium 32LB/52LB Adjustable Dumbbells, 5 Weight Options</div>
-                                    <div class="bid"><b>$128.00</b></div><button class="btn-bid mt-1">Buy Now</button>
-                                </div>
-                            </div>
+                            @empty
+                                <div class="text-muted small px-3 w-100">No new arrival products yet.</div>
+                            @endforelse
                         </div>
                     </div>
                 </div>
@@ -999,6 +993,35 @@
                 });
 
                 slider.parentElement.style.scrollBehavior = 'smooth';
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const slider = document.getElementById('newArrivalSlider');
+                const prevBtn = document.getElementById('newArrivalPrev');
+                const nextBtn = document.getElementById('newArrivalNext');
+                if (!slider || !prevBtn || !nextBtn) return;
+
+                const slides = slider.querySelectorAll('.newarrival-slide');
+                const totalSlides = slides.length;
+                let currentSlideIndex = 0;
+
+                function scrollSlide() {
+                    slider.style.transform = `translateX(-${currentSlideIndex * 100}%)`;
+                }
+
+                prevBtn.addEventListener('click', function() {
+                    if (currentSlideIndex > 0) {
+                        currentSlideIndex--;
+                        scrollSlide();
+                    }
+                });
+
+                nextBtn.addEventListener('click', function() {
+                    if (currentSlideIndex < totalSlides - 1) {
+                        currentSlideIndex++;
+                        scrollSlide();
+                    }
+                });
             });
 
             // ─── Frontend Cart & Checkout System ───────────────────────────────

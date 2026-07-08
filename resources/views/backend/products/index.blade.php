@@ -55,7 +55,7 @@
         <th>Price</th>
         <th>Stock</th>
         <th>Sales</th>
-        <th>Status</th>
+        <th>New Arrival</th>
         <th>Featured</th>
         <th style="width: 100px;">Actions</th>
       </tr>
@@ -78,9 +78,9 @@
           <td>{{ $product->stock }}</td>
           <td>{{ $product->sales_count }}</td>
           <td>
-            <span class="badge bg-{{ $product->is_active ? 'success' : 'secondary' }}">
-              {{ $product->is_active ? 'Active' : 'Inactive' }}
-            </span>
+            <div class="form-check form-switch">
+              <input class="form-check-input active-toggle" type="checkbox" data-id="{{ $product->id }}" {{ $product->is_active ? 'checked' : '' }}>
+            </div>
           </td>
           <td>
             <div class="form-check form-switch">
@@ -116,6 +116,28 @@
     toggle.addEventListener('change', function() {
       const productId = this.dataset.id;
       fetch(`/admin/products/${productId}/toggle-featured`, {
+        method: 'PATCH',
+        headers: {
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(res => res.json())
+      .then(data => {
+        // toggle reflects server state
+      })
+      .catch(() => {
+        // revert on error
+        this.checked = !this.checked;
+      });
+    });
+  });
+
+  document.querySelectorAll('.active-toggle').forEach(function(toggle) {
+    toggle.addEventListener('change', function() {
+      const productId = this.dataset.id;
+      fetch(`/admin/products/${productId}/toggle-active`, {
         method: 'PATCH',
         headers: {
           'X-CSRF-TOKEN': '{{ csrf_token() }}',

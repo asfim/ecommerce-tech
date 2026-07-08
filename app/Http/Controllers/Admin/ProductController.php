@@ -207,4 +207,14 @@ class ProductController extends Controller
             'message' => $product->is_featured ? 'Product marked as featured.' : 'Product removed from featured.',
         ]);
     }
+
+    public function toggleActive(Product $product): JsonResponse
+    {
+        $product->update(['is_active' => ! $product->is_active]);
+
+        return response()->json([
+            'is_active' => $product->is_active,
+            'message' => $product->is_active ? 'Product marked as active (New Arrival).' : 'Product marked as inactive.',
+        ]);
+    }
 }
