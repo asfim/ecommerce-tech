@@ -45,6 +45,7 @@ class ProductController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'sales_count' => 'nullable|integer|min:0',
             'image' => 'nullable|image|max:2048',
             'images' => 'nullable|array',
             'images.*' => 'image|max:2048',
@@ -69,6 +70,7 @@ class ProductController extends Controller
             }
         }
         $validated['variants'] = $variants ?: null;
+        $validated['sales_count'] = $validated['sales_count'] ?? 0;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -107,6 +109,7 @@ class ProductController extends Controller
             'brand_id' => 'required|exists:brands,id',
             'price' => 'required|numeric|min:0',
             'stock' => 'required|integer|min:0',
+            'sales_count' => 'nullable|integer|min:0',
             'image' => 'nullable|image|max:2048',
             'images' => 'nullable|array',
             'images.*' => 'image|max:2048',
@@ -131,6 +134,7 @@ class ProductController extends Controller
             }
         }
         $validated['variants'] = $variants ?: null;
+        $validated['sales_count'] = $validated['sales_count'] ?? 0;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');

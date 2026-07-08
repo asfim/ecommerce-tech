@@ -54,6 +54,7 @@
         <th>Brand</th>
         <th>Price</th>
         <th>Stock</th>
+        <th>Sales</th>
         <th>Status</th>
         <th>Featured</th>
         <th style="width: 100px;">Actions</th>
@@ -75,6 +76,7 @@
           <td>{{ $product->brand->name ?? '-' }}</td>
           <td>${{ number_format($product->price, 2) }}</td>
           <td>{{ $product->stock }}</td>
+          <td>{{ $product->sales_count }}</td>
           <td>
             <span class="badge bg-{{ $product->is_active ? 'success' : 'secondary' }}">
               {{ $product->is_active ? 'Active' : 'Inactive' }}

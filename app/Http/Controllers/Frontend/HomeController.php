@@ -22,7 +22,11 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->latest()
             ->get();
+        $bestSellingProducts = Product::where('is_active', true)
+            ->orderBy('sales_count', 'desc')
+            ->take(5)
+            ->get();
 
-        return view('home', compact('heroBanners', 'hotCategories', 'trendingCategories', 'featuredProducts', 'bestSellingBanners', 'newArrivalsBanner', 'discountedProductsBanner'));
+        return view('home', compact('heroBanners', 'hotCategories', 'trendingCategories', 'featuredProducts', 'bestSellingBanners', 'newArrivalsBanner', 'discountedProductsBanner', 'bestSellingProducts'));
     }
 }

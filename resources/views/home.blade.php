@@ -112,11 +112,19 @@
       <div class="bestselling-panel h-100">
         <div class="panel-title">Best Selling <span class="arrow"><i class="bi bi-chevron-right"></i></span></div>
         <div class="row g-2 px-3 pb-3">
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1592286130958-40dd3d2d5f0e?w=200&q=80"><div class="t">Shining Star Ladies Purse</div><div class="p">$449.00</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&q=80"><div class="t">Apple MacBook Air 2022 with M2, 24GB Ram &amp; 512...</div><div class="p">$449.00</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&q=80"><div class="t">Shining Star Ladies Purse</div><div class="p">$400.00</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1585487000160-6ebcfceb0d03?w=200&q=80"><div class="t">Apple MacBook Air 2022 with M2, 24GB Ram...</div><div class="p">$449.00</div></div>
-          <div class="col mini-prod"><img src="https://images.unsplash.com/photo-1590874103328-eac38a683ce7?w=200&q=80"><div class="t">Shining Star Ladies Purse</div><div class="p">$449.00</div></div>
+          @forelse($bestSellingProducts as $bp)
+            <div class="col mini-prod">
+              @if($bp->image)
+                <img src="{{ asset('storage/' . $bp->image) }}">
+              @else
+                <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($bp->name, 8, '')) }}">
+              @endif
+              <div class="t">{{ Str::limit($bp->name, 35) }}</div>
+              <div class="p">${{ number_format($bp->price, 2) }}</div>
+            </div>
+          @empty
+            <div class="text-muted small px-3">No best selling products yet.</div>
+          @endforelse
         </div>
       </div>
     </div>
