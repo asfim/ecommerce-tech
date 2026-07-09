@@ -11,9 +11,26 @@ class CustomerOrderController extends Controller
 {
     public function index(Request $request): View
     {
-        $orders = Order::where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+        $query = Order::where('user_id', auth()->id())->with('items')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('invoice_no', 'like', "%{$search}%")
+                    ->orWhereHas('items', function ($itemQuery) use ($search) {
+                        $itemQuery->where('product_name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $perPage = $request->input('per_page', 10);
+
+        if ($perPage === 'all') {
+            $orders = $query->paginate($query->count() ?: 10);
+        } else {
+            $perPage = in_array((int) $perPage, [10, 20, 30, 50]) ? (int) $perPage : 10;
+            $orders = $query->paginate($perPage);
+        }
 
         return view('frontend.orders.index', compact('orders'));
     }

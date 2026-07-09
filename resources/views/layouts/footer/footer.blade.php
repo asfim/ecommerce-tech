@@ -24,9 +24,18 @@
   <div class="wrap">
     <div class="row g-4">
       <div class="col-3">
+        @php
+          $companySettings = \App\Models\HomepageSetting::get('company_settings', []);
+          $companyName = $companySettings['name'] ?? 'eCommerce';
+          $companyLogo = $companySettings['logo'] ?? null;
+        @endphp
         <div class="d-flex align-items-center gap-2 mb-2">
-          <span class="logo-box">A</span>
-          <b class="text-white"> <span style="color:#1a73e8;">ECOMMERCE</span></b>
+          @if($companyLogo)
+            <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 34px; border-radius: 4px;">
+          @else
+            <span class="logo-box">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+          @endif
+          <b class="text-white"> <span style="color:#1a73e8; text-transform: uppercase;">{{ $companyName }}</span></b>
         </div>
         <p class="small">Complete system for your eCommerce business</p>
         <p class="small">Subscribe to our newsletter for regular updates about Offers, Coupons &amp; more</p>

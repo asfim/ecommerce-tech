@@ -95,6 +95,12 @@
             <td colspan="4" class="text-end fw-bold">Subtotal</td>
             <td class="fw-bold">৳{{ number_format($order->subtotal, 2) }}</td>
           </tr>
+          @if($order->coupon_code)
+            <tr class="text-success">
+              <td colspan="4" class="text-end text-success">Discount ({{ $order->coupon_code }})</td>
+              <td class="fw-bold text-success">-৳{{ number_format($order->discount_amount, 2) }}</td>
+            </tr>
+          @endif
           <tr>
             <td colspan="4" class="text-end">Shipping ({{ $order->shipping_method === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka' }})</td>
             <td>৳{{ number_format($order->shipping_cost, 2) }}</td>
@@ -149,12 +155,22 @@
       <form method="POST" action="{{ route('admin.orders.update-status', $order) }}">
         @csrf
         @method('PATCH')
-        <select name="order_status" class="form-select form-select-sm mb-2">
-          <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
-          <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-          <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-          <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-        </select>
+        <div class="mb-2">
+          <label class="form-label small text-muted mb-1">Order Status</label>
+          <select name="order_status" class="form-select form-select-sm">
+            <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+            <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+            <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label small text-muted mb-1">Payment Status</label>
+          <select name="payment_status" class="form-select form-select-sm">
+            <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pending</option>
+            <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Paid</option>
+          </select>
+        </div>
         <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check-lg me-1"></i> Update Status</button>
       </form>
     </div>

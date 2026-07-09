@@ -1,3 +1,8 @@
+@php
+    $companySettings = \App\Models\HomepageSetting::get('company_settings', []);
+    $companyName = $companySettings['name'] ?? 'eCommerce';
+    $companyLogo = $companySettings['logo'] ?? null;
+@endphp
 <style>
     :root {
         --blue: #1e6fd9;
@@ -441,12 +446,13 @@
     <!-- Header Row -->
     <div class="header-row">
         <div class="wrap d-flex align-items-center gap-4">
-            <a class="d-flex align-items-center gap-2" href="{{ route('home') }}">
-                <span class="logo-box">A</span>
-                <div class="brand-text">
-                    <small class="d-block text-muted" style="font-size:9px;letter-spacing:1px;">THE COREST</small>
-                    <b>eCommerce</b>
-                </div>
+            <a class="d-flex align-items-center gap-2" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
+                @if($companyLogo)
+                    <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 34px; border-radius: 4px;">
+                @else
+                    <span class="logo-box">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+                @endif
+                
             </a>
 
             <div class="search-input flex-grow-1 d-flex">
@@ -555,12 +561,12 @@
         <div class="wrap">
             <!-- Top Row: Logo (left), Search (right) -->
             <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
-                <a class="d-flex align-items-center gap-2" href="{{ route('home') }}">
-                    <span class="logo-box">A</span>
-                    <div class="brand-text">
-                        <small class="d-block text-muted" style="font-size: 9px; letter-spacing: 1px;">THE COREST</small>
-                        <b>eCommerce</b>
-                    </div>
+                <a class="d-flex align-items-center gap-2" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
+                    @if($companyLogo)
+                        <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 34px; border-radius: 4px;">
+                    @else
+                        <span class="logo-box">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+                    @endif
                 </a>
 
                 <div class="search-input d-flex m-0" style="max-width: 450px; width: 100%;">

@@ -270,13 +270,37 @@
 <div class="invoice-wrap">
   <div class="invoice-card">
     <div class="invoice-header">
-      <div>
-        <h1 class="inv-title">Invoice</h1>
-        <div class="inv-subtitle">Order Confirmation</div>
+      @php
+        $companySettings = \App\Models\HomepageSetting::get('company_settings', []);
+        $companyName = $companySettings['name'] ?? 'eCommerce';
+        $companyLogo = $companySettings['logo'] ?? null;
+        $companyAddress = $companySettings['address'] ?? '';
+        $companyPhone = $companySettings['phone'] ?? '';
+      @endphp
+      <div class="d-flex align-items-center gap-3">
+        @if($companyLogo)
+          <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 45px; border-radius: 4px;">
+        @else
+          <span class="logo-box" style="width:36px;height:36px;background:#1a73e8;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:18px;">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+        @endif
+        <div>
+          <h1 class="inv-title">{{ $companyName }}</h1>
+          <div class="inv-subtitle">Order Confirmation</div>
+        </div>
       </div>
-      <div class="inv-right">
+      <div class="inv-right text-end">
         <div class="inv-no">{{ $order->invoice_no }}</div>
         <div class="inv-date">{{ $order->created_at->format('d M Y, h:i A') }}</div>
+        @if($companyAddress || $companyPhone)
+          <div style="font-size: 11px; opacity: 0.8; margin-top: 6px; line-height: 1.3;">
+            @if($companyAddress)
+              <div>{{ $companyAddress }}</div>
+            @endif
+            @if($companyPhone)
+              <div>Phone: {{ $companyPhone }}</div>
+            @endif
+          </div>
+        @endif
       </div>
     </div>
 
@@ -341,6 +365,12 @@
           <span>Subtotal</span>
           <span class="val">৳{{ number_format($order->subtotal, 2) }}</span>
         </div>
+        @if($order->coupon_code)
+          <div class="t-line text-success" style="color: #2c7d35 !important;">
+            <span>Discount ({{ $order->coupon_code }})</span>
+            <span class="val">-৳{{ number_format($order->discount_amount, 2) }}</span>
+          </div>
+        @endif
         <div class="t-line">
           <span>Shipping ({{ $order->shipping_method === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka' }})</span>
           <span class="val">৳{{ number_format($order->shipping_cost, 2) }}</span>

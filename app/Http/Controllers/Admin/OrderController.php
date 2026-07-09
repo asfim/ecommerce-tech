@@ -12,7 +12,7 @@ class OrderController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = Order::query()->latest();
+        $query = Order::query()->with('items')->latest();
 
         if ($request->filled('status')) {
             $query->where('order_status', $request->status);
@@ -27,7 +27,14 @@ class OrderController extends Controller
             });
         }
 
-        $orders = $query->paginate(15);
+        $perPage = $request->input('per_page', 15);
+
+        if ($perPage === 'all') {
+            $orders = $query->paginate($query->count() ?: 15);
+        } else {
+            $perPage = in_array((int) $perPage, [10, 15, 20, 30, 50]) ? (int) $perPage : 15;
+            $orders = $query->paginate($perPage);
+        }
 
         $statusCounts = [
             'all' => Order::count(),
@@ -49,13 +56,26 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
         $validated = $request->validate([
-            'order_status' => 'required|in:pending,confirmed,delivered,cancelled',
+            'order_status' => 'nullable|in:pending,confirmed,delivered,cancelled',
+            'payment_status' => 'nullable|in:pending,paid',
         ]);
 
-        $order->update([
-            'order_status' => $validated['order_status'],
-        ]);
+        $updateData = array_filter($validated, fn ($value) => ! is_null($value));
 
-        return back()->with('success', 'Order status updated to '.ucfirst($validated['order_status']));
+        if (! empty($updateData)) {
+            $order->update($updateData);
+        }
+
+        $messages = [];
+        if (isset($updateData['order_status'])) {
+            $messages[] = 'Order status updated to '.ucfirst($updateData['order_status']);
+        }
+        if (isset($updateData['payment_status'])) {
+            $messages[] = 'Payment status updated to '.ucfirst($updateData['payment_status']);
+        }
+
+        $message = empty($messages) ? 'Order updated.' : implode(' and ', $messages);
+
+        return back()->with('success', $message);
     }
 }

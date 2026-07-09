@@ -43,14 +43,39 @@
 </div>
 
 <div class="stat-card">
-  <!-- Search -->
-  <div class="d-flex justify-content-between align-items-center mb-3">
+  <!-- Search and Per Page Filter -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <form method="GET" action="{{ route('admin.orders.index') }}" class="d-flex align-items-center gap-2">
+      @if(request('status'))
+        <input type="hidden" name="status" value="{{ request('status') }}">
+      @endif
+      @if(request('search'))
+        <input type="hidden" name="search" value="{{ request('search') }}">
+      @endif
+      <label class="small text-muted mb-0">Show</label>
+      <select name="per_page" class="form-select form-select-sm" style="width: 85px;" onchange="this.form.submit()">
+        <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
+        <option value="15" {{ request('per_page') == '15' || !request('per_page') ? 'selected' : '' }}>15</option>
+        <option value="20" {{ request('per_page') == '20' ? 'selected' : '' }}>20</option>
+        <option value="30" {{ request('per_page') == '30' ? 'selected' : '' }}>30</option>
+        <option value="50" {{ request('per_page') == '50' ? 'selected' : '' }}>50</option>
+        <option value="all" {{ request('per_page') == 'all' ? 'selected' : '' }}>All</option>
+      </select>
+      <label class="small text-muted mb-0">entries</label>
+    </form>
+
     <form method="GET" action="{{ route('admin.orders.index') }}" class="d-flex gap-2">
       @if(request('status'))
         <input type="hidden" name="status" value="{{ request('status') }}">
       @endif
+      @if(request('per_page'))
+        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+      @endif
       <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Search by invoice, name, phone..." style="width:280px;">
       <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search"></i></button>
+      @if(request('search') || request('per_page'))
+        <a href="{{ route('admin.orders.index', request('status') ? ['status' => request('status')] : []) }}" class="btn btn-outline-secondary btn-sm" title="Clear Filters"><i class="bi bi-x-lg"></i></a>
+      @endif
     </form>
   </div>
 
@@ -62,12 +87,12 @@
     <thead>
       <tr>
         <th style="width:60px;">#</th>
-        <th>Invoice</th>
+        <th>Product Name</th>
         <th>Customer</th>
         <th>Phone</th>
         <th>Total</th>
-        <th>Payment</th>
-        <th>Status</th>
+        <th style="width:170px;">Payment</th>
+        <th style="width:190px;">Status</th>
         <th>Date</th>
         <th style="width:100px;">Actions</th>
       </tr>
@@ -75,28 +100,49 @@
     <tbody>
       @forelse($orders as $order)
         <tr>
-          <td>{{ $order->id }}</td>
-          <td><span class="badge bg-dark font-monospace">{{ $order->invoice_no }}</span></td>
+          <td>{{ $loop->iteration}}</td>
+          <td>
+            @foreach($order->items as $item)
+              <div class="small fw-semibold text-wrap">{{ $item->product_name }} <span class="text-muted">(x{{ $item->quantity }})</span></div>
+            @endforeach
+          </td>
           <td>{{ $order->customer_name }}</td>
           <td>{{ $order->customer_phone }}</td>
           <td class="fw-bold">৳{{ number_format($order->total, 2) }}</td>
           <td>
-            @if($order->payment_method === 'cod')
-              <span class="badge bg-info text-dark">COD</span>
-            @else
-              <span class="badge bg-primary">SSL Commerz</span>
-            @endif
+            <div class="mb-1">
+              @if($order->payment_method === 'cod' && $order->payment_status === 'pending')
+                <span class="badge bg-info text-dark">COD</span>
+              @elseif($order->payment_method === 'sslcommerz' && $order->payment_status === 'pending')
+                <span class="badge bg-primary">SSL Commerz</span>
+              @endif
+            </div>
+            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
+              @csrf
+              @method('PATCH')
+              <select name="payment_status" class="form-select form-select-sm" style="width: 100px;">
+                <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Paid</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary" title="Update Payment Status">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </form>
           </td>
           <td>
-            @if($order->order_status === 'pending')
-              <span class="badge bg-warning text-dark"><i class="bi bi-clock"></i> Pending</span>
-            @elseif($order->order_status === 'confirmed')
-              <span class="badge bg-primary"><i class="bi bi-check-circle"></i> Confirmed</span>
-            @elseif($order->order_status === 'delivered')
-              <span class="badge bg-success"><i class="bi bi-check2-all"></i> Delivered</span>
-            @elseif($order->order_status === 'cancelled')
-              <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Cancelled</span>
-            @endif
+            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
+              @csrf
+              @method('PATCH')
+              <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
+                <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary" title="Update Status">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </form>
           </td>
           <td class="text-muted small">{{ $order->created_at->format('d M Y') }}</td>
           <td>

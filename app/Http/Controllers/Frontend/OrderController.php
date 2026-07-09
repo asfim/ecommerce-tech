@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,7 @@ class OrderController extends Controller
             'subtotal' => 'required|numeric|min:0',
             'tax' => 'required|numeric|min:0',
             'total' => 'required|numeric|min:0',
+            'coupon_code' => 'nullable|string',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'nullable|integer',
             'items.*.product_name' => 'required|string|max:255',
@@ -33,7 +35,23 @@ class OrderController extends Controller
             'items.*.variants' => 'nullable|array',
         ]);
 
-        $order = DB::transaction(function () use ($validated) {
+        $discountAmount = 0.00;
+        $couponCode = null;
+
+        if (! empty($validated['coupon_code'])) {
+            $coupon = Coupon::where('code', $validated['coupon_code'])->first();
+            if ($coupon && $coupon->isValidForSubtotal($validated['subtotal'])) {
+                $discountAmount = $coupon->calculateDiscount($validated['subtotal']);
+                $couponCode = $coupon->code;
+            }
+        }
+
+        $shippingCost = (float) $validated['shipping_cost'];
+        $subtotal = (float) $validated['subtotal'];
+        $tax = round($subtotal * 0.05, 2);
+        $total = max(0, $subtotal - $discountAmount + $shippingCost + $tax);
+
+        $order = DB::transaction(function () use ($validated, $couponCode, $discountAmount, $tax, $total) {
             $order = Order::create([
                 'user_id' => auth()->id(),
                 'invoice_no' => Order::generateInvoiceNo(),
@@ -43,11 +61,13 @@ class OrderController extends Controller
                 'shipping_method' => $validated['shipping_method'],
                 'shipping_cost' => $validated['shipping_cost'],
                 'payment_method' => $validated['payment_method'],
-                'payment_status' => $validated['payment_method'] === 'cod' ? 'pending' : 'pending',
+                'payment_status' => 'pending',
                 'order_status' => 'pending',
+                'coupon_code' => $couponCode,
+                'discount_amount' => $discountAmount,
                 'subtotal' => $validated['subtotal'],
-                'tax' => $validated['tax'],
-                'total' => $validated['total'],
+                'tax' => $tax,
+                'total' => $total,
             ]);
 
             foreach ($validated['items'] as $item) {

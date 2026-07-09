@@ -1,4 +1,4 @@
-﻿@extends('layouts.frontend.app')
+@extends('layouts.frontend.app')
 
 @section('title', 'My Dashboard')
 
@@ -53,53 +53,76 @@
     </div>
 </div>
 
-@if($totalOrders > 0)
 <div class="mt-4">
-    <h5 class="mb-3">Recent Orders</h5>
-    @php
-        $recentOrders = \App\Models\Order::where('user_id', auth()->id())->latest()->take(5)->get();
-    @endphp
+    <h5 class="mb-3">Monthly Order History</h5>
     <div class="stat-card">
-        <table class="table table-bordered align-middle mb-0">
-            <thead>
-                <tr>
-                    <th>Invoice</th>
-                    <th>Total</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th style="width:120px;">Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($recentOrders as $order)
-                    <tr>
-                        <td><span class="badge bg-dark font-monospace">{{ $order->invoice_no }}</span></td>
-                        <td class="fw-bold">৳{{ number_format($order->total, 2) }}</td>
-                        <td>
-                            @if($order->order_status === 'pending')
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            @elseif($order->order_status === 'confirmed')
-                                <span class="badge bg-primary">Confirmed</span>
-                            @elseif($order->order_status === 'delivered')
-                                <span class="badge bg-success">Delivered</span>
-                            @elseif($order->order_status === 'cancelled')
-                                <span class="badge bg-danger">Cancelled</span>
-                            @endif
-                        </td>
-                        <td class="text-muted small">{{ $order->created_at->format('d M Y') }}</td>
-                        <td>
-                            <a href="{{ route('user.orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-        <div class="text-center mt-3">
-            <a href="{{ route('user.orders.index') }}" class="btn btn-sm btn-outline-dark">View All Orders</a>
+        <div style="height: 320px; position: relative;">
+            <canvas id="monthlyOrdersChart"></canvas>
         </div>
     </div>
 </div>
-@endif
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('monthlyOrdersChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {!! json_encode($months) !!},
+                datasets: [{
+                    label: 'Orders Placed',
+                    data: {!! json_encode($monthlyOrderCounts) !!},
+                    borderColor: '#1a73e8',
+                    backgroundColor: 'rgba(26, 115, 232, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#1a73e8',
+                    pointBorderColor: '#fff',
+                    pointHoverRadius: 6,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        padding: 10,
+                        backgroundColor: '#111',
+                        titleColor: '#fff',
+                        bodyColor: '#ccc',
+                        borderColor: '#222',
+                        borderWidth: 1
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1,
+                            precision: 0
+                        },
+                        grid: {
+                            color: '#f0f0f0'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+@endpush
 @endsection

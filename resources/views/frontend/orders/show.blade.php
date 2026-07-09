@@ -4,6 +4,9 @@
 
 @section('content')
 <div class="clearfix mb-4">
+  <div class="float-end">
+    <a href="{{ route('order.invoice', $order->invoice_no) }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-file-earmark-text me-1"></i> View Invoice</a>
+  </div>
   <a href="{{ route('user.orders.index') }}" class="btn btn-outline-secondary btn-sm me-2"><i class="bi bi-arrow-left"></i> Back to Orders</a>
   <h4 class="d-inline-block mb-0">Order Details</h4>
 </div>
@@ -71,6 +74,12 @@
             <td colspan="4" class="text-end fw-bold">Subtotal</td>
             <td class="fw-bold">৳{{ number_format($order->subtotal, 2) }}</td>
           </tr>
+          @if($order->coupon_code)
+            <tr class="text-success">
+              <td colspan="4" class="text-end text-success">Discount ({{ $order->coupon_code }})</td>
+              <td class="fw-bold text-success">-৳{{ number_format($order->discount_amount, 2) }}</td>
+            </tr>
+          @endif
           <tr>
             <td colspan="4" class="text-end">Shipping ({{ $order->shipping_method === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka' }})</td>
             <td>৳{{ number_format($order->shipping_cost, 2) }}</td>

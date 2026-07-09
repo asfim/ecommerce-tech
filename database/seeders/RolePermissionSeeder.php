@@ -22,6 +22,7 @@ class RolePermissionSeeder extends Seeder
         $manageBrands = Permission::create(['name' => 'manage-brands', 'guard_name' => 'admin']);
         $manageAttributes = Permission::create(['name' => 'manage-attributes', 'guard_name' => 'admin']);
         $manageOrders = Permission::create(['name' => 'manage-orders', 'guard_name' => 'admin']);
+        $manageCoupons = Permission::create(['name' => 'manage-coupons', 'guard_name' => 'admin']);
 
         // 2. Create roles for 'admin' guard and assign permissions
         $superAdminRole = Role::create(['name' => 'Super Admin', 'guard_name' => 'admin']);
@@ -31,6 +32,7 @@ class RolePermissionSeeder extends Seeder
             $manageBrands,
             $manageAttributes,
             $manageOrders,
+            $manageCoupons,
         ]);
 
         $editorRole = Role::create(['name' => 'Editor', 'guard_name' => 'admin']);

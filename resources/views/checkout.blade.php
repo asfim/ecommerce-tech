@@ -248,13 +248,17 @@
     <div class="summary-items">
       <!-- Loaded dynamically via JS -->
     </div>
-    <div class="promo-row">
-      <input type="text" class="checkout-input" placeholder="Discount code">
-      <button type="button">Apply</button>
+    <div>
+      <div class="promo-row">
+        <input type="text" id="couponCode" class="checkout-input" placeholder="Discount code">
+        <button type="button" id="applyCouponBtn">Apply</button>
+      </div>
+      <div id="couponMessage" class="px-4 pb-2 small" style="display:none; font-weight:600;"></div>
     </div>
     <div class="tear"></div>
     <div class="totals">
       <div class="t-row"><span>Subtotal</span><span class="mono" id="summarySubtotal">৳0.00</span></div>
+      <div class="t-row discount text-success" id="discountRow" style="display:none; color: #2e7d32 !important;"><span>Discount (<span id="discountCodeLabel"></span>)</span><span class="mono" id="summaryDiscount">-৳0.00</span></div>
       <div class="t-row"><span>Shipping</span><span class="mono" id="summaryShipping">৳60.00</span></div>
       <div class="t-row"><span>Estimated tax (5%)</span><span class="mono" id="summaryTax">৳0.00</span></div>
       <div class="t-row grand"><span>Total</span><span class="mono" id="summaryTotal">৳0.00</span></div>
@@ -284,10 +288,29 @@ document.addEventListener('DOMContentLoaded', function() {
     const taxEl = document.getElementById('summaryTax');
     const totalEl = document.getElementById('summaryTotal');
     const itemsCountEl = document.querySelector('.summary-head .count');
+    
+    // Coupon variables
+    const couponCodeInput = document.getElementById('couponCode');
+    const applyCouponBtn = document.getElementById('applyCouponBtn');
+    const couponMessage = document.getElementById('couponMessage');
+    const discountRow = document.getElementById('discountRow');
+    const discountCodeLabel = document.getElementById('discountCodeLabel');
+    const summaryDiscount = document.getElementById('summaryDiscount');
+
+    let appliedCouponCode = null;
+    let discountAmount = 0.00;
 
     function getShippingCost() {
         const checked = document.querySelector('input[name="ship"]:checked');
         return checked ? parseFloat(checked.value) : 60;
+    }
+
+    function calculateSubtotal() {
+        let subtotal = 0;
+        checkoutItems.forEach(item => {
+            subtotal += parseFloat(item.price) * (parseInt(item.quantity) || 1);
+        });
+        return subtotal;
     }
 
     function renderSummary() {
@@ -301,14 +324,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         let itemsHtml = '';
-        let subtotal = 0;
+        let subtotal = calculateSubtotal();
         let totalItems = 0;
 
         checkoutItems.forEach(item => {
             const price = parseFloat(item.price);
             const qty = parseInt(item.quantity) || 1;
             const itemTotal = price * qty;
-            subtotal += itemTotal;
             totalItems += qty;
 
             let variantsText = '';
@@ -332,8 +354,18 @@ document.addEventListener('DOMContentLoaded', function() {
         itemsCountEl.textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`;
 
         const shippingCost = getShippingCost();
+        
+        // Dynamic discount recalculation
+        if (appliedCouponCode) {
+            discountRow.style.display = 'flex';
+            discountCodeLabel.textContent = appliedCouponCode;
+            summaryDiscount.textContent = `-৳${discountAmount.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+        } else {
+            discountRow.style.display = 'none';
+        }
+
         const tax = subtotal * 0.05; // 5% tax
-        const grandTotal = subtotal + shippingCost + tax;
+        const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost + tax);
 
         subtotalEl.textContent = `৳${subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
         shippingEl.textContent = `৳${shippingCost.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
@@ -342,6 +374,67 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     renderSummary();
+
+    // Apply coupon handler
+    applyCouponBtn.addEventListener('click', function() {
+        const code = couponCodeInput.value.trim();
+        if (!code) {
+            couponMessage.style.display = 'block';
+            couponMessage.style.color = '#c0432e';
+            couponMessage.textContent = 'Please enter a discount code.';
+            return;
+        }
+
+        const subtotal = calculateSubtotal();
+
+        applyCouponBtn.disabled = true;
+        applyCouponBtn.textContent = 'Applying...';
+
+        fetch("{{ route('coupon.apply') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                code: code,
+                subtotal: subtotal
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw err; });
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                appliedCouponCode = data.code;
+                discountAmount = parseFloat(data.discount);
+                
+                couponMessage.style.display = 'block';
+                couponMessage.style.color = '#2e7d32';
+                couponMessage.textContent = data.message;
+                
+                renderSummary();
+            }
+            applyCouponBtn.disabled = false;
+            applyCouponBtn.textContent = 'Apply';
+        })
+        .catch(error => {
+            appliedCouponCode = null;
+            discountAmount = 0.00;
+            
+            couponMessage.style.display = 'block';
+            couponMessage.style.color = '#c0432e';
+            couponMessage.textContent = error.message || 'Invalid coupon code.';
+            
+            renderSummary();
+            applyCouponBtn.disabled = false;
+            applyCouponBtn.textContent = 'Apply';
+        });
+    });
 
     // Payment methods tabs switching
     const tabs = document.querySelectorAll('.pay-tab');
@@ -397,13 +490,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const shippingCost = getShippingCost();
         const shippingMethod = shippingCost === 60 ? 'inside_dhaka' : 'outside_dhaka';
 
-        // Calculate totals
-        let subtotal = 0;
-        checkoutItems.forEach(item => {
-            subtotal += parseFloat(item.price) * (parseInt(item.quantity) || 1);
-        });
+        // Calculate subtotal
+        const subtotal = calculateSubtotal();
         const tax = subtotal * 0.05;
-        const total = subtotal + shippingCost + tax;
+        const total = Math.max(0, subtotal - discountAmount + shippingCost + tax);
 
         // Build order items
         const orderItems = checkoutItems.map(item => ({
@@ -436,6 +526,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 subtotal: subtotal,
                 tax: tax,
                 total: total,
+                coupon_code: appliedCouponCode,
                 items: orderItems
             })
         })

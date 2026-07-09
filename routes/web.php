@@ -5,6 +5,8 @@ use App\Http\Controllers\Admin\AdminAttributeController;
 use App\Http\Controllers\Admin\AdminAttributeValueController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\CompanySettingController as AdminCompanySettingController;
+use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -15,6 +17,7 @@ use App\Http\Controllers\Backend\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Backend\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Frontend\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\Frontend\Auth\RegisterController as UserRegisterController;
+use App\Http\Controllers\Frontend\CouponController;
 use App\Http\Controllers\Frontend\CustomerOrderController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
 use App\Http\Controllers\Frontend\HomeController;
@@ -26,6 +29,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
+Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
 Route::get('/order/invoice/{invoiceNo}', [OrderController::class, 'invoice'])->name('order.invoice');
 
 /* ========== Frontend (User) ========== */
@@ -62,6 +66,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('role:Super Admin,admin')->group(function () {
             Route::get('settings/homepage', [AdminHomepageSettingController::class, 'index'])->name('settings.homepage');
             Route::post('settings/homepage/{section}', [AdminHomepageSettingController::class, 'update'])->name('settings.homepage.update');
+
+            Route::get('settings/company', [AdminCompanySettingController::class, 'index'])->name('settings.company');
+            Route::post('settings/company', [AdminCompanySettingController::class, 'update'])->name('settings.company.update');
         });
 
         Route::middleware('permission:manage-brands,admin')->group(function () {
@@ -78,6 +85,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
             Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+        });
+
+        Route::middleware('permission:manage-coupons,admin')->group(function () {
+            Route::resource('coupons', AdminCouponController::class);
         });
 
         Route::middleware('permission:manage-attributes,admin')->group(function () {

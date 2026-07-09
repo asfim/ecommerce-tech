@@ -1,12 +1,17 @@
 <!-- Sidebar -->
 <div class="sidebar">
   <div class="brand">
+    @php
+      $companySettings = \App\Models\HomepageSetting::get('company_settings', []);
+      $companyName = $companySettings['name'] ?? 'eCommerce';
+      $companyLogo = $companySettings['logo'] ?? null;
+    @endphp
     <a href="{{ route('home') }}" class="d-flex align-items-center gap-2 text-decoration-none">
-      <span class="logo-box" style="width:32px;height:32px;background:#1a73e8;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;">A</span>
-      <div>
-        <small style="font-size:9px;color:#aaa;letter-spacing:1px;display:block;margin-top:-2px;">THE COREST</small>
-        <b style="font-size:14px;color:#fff;">eCommerce</b>
-      </div>
+      @if($companyLogo)
+        <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 32px; border-radius: 4px;">
+      @else
+        <span class="logo-box" style="width:32px;height:32px;background:#1a73e8;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:15px;">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+      @endif
     </a>
   </div>
   <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
@@ -33,6 +38,9 @@
   @can('manage-orders')
     <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Orders</a>
   @endcan
+  @can('manage-coupons')
+    <a href="{{ route('admin.coupons.index') }}" class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}"><i class="bi bi-ticket-perforated"></i> Coupons</a>
+  @endcan
   @role('Super Admin')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#staffSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-shield-lock"></i> Staff Management</a>
     <div class="collapse {{ request()->routeIs(['admin.users.*', 'admin.roles.*', 'admin.permissions.*', 'admin.activity-logs.*']) ? 'show' : '' }}" id="staffSubmenu">
@@ -44,9 +52,7 @@
     </div>
   @endrole
   @role('Super Admin')
-    <a href="#" data-bs-toggle="collapse" data-bs-target="#settingsSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-gear"></i> Settings</a>
-    <div class="collapse {{ request()->routeIs('admin.settings.*') ? 'show' : '' }}" id="settingsSubmenu">
-      <a href="{{ route('admin.settings.homepage') }}" class="ps-4 {{ request()->routeIs('admin.settings.homepage') ? 'active' : '' }}"><i class="bi bi-house"></i> Homepage Settings</a>
-    </div>
+    <a href="{{ route('admin.settings.homepage') }}" class="{{ request()->routeIs('admin.settings.homepage') ? 'active' : '' }}"><i class="bi bi-house"></i> Homepage Settings</a>
+    <a href="{{ route('admin.settings.company') }}" class="{{ request()->routeIs('admin.settings.company') ? 'active' : '' }}"><i class="bi bi-building"></i> Company Settings</a>
   @endrole
 </div>

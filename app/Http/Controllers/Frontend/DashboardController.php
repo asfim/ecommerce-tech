@@ -12,6 +12,20 @@ class DashboardController extends Controller
     {
         $totalOrders = Order::where('user_id', auth()->id())->count();
 
-        return view('frontend.dashboard.index', compact('totalOrders'));
+        $monthlyOrderCounts = [];
+        $months = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = now()->subMonths($i);
+            $months[] = $date->format('M Y');
+
+            $count = Order::where('user_id', auth()->id())
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->count();
+
+            $monthlyOrderCounts[] = $count;
+        }
+
+        return view('frontend.dashboard.index', compact('totalOrders', 'months', 'monthlyOrderCounts'));
     }
 }
