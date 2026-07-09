@@ -52,8 +52,11 @@ test('the home page search returns matching products and hides non-matching ones
     $response->assertStatus(200)
         ->assertSee('Zara Winter Jacket')
         ->assertSee('Search Results for')
-        ->assertSee('Jacket')
-        ->assertDontSee('Nike Shoes');
+        ->assertSee('Jacket');
+
+    $response->assertViewHas('products', function ($products) use ($matchProduct, $nonMatchProduct) {
+        return $products->contains($matchProduct) && ! $products->contains($nonMatchProduct);
+    });
 });
 
 test('the search API returns matching products in JSON format', function () {
@@ -79,4 +82,42 @@ test('the search API returns matching products in JSON format', function () {
             'name' => 'Zara Winter Jacket',
             'price' => '120.00',
         ]);
+});
+
+test('home page ajax pagination returns next batch of products', function () {
+    $user = User::factory()->create();
+
+    $category = Category::create(['name' => 'Clothing']);
+    $brand = Brand::create(['name' => 'Zara']);
+
+    for ($i = 1; $i <= 20; $i++) {
+        Product::create([
+            'name' => "Product {$i}",
+            'slug' => "product-{$i}",
+            'category_id' => $category->id,
+            'brand_id' => $brand->id,
+            'price' => 10.00,
+            'stock' => 10,
+            'is_active' => true,
+        ]);
+    }
+
+    $response = $this->actingAs($user)->get('/');
+    $response->assertStatus(200)
+        ->assertSee('Product 20')
+        ->assertDontSee('Product 8')
+        ->assertSee('Load more');
+
+    $response = $this->actingAs($user)->get('/?page=2', [
+        'HTTP_X-Requested-With' => 'XMLHttpRequest',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonStructure(['html', 'has_more'])
+        ->assertJsonFragment(['has_more' => false]);
+
+    $responseContent = $response->json('html');
+    expect($responseContent)->toContain('Product 8')
+        ->toContain('Product 1')
+        ->not->toContain('Product 20');
 });

@@ -383,85 +383,22 @@
         @endif
 
         <!-- Product grid -->
-        <div class="row g-3 mb-3">
+        <div id="products-grid" class="row g-3 mb-3">
             @forelse($products as $product)
-                @php
-                    $hasDiscount = $product->discount_type && $product->discount_value > 0;
-                    $discountedPrice = $product->price;
-                    if ($hasDiscount) {
-                        if ($product->discount_type === 'percent') {
-                            $discountedPrice = $product->price - ($product->price * $product->discount_value) / 100;
-                        } elseif ($product->discount_type === 'fixed') {
-                            $discountedPrice = $product->price - $product->discount_value;
-                        }
-                    }
-                @endphp
-                <div class="col-6 col-sm-4 col-md-3 col-lg-2">
-                    <div class="prod-card">
-                        <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
-                            <div class="prod-img-wrap">
-                                @if ($hasDiscount)
-                                    @if ($product->discount_type === 'percent')
-                                        <span class="badge-new-arrival">-{{ round($product->discount_value) }}%</span>
-                                    @else
-                                        <span
-                                            class="badge-new-arrival">-${{ number_format($product->discount_value, 0) }}</span>
-                                    @endif
-                                @else
-                                    <span class="badge-new-arrival">NEW</span>
-                                @endif
-
-                                @if ($product->stock <= 5 && $product->stock > 0)
-                                    <span class="badge bg-primary position-absolute"
-                                        style="top:10px;right:10px;font-size:9px;">Limited Stock</span>
-                                @elseif($product->stock == 0)
-                                    <span class="badge bg-danger position-absolute"
-                                        style="top:10px;right:10px;font-size:9px;">Out of Stock</span>
-                                @endif
-
-                                @if ($product->image)
-                                    <img src="{{ asset('storage/' . $product->image) }}">
-                                @else
-                                    <img
-                                        src="https://placehold.co/200x200/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}">
-                                @endif
-                            </div>
-                        </a>
-
-                        <div class="prod-info">
-                            <div>
-                                <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
-                                    <div class="t text-dark hover-blue">{{ Str::limit($product->name, 35) }}</div>
-                                </a>
-                                <div class="p">
-                                    @if ($hasDiscount)
-                                        ${{ number_format($discountedPrice, 2) }}
-                                        <span class="old">${{ number_format($product->price, 2) }}</span>
-                                    @else
-                                        ${{ number_format($product->price, 2) }}
-                                    @endif
-                                </div>
-                            </div>
-
-                            <div class="mt-2">
-                                <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 mb-1"
-                                    style="border-radius:15px; font-weight:600; font-size:11px;"
-                                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                                    data-price="{{ $discountedPrice }}"
-                                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
-                                    <i class="bi bi-cart3"></i> Add to cart
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @include('frontend.partials.product_card', ['product' => $product])
             @empty
                 <div class="text-muted small px-3">No products available.</div>
             @endforelse
         </div>
-        <div class="text-center mb-4">
-            <a href="#" class="btn btn-outline-dark px-5">Load more</a>
-        </div>
+
+        @if($hasMore)
+            <div class="text-center mb-4">
+                <button id="load-more-btn" class="btn btn-outline-dark px-5" data-page="2">
+                    <span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span>
+                    Load more
+                </button>
+            </div>
+        @endif
     </div>
 
     @push('styles')
@@ -1064,6 +1001,47 @@
                         scrollSlide();
                     }
                 });
+            });
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const loadMoreBtn = document.getElementById('load-more-btn');
+                const productsGrid = document.getElementById('products-grid');
+                
+                if (loadMoreBtn) {
+                    loadMoreBtn.addEventListener('click', function() {
+                        const page = loadMoreBtn.getAttribute('data-page');
+                        const spinner = loadMoreBtn.querySelector('.spinner-border');
+                        
+                        spinner.classList.remove('d-none');
+                        loadMoreBtn.disabled = true;
+                        
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const search = urlParams.get('search') || '';
+                        
+                        fetch(`/?page=${page}&search=${encodeURIComponent(search)}`, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            productsGrid.insertAdjacentHTML('beforeend', data.html);
+                            loadMoreBtn.setAttribute('data-page', parseInt(page) + 1);
+                            
+                            spinner.classList.add('d-none');
+                            loadMoreBtn.disabled = false;
+                            
+                            if (!data.has_more) {
+                                loadMoreBtn.parentElement.remove();
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error loading products:', err);
+                            spinner.classList.add('d-none');
+                            loadMoreBtn.disabled = false;
+                        });
+                    });
+                }
             });
         </script>
     @endpush

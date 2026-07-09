@@ -44,6 +44,9 @@
   @can('manage-reviews')
     <a href="{{ route('admin.reviews.index') }}" class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}"><i class="bi bi-star"></i> Reviews</a>
   @endcan
+  @can('manage-blogs')
+    <a href="{{ route('admin.blog-posts.index') }}" class="{{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}"><i class="bi bi-journal-text"></i> Blog Posts</a>
+  @endcan
   @can('view-reports')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubmenu" aria-expanded="false" class="dropdown-toggle {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"><i class="bi bi-bar-chart-line"></i> Reports</a>
     <div class="collapse {{ request()->routeIs('admin.reports.*') ? 'show' : '' }}" id="reportsSubmenu">

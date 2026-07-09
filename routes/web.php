@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\ActivityLogController as AdminActivityLogController;
 use App\Http\Controllers\Admin\AdminAttributeController;
 use App\Http\Controllers\Admin\AdminAttributeValueController;
+use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CompanySettingController as AdminCompanySettingController;
@@ -18,6 +19,7 @@ use App\Http\Controllers\Backend\Auth\LoginController as AdminLoginController;
 use App\Http\Controllers\Backend\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Frontend\Auth\LoginController as UserLoginController;
 use App\Http\Controllers\Frontend\Auth\RegisterController as UserRegisterController;
+use App\Http\Controllers\Frontend\BlogController;
 use App\Http\Controllers\Frontend\CouponController;
 use App\Http\Controllers\Frontend\CustomerOrderController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
@@ -31,6 +33,8 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
 Route::get('/category/{id}', [HomeController::class, 'categoryProducts'])->name('category.products');
 Route::get('/products/search-api', [HomeController::class, 'searchApi'])->name('products.search-api');
+Route::get('/blog', [BlogController::class, 'index'])->name('blogs.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blogs.show');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
 Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
@@ -99,6 +103,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:manage-reviews,admin')->group(function () {
             Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
+        });
+
+        Route::middleware('permission:manage-blogs,admin')->group(function () {
+            Route::resource('blog-posts', BlogPostController::class);
         });
 
         Route::middleware('permission:view-reports,admin')->group(function () {

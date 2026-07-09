@@ -64,7 +64,7 @@
     <tbody>
       @foreach($products as $product)
         <tr>
-          <td>{{ $product->id }}</td>
+          <td>{{ $loop->iteration }}</td>
           <td>
             @if($product->image)
               <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="width: 40px; height: 40px; object-fit: cover;">

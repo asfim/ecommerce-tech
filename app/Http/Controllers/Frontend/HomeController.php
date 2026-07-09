@@ -40,7 +40,7 @@ class HomeController extends Controller
         return response()->json($formatted);
     }
 
-    public function index(): View
+    public function index(): View|JsonResponse
     {
         $heroBanners = HomepageSetting::get('hero_banners', []);
         $bestSellingBanners = HomepageSetting::get('best_selling_banners', []);
@@ -52,6 +52,7 @@ class HomeController extends Controller
             ->where('is_active', true)
             ->latest()
             ->get();
+
         $bestSellingProducts = Product::where('is_active', true)
             ->orderBy('sales_count', 'desc')
             ->take(5)
@@ -73,7 +74,27 @@ class HomeController extends Controller
             $productsQuery->where('name', 'like', '%'.$search.'%');
         }
 
-        $products = $productsQuery->get();
+        if (request()->ajax()) {
+            $page = (int) request()->query('page', 1);
+            $limit = 8;
+            $offset = 12 + ($page - 2) * 8;
+
+            $ajaxProducts = $productsQuery->skip($offset)->take($limit)->get();
+            $hasMore = $productsQuery->skip($offset + $limit)->exists();
+
+            $html = '';
+            foreach ($ajaxProducts as $product) {
+                $html .= view('frontend.partials.product_card', compact('product'))->render();
+            }
+
+            return response()->json([
+                'html' => $html,
+                'has_more' => $hasMore,
+            ]);
+        }
+
+        $products = $productsQuery->take(12)->get();
+        $hasMore = $productsQuery->skip(12)->exists();
 
         return view('home', compact(
             'heroBanners',
@@ -86,7 +107,8 @@ class HomeController extends Controller
             'bestSellingProducts',
             'discountedProducts',
             'newArrivalProducts',
-            'products'
+            'products',
+            'hasMore'
         ));
     }
 
