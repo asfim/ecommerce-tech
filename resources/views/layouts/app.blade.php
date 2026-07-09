@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'eCommerce - Fashion Store')</title>
     @php
         $companySettings = \App\Models\HomepageSetting::get('company_settings', []);
+        $siteName = $companySettings['site_name'] ?? 'E-Commerce';
         $favicon = $companySettings['favicon'] ?? null;
     @endphp
+    <title>@hasSection('title')@yield('title') - @endif{{ $siteName }}</title>
     @if($favicon)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . $favicon) }}">
     @endif

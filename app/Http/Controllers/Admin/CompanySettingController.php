@@ -22,6 +22,7 @@ class CompanySettingController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'site_name' => 'required|string|max:255',
             'logo' => 'nullable|image|max:2048',
             'favicon' => 'nullable|image',
             'address' => 'nullable|string',
@@ -50,6 +51,7 @@ class CompanySettingController extends Controller
 
         $settings = [
             'name' => $validated['name'],
+            'site_name' => $validated['site_name'],
             'logo' => $logoPath,
             'favicon' => $faviconPath,
             'address' => $validated['address'] ?? '',

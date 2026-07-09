@@ -30,6 +30,7 @@ test('authorized admin can update company settings', function () {
 
     $response = $this->actingAs($admin, 'admin')->post(route('admin.settings.company.update'), [
         'name' => 'Tech Corp',
+        'site_name' => 'TechShop',
         'logo' => $logo,
         'favicon' => $favicon,
         'address' => 'Mirpur, Dhaka',
@@ -42,6 +43,7 @@ test('authorized admin can update company settings', function () {
 
     expect($stored)->not->toBeNull()
         ->and($stored['name'])->toBe('Tech Corp')
+        ->and($stored['site_name'])->toBe('TechShop')
         ->and($stored['address'])->toBe('Mirpur, Dhaka')
         ->and($stored['phone'])->toBe('+8801234567890');
 

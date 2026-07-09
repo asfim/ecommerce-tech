@@ -41,6 +41,12 @@
     </div>
 
     <div class="mb-3">
+      <label class="form-label fw-bold">Site Name</label>
+      <input type="text" name="site_name" class="form-control" value="{{ old('site_name', $settings['site_name'] ?? '') }}" required>
+      @error('site_name') <div class="text-danger small">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="mb-3">
       <label class="form-label fw-bold">Company Logo</label>
       @if(!empty($settings['logo']))
         <div class="mb-2">
