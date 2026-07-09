@@ -6,10 +6,40 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\HomepageSetting;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class HomeController extends Controller
 {
+    /**
+     * Search products for live autocomplete.
+     */
+    public function searchApi(Request $request): JsonResponse
+    {
+        $query = $request->query('q');
+        if (empty($query)) {
+            return response()->json([]);
+        }
+
+        $products = Product::where('is_active', true)
+            ->where('name', 'like', '%'.$query.'%')
+            ->take(5)
+            ->get(['id', 'name', 'price', 'slug', 'image']);
+
+        $formatted = $products->map(function ($product) {
+            return [
+                'id' => $product->id,
+                'name' => $product->name,
+                'price' => number_format($product->price, 2),
+                'url' => route('product.details', $product->slug),
+                'image' => $product->image ? asset('storage/'.$product->image) : 'https://placehold.co/50x50/eee/aaa?text=No+Img',
+            ];
+        });
+
+        return response()->json($formatted);
+    }
+
     public function index(): View
     {
         $heroBanners = HomepageSetting::get('hero_banners', []);
@@ -36,7 +66,14 @@ class HomeController extends Controller
             ->latest()
             ->take(12)
             ->get();
-        $products = Product::where('is_active', true)->latest()->get();
+        $search = request()->query('search');
+        $productsQuery = Product::where('is_active', true)->latest();
+
+        if (! empty($search)) {
+            $productsQuery->where('name', 'like', '%'.$search.'%');
+        }
+
+        $products = $productsQuery->get();
 
         return view('home', compact(
             'heroBanners',

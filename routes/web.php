@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
 Route::get('/category/{id}', [HomeController::class, 'categoryProducts'])->name('category.products');
+Route::get('/products/search-api', [HomeController::class, 'searchApi'])->name('products.search-api');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
 Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');

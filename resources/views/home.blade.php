@@ -372,6 +372,16 @@
             </div>
         </div>
 
+        @if(request()->query('search'))
+            <div class="mb-4 p-3 bg-white rounded border border-light shadow-sm d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-1 fw-bold">Search Results for "{{ request()->query('search') }}"</h5>
+                    <span class="text-muted small">Found {{ $products->count() }} product(s)</span>
+                </div>
+                <a href="{{ route('home') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-x-circle me-1"></i> Clear Search</a>
+            </div>
+        @endif
+
         <!-- Product grid -->
         <div class="row g-3 mb-3">
             @forelse($products as $product)

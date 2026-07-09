@@ -20,10 +20,11 @@
                 
             </a>
 
-            <div class="search-input flex-grow-1 d-flex">
-                <input type="text" class="form-control" placeholder="I am shopping for...">
-                <button class="btn"><i class="bi bi-search"></i></button>
-            </div>
+            <form action="{{ route('home') }}" method="GET" class="search-input flex-grow-1 d-flex mb-0 position-relative">
+                <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off">
+                <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+                <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
+            </form>
 
             <div class="d-flex align-items-center gap-2">
                 <a href="#" class="icon-btn"><i class="bi bi-heart"></i><span class="badge-num">3</span></a>
@@ -134,10 +135,11 @@
                     @endif
                 </a>
 
-                <div class="search-input d-flex m-0" style="max-width: 450px; width: 100%;">
-                    <input type="text" class="form-control" placeholder="I am shopping for...">
-                    <button class="btn"><i class="bi bi-search"></i></button>
-                </div>
+                <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative" style="max-width: 450px; width: 100%;">
+                    <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off">
+                    <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+                    <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
+                </form>
             </div>
 
             <!-- Bottom Row: Nav Icon -> Category Icon -> Add to cart icon -> Auth Icon dropdown -->
@@ -303,5 +305,83 @@
                 toggleDrawer(categoryDrawer, false);
             });
         }
+    });
+</script>
+
+<style>
+    .search-results-dropdown {
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+    .search-item-link:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInputs = document.querySelectorAll('.search-input-field');
+        
+        searchInputs.forEach(input => {
+            const form = input.closest('form');
+            const dropdown = form.querySelector('.search-results-dropdown');
+            let debounceTimer;
+
+            input.addEventListener('input', function() {
+                clearTimeout(debounceTimer);
+                const query = input.value.trim();
+
+                if (query.length < 2) {
+                    dropdown.innerHTML = '';
+                    dropdown.classList.add('d-none');
+                    return;
+                }
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`/products/search-api?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(products => {
+                            dropdown.innerHTML = '';
+                            
+                            if (products.length === 0) {
+                                dropdown.innerHTML = '<div class="text-muted text-center py-3 small">No products found</div>';
+                                dropdown.classList.remove('d-none');
+                                return;
+                            }
+
+                            products.forEach(product => {
+                                const itemHtml = `
+                                    <a href="${product.url}" class="d-flex align-items-center gap-3 p-2 mb-1 text-decoration-none text-dark rounded search-item-link">
+                                        <img src="${product.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" alt="">
+                                        <div class="flex-grow-1 min-w-0">
+                                            <div class="fw-semibold text-truncate small">${product.name}</div>
+                                            <div class="text-danger small">$${product.price}</div>
+                                        </div>
+                                    </a>
+                                `;
+                                dropdown.insertAdjacentHTML('beforeend', itemHtml);
+                            });
+
+                            dropdown.classList.remove('d-none');
+                        })
+                        .catch(err => console.error('Error fetching live search results:', err));
+                }, 300);
+            });
+
+            // Hide dropdown on click outside
+            document.addEventListener('click', function(e) {
+                if (!form.contains(e.target)) {
+                    dropdown.classList.add('d-none');
+                }
+            });
+            
+            // Show dropdown on focus if it has items
+            input.addEventListener('focus', function() {
+                if (dropdown.children.length > 0) {
+                    dropdown.classList.remove('d-none');
+                }
+            });
+        });
     });
 </script>
