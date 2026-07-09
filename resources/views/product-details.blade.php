@@ -369,7 +369,7 @@
 
                 <!-- Cart Actions -->
                 <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-primary btn-lg flex-fill add-to-cart-detail"
+                    <button type="button" class="btn btn-custom-cart btn-lg flex-fill add-to-cart-detail"
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"
@@ -377,7 +377,7 @@
                         style="font-size: 15px; font-weight: 600; border-radius: 8px;">
                         <i class="bi bi-cart3 me-2"></i> Add To Cart
                     </button>
-                    <button type="button" class="btn btn-danger btn-lg flex-fill buy-now-detail"
+                    <button type="button" class="btn btn-custom-buy btn-lg flex-fill buy-now-detail"
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"

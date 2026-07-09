@@ -65,6 +65,17 @@ class HomeController extends Controller
         return view('product-details', compact('product', 'relatedProducts'));
     }
 
+    public function categoryProducts(int $id): View
+    {
+        $category = Category::findOrFail($id);
+        $products = Product::where('category_id', $category->id)
+            ->where('is_active', true)
+            ->latest()
+            ->paginate(12);
+
+        return view('category-products', compact('category', 'products'));
+    }
+
     public function checkout(): View
     {
         return view('checkout');

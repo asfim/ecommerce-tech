@@ -1,7 +1,5 @@
 @extends('layouts.app')
 
-@section('title')
-
 @section('content')
     <!-- Hero section -->
     <div class="hero-sec">
@@ -33,14 +31,16 @@
                         <h6><i class="bi bi-fire text-danger"></i> Hot Categories</h6>
                         <div class="row g-2 mt-1">
                             @foreach ($hotCategories as $cat)
-                                <div class="col-3 hotcat-item">
-                                    @if ($cat->image)
-                                        <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}">
-                                    @else
-                                        <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($cat->name, 8, '')) }}"
-                                            alt="{{ $cat->name }}">
-                                    @endif
-                                    <div class="name">{{ $cat->name }}</div>
+                                <div class="col-3">
+                                    <a href="{{ route('category.products', $cat->id) }}" class="hotcat-item">
+                                        @if ($cat->image)
+                                            <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}">
+                                        @else
+                                            <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($cat->name, 8, '')) }}"
+                                                alt="{{ $cat->name }}">
+                                        @endif
+                                        <div class="name">{{ $cat->name }}</div>
+                                    </a>
                                 </div>
                             @endforeach
                         </div>
@@ -160,8 +160,8 @@
                                 </a>
                                 <div class="p">${{ number_format($bp->price, 2) }}</div>
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-dark w-100 add-to-cart-btn py-1 px-2 mb-1"
-                                        style="background:#0066b9; border-color:#0D1F1C; border-radius:15px; font-weight:600; font-size:11px;"
+                                    <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 px-2 mb-1"
+                                        style="border-radius:15px; font-weight:600; font-size:11px;"
                                         data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
                                         data-price="{{ $bp->price }}"
                                         data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}">
@@ -257,14 +257,14 @@
                                                         </a>
                                                         <div class="bid"><b>${{ number_format($np->price, 2) }}</b></div>
                                                         <div class="d-flex gap-1 mt-1">
-                                                            <button type="button" class="btn btn-sm btn-outline-primary add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
+                                                            <button type="button" class="btn btn-sm btn-outline-primary btn-custom-cart add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
                                                                 style="height: 24px; font-size:11px; border-radius:10px;"
                                                                 data-id="{{ $np->id }}" data-name="{{ $np->name }}"
                                                                 data-price="{{ $np->price }}"
                                                                 data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}">
                                                                 <i class="bi bi-cart-plus"></i> Add
                                                             </button>
-                                                            <button class="btn btn-sm btn-primary py-0 px-2 d-inline-flex align-items-center justify-content-center btn-bid"
+                                                            <button class="btn btn-sm btn-primary btn-custom-buy py-0 px-2 d-inline-flex align-items-center justify-content-center btn-bid"
                                                                 style="height: 24px; font-size:11px; border-radius:10px;"
                                                                 data-id="{{ $np->id }}"
                                                                 data-name="{{ $np->name }}"
@@ -354,8 +354,8 @@
                                     </div>
                                     <div class="rating">★★★★★</div>
                                     <div class="mt-2">
-                                        <button type="button" class="btn btn-dark w-100 add-to-cart-btn py-1 px-2 mb-1"
-                                            style="background:#0066b9; border-color:#0D1F1C; border-radius:15px; font-weight:600; font-size:11px;"
+                                        <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 px-2 mb-1"
+                                            style="border-radius:15px; font-weight:600; font-size:11px;"
                                             data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
                                             data-price="{{ $discountedPrice }}"
                                             data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}">
@@ -434,8 +434,8 @@
                             </div>
 
                             <div class="mt-2">
-                                <button type="button" class="btn btn-dark w-100 add-to-cart-btn py-1 mb-1"
-                                    style="background:#0066b9; border-color:#0D1F1C; border-radius:15px; font-weight:600; font-size:11px;"
+                                <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 mb-1"
+                                    style="border-radius:15px; font-weight:600; font-size:11px;"
                                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                                     data-price="{{ $discountedPrice }}"
                                     data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">

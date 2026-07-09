@@ -58,8 +58,10 @@
         .season-banner .cap{ position:relative; z-index:2; padding:20px; }
         .hotcat-panel{ background:#fff; border-radius:6px; padding:14px; height:260px; }
         .hotcat-panel h6{ font-weight:700; font-size:13px; }
-        .hotcat-item img{ width:100%; height:60px; object-fit:cover; border-radius:6px; margin-bottom:4px; }
-        .hotcat-item .name{ font-size:10.5px; text-align:center; color:#555; }
+        .hotcat-item { display: block; text-decoration: none; transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out; }
+        .hotcat-item:hover { transform: translateY(-3px) scale(1.03); opacity: 0.9; }
+        .hotcat-item img { width:100%; height:60px; object-fit:cover; border-radius:6px; margin-bottom:4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .hotcat-item .name { font-size:10.5px; text-align:center; color:#555; }
 
         .featured-strip{ background:#fff; border-radius:6px; padding:12px 16px; margin-top:14px; }
         .fs-item{ display:flex; align-items:center; gap:10px; }
@@ -102,6 +104,29 @@
         .newarrival-item .t{ font-size:11.5px; font-weight:600; }
         .newarrival-item .bid{ font-size:10.5px; color:var(--muted); }
         .btn-bid{ background:#c9a45c; color:#fff; font-size:10px; padding:3px 10px; border-radius:3px; border:none; }
+
+        .btn-custom-cart {
+            background-color: #fff !important;
+            border: 1.5px solid #1a73e8 !important;
+            color: #1a73e8 !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .btn-custom-cart:hover {
+            background-color: #000000 !important;
+            color: #fff !important;
+        }
+
+        .btn-custom-buy {
+            background-color: #1a73e8 !important;
+            border: 1.5px solid #1a73e8 !important;
+            color: #fff !important;
+            transition: all 0.2s ease-in-out !important;
+        }
+        .btn-custom-buy:hover {
+            background-color: #111 !important;
+            border-color: #111 !important;
+            color: #fff !important;
+        }
 
         .classified-sec{ background:#f5f5f5; padding:26px 0; }
         .classified-card{ background:#fff; border:1px solid #eee; border-radius:6px; padding:10px; text-align:center; position:relative; }
