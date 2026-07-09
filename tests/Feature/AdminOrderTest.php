@@ -7,7 +7,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
-test('admin can update order status and payment status on the order index page', function () {
+test('admin can update order status on the order index page and delivery sets payment to paid', function () {
     // Seed database to create Super Admin role and admin user
     $this->seed();
 
@@ -40,34 +40,71 @@ test('admin can update order status and payment status on the order index page',
     // View orders index page
     $response = $this->actingAs($admin, 'admin')->get(route('admin.orders.index'));
 
-    $response->assertStatus(200);
-    // Confirm the inline status update forms are rendered
+    $response->assertSuccessful();
+    // Confirm the inline status update forms are rendered, but payment status dropdown is not
     $response->assertSee('action="'.route('admin.orders.update-status', $order).'"', false);
     $response->assertSee('order_status');
-    $response->assertSee('payment_status');
+    $response->assertDontSee('name="payment_status"', false);
 
-    // Update order status to confirmed
+    // Update order status to confirmed should fail validation
     $patchResponse1 = $this->actingAs($admin, 'admin')->patch(route('admin.orders.update-status', $order), [
         'order_status' => 'confirmed',
     ]);
 
-    $patchResponse1->assertRedirect();
+    $patchResponse1->assertSessionHasErrors(['order_status']);
     $this->assertDatabaseHas('orders', [
         'id' => $order->id,
-        'order_status' => 'confirmed',
-        'payment_status' => 'pending',
+        'order_status' => 'pending',
     ]);
 
-    // Update payment status to paid
+    // Update order status to delivered should succeed and set payment status to paid automatically
     $patchResponse2 = $this->actingAs($admin, 'admin')->patch(route('admin.orders.update-status', $order), [
-        'payment_status' => 'paid',
+        'order_status' => 'delivered',
     ]);
 
     $patchResponse2->assertRedirect();
     $this->assertDatabaseHas('orders', [
         'id' => $order->id,
-        'order_status' => 'confirmed',
+        'order_status' => 'delivered',
         'payment_status' => 'paid',
+    ]);
+});
+
+test('admin can delete an order', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $order = Order::create([
+        'invoice_no' => 'INV-20260709-0002',
+        'customer_name' => 'John Doe',
+        'customer_phone' => '01712345678',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 1000,
+        'tax' => 50,
+        'total' => 1110,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order->id,
+        'product_name' => 'Product Name A',
+        'price' => 1000,
+        'quantity' => 1,
+        'line_total' => 1000,
+    ]);
+
+    $response = $this->actingAs($admin, 'admin')->delete(route('admin.orders.destroy', $order));
+
+    $response->assertRedirect(route('admin.orders.index'));
+    $this->assertDatabaseMissing('orders', [
+        'id' => $order->id,
+    ]);
+    $this->assertDatabaseMissing('order_items', [
+        'order_id' => $order->id,
     ]);
 });
 

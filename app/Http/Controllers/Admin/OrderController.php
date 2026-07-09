@@ -39,7 +39,6 @@ class OrderController extends Controller
         $statusCounts = [
             'all' => Order::count(),
             'pending' => Order::where('order_status', 'pending')->count(),
-            'confirmed' => Order::where('order_status', 'confirmed')->count(),
             'delivered' => Order::where('order_status', 'delivered')->count(),
         ];
 
@@ -56,11 +55,15 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
         $validated = $request->validate([
-            'order_status' => 'nullable|in:pending,confirmed,delivered,cancelled',
+            'order_status' => 'nullable|in:pending,delivered,cancelled',
             'payment_status' => 'nullable|in:pending,paid',
         ]);
 
         $updateData = array_filter($validated, fn ($value) => ! is_null($value));
+
+        if (isset($updateData['order_status']) && $updateData['order_status'] === 'delivered') {
+            $updateData['payment_status'] = 'paid';
+        }
 
         if (! empty($updateData)) {
             $order->update($updateData);
@@ -77,5 +80,12 @@ class OrderController extends Controller
         $message = empty($messages) ? 'Order updated.' : implode(' and ', $messages);
 
         return back()->with('success', $message);
+    }
+
+    public function destroy(Order $order): RedirectResponse
+    {
+        $order->delete();
+
+        return redirect()->route('admin.orders.index')->with('success', 'Order deleted successfully.');
     }
 }

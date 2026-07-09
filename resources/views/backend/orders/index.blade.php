@@ -34,9 +34,6 @@
   <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="btn btn-sm {{ request('status') === 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
     Pending <span class="badge bg-warning text-dark ms-1">{{ $statusCounts['pending'] }}</span>
   </a>
-  <a href="{{ route('admin.orders.index', ['status' => 'confirmed']) }}" class="btn btn-sm {{ request('status') === 'confirmed' ? 'btn-primary' : 'btn-outline-primary' }}">
-    Confirmed <span class="badge bg-primary ms-1">{{ $statusCounts['confirmed'] }}</span>
-  </a>
   <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="btn btn-sm {{ request('status') === 'delivered' ? 'btn-success' : 'btn-outline-success' }}">
     Delivered <span class="badge bg-success ms-1">{{ $statusCounts['delivered'] }}</span>
   </a>
@@ -110,24 +107,11 @@
           <td>{{ $order->customer_phone }}</td>
           <td class="fw-bold">৳{{ number_format($order->total, 2) }}</td>
           <td>
-            <div class="mb-1">
-              @if($order->payment_method === 'cod' && $order->payment_status === 'pending')
-                <span class="badge bg-info text-dark">COD</span>
-              @elseif($order->payment_method === 'sslcommerz' && $order->payment_status === 'pending')
-                <span class="badge bg-primary">SSL Commerz</span>
-              @endif
-            </div>
-            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
-              @csrf
-              @method('PATCH')
-              <select name="payment_status" class="form-select form-select-sm" style="width: 100px;">
-                <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Paid</option>
-              </select>
-              <button type="submit" class="btn btn-sm btn-primary" title="Update Payment Status">
-                <i class="bi bi-check-lg"></i>
-              </button>
-            </form>
+            @if($order->payment_status === 'paid')
+              <span class="badge bg-success">Paid</span>
+            @else
+              <span class="badge bg-warning text-dark">Pending</span>
+            @endif
           </td>
           <td>
             <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
@@ -135,7 +119,6 @@
               @method('PATCH')
               <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
                 <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
                 <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
                 <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
               </select>
@@ -149,6 +132,11 @@
             <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View">
               <i class="bi bi-eye"></i>
             </a>
+            <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
+              @csrf
+              @method('DELETE')
+              <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+            </form>
           </td>
         </tr>
       @empty

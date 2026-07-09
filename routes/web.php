@@ -22,6 +22,7 @@ use App\Http\Controllers\Frontend\CustomerOrderController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -32,6 +33,7 @@ Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
 Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
 Route::get('/order/invoice/{invoiceNo}', [OrderController::class, 'invoice'])->name('order.invoice');
+Route::post('/product/{product}/review', [ReviewController::class, 'store'])->name('product.review.store');
 
 /* ========== Frontend (User) ========== */
 Route::prefix('account')->name('user.')->group(function () {
@@ -86,10 +88,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
             Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+            Route::delete('orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
         });
 
         Route::middleware('permission:manage-coupons,admin')->group(function () {
             Route::resource('coupons', AdminCouponController::class);
+        });
+
+        Route::middleware('permission:manage-reviews,admin')->group(function () {
+            Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
         });
 
         Route::middleware('permission:manage-attributes,admin')->group(function () {

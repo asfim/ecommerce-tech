@@ -112,7 +112,7 @@
             <div style="overflow: hidden; flex-grow: 1;">
                 <div id="trendingSlider" style="display: flex; gap: 15px; transition: transform .4s ease;">
                     @forelse($trendingCategories as $tc)
-                        <div class="tcat-item">
+                        <a href="{{ route('category.products', $tc->id) }}" class="tcat-item">
                             @if ($tc->image)
                                 <img src="{{ asset('storage/' . $tc->image) }}" alt="{{ $tc->name }}"
                                     style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
@@ -122,7 +122,7 @@
                                     style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
                             @endif
                             <div class="name" style="font-size:11.5px;">{{ $tc->name }}</div>
-                        </div>
+                        </a>
                     @empty
                         <div class="text-muted small px-2">No trending categories yet.</div>
                     @endforelse

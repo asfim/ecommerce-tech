@@ -41,6 +41,9 @@
   @can('manage-coupons')
     <a href="{{ route('admin.coupons.index') }}" class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}"><i class="bi bi-ticket-perforated"></i> Coupons</a>
   @endcan
+  @can('manage-reviews')
+    <a href="{{ route('admin.reviews.index') }}" class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}"><i class="bi bi-star"></i> Reviews</a>
+  @endcan
   @role('Super Admin')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#staffSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-shield-lock"></i> Staff Management</a>
     <div class="collapse {{ request()->routeIs(['admin.users.*', 'admin.roles.*', 'admin.permissions.*', 'admin.activity-logs.*']) ? 'show' : '' }}" id="staffSubmenu">

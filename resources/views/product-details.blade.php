@@ -292,6 +292,9 @@
             }
         }
     }
+
+    $reviewCount = $product->reviews->count();
+    $averageRating = $reviewCount > 0 ? round($product->reviews->avg('rating')) : 0;
 @endphp
 
 <section class="py-5">
@@ -321,13 +324,15 @@
 
                 <div class="mb-3 d-flex align-items-center gap-2">
                     <div class="rating">
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
-                        <i class="fas fa-star text-warning"></i>
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= $averageRating)
+                                <i class="bi bi-star-fill text-warning"></i>
+                            @else
+                                <i class="bi bi-star text-warning"></i>
+                            @endif
+                        @endfor
                     </div>
-                    <span class="text-muted small">(254 Reviews)</span>
+                    <span class="text-muted small">({{ $reviewCount }} Review{{ $reviewCount === 1 ? '' : 's' }})</span>
                 </div>
 
                 <h2 class="text-danger fw-bold">
@@ -431,52 +436,65 @@
     <div class="tab-content-panel">
         <h5 class="fw-bold mb-3">Customer Reviews</h5>
         <div id="reviewsList">
-            <div class="mb-3 review-item">
-                <strong>John Doe</strong>
-                <div class="rating my-1">
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
+            @forelse($product->reviews as $review)
+                <div class="mb-3 review-item">
+                    <strong>{{ $review->name }}</strong>
+                    <div class="rating my-1">
+                        @for ($i = 1; $i <= 5; $i++)
+                            @if ($i <= $review->rating)
+                                <i class="bi bi-star-fill text-warning"></i>
+                            @else
+                                <i class="bi bi-star text-warning"></i>
+                            @endif
+                        @endfor
+                    </div>
+                    <p class="text-muted small">{{ $review->comment }}</p>
+                    <hr>
                 </div>
-                <p class="text-muted small">Amazing sound quality and very comfortable to wear for long hours.</p>
-                <hr>
-            </div>
-            <div class="mb-3 review-item">
-                <strong>Jane Smith</strong>
-                <div class="rating my-1">
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="fas fa-star text-warning"></i>
-                    <i class="far fa-star text-warning"></i>
+            @empty
+                <div class="mb-3 review-item text-muted">
+                    <p>No reviews yet. Be the first to leave a review.</p>
                 </div>
-                <p class="text-muted small">Great bass and battery life. Worth the price!</p>
-                <hr>
-            </div>
+            @endforelse
         </div>
 
         <h5 class="mt-4 fw-bold">Write a Review</h5>
-        <form id="reviewForm">
+
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        @if($errors->any())
+            <div class="alert alert-danger">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <form id="reviewForm" method="POST" action="{{ route('product.review.store', $product) }}">
+            @csrf
+
             <div class="mb-3">
                 <label class="form-label small fw-semibold">Your Name</label>
-                <input type="text" class="form-control form-control-sm" id="reviewName" required>
+                <input type="text" class="form-control form-control-sm" id="reviewName" name="name" value="{{ old('name') }}" required>
             </div>
             <div class="mb-3">
                 <label class="form-label small fw-semibold d-block">Rating</label>
                 <div id="starRating">
-                    <i class="far fa-star text-warning" data-value="1"></i>
-                    <i class="far fa-star text-warning" data-value="2"></i>
-                    <i class="far fa-star text-warning" data-value="3"></i>
-                    <i class="far fa-star text-warning" data-value="4"></i>
-                    <i class="far fa-star text-warning" data-value="5"></i>
+                    <i class="bi bi-star text-warning" data-value="1"></i>
+                    <i class="bi bi-star text-warning" data-value="2"></i>
+                    <i class="bi bi-star text-warning" data-value="3"></i>
+                    <i class="bi bi-star text-warning" data-value="4"></i>
+                    <i class="bi bi-star text-warning" data-value="5"></i>
                 </div>
-                <input type="hidden" id="ratingValue" value="0">
+                <input type="hidden" id="ratingValue" name="rating" value="{{ old('rating', 0) }}">
             </div>
             <div class="mb-3">
                 <label class="form-label small fw-semibold">Your Review</label>
-                <textarea class="form-control form-control-sm" id="reviewText" rows="3" required></textarea>
+                <textarea class="form-control form-control-sm" id="reviewText" name="comment" rows="3" required>{{ old('comment') }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-sm px-3">Submit Review</button>
         </form>
@@ -718,11 +736,11 @@
         stars.forEach(s => {
             const v = parseInt(s.getAttribute('data-value'));
             if (v <= value) {
-                s.classList.remove('far');
-                s.classList.add('fas');
+                s.classList.remove('bi-star');
+                s.classList.add('bi-star-fill');
             } else {
-                s.classList.remove('fas');
-                s.classList.add('far');
+                s.classList.remove('bi-star-fill');
+                s.classList.add('bi-star');
             }
         });
     }
@@ -735,56 +753,6 @@
             } else {
                 s.classList.remove('hovered');
             }
-        });
-    }
-
-    if (reviewForm) {
-        reviewForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const name = document.getElementById('reviewName').value.trim();
-            const text = document.getElementById('reviewText').value.trim();
-            const rating = parseInt(ratingValue.value) || 0;
-
-            if (rating === 0) {
-                alert('Please select a rating.');
-                return;
-            }
-
-            const reviewDiv = document.createElement('div');
-            reviewDiv.className = 'mb-3 review-item';
-
-            const nameStrong = document.createElement('strong');
-            nameStrong.textContent = name;
-
-            const starsDiv = document.createElement('div');
-            starsDiv.className = 'rating my-1';
-
-            for (let i = 1; i <= 5; i++) {
-                const star = document.createElement('i');
-                if (i <= rating) {
-                    star.className = 'fas fa-star text-warning';
-                } else {
-                    star.className = 'far fa-star text-warning';
-                }
-                starsDiv.appendChild(star);
-            }
-
-            const textP = document.createElement('p');
-            textP.className = 'text-muted small';
-            textP.textContent = text;
-
-            const hr = document.createElement('hr');
-
-            reviewDiv.appendChild(nameStrong);
-            reviewDiv.appendChild(starsDiv);
-            reviewDiv.appendChild(textP);
-            reviewDiv.appendChild(hr);
-
-            reviewsList.insertBefore(reviewDiv, reviewsList.firstChild);
-
-            reviewForm.reset();
-            ratingValue.value = '0';
-            updateStars(0);
         });
     }
 

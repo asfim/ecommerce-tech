@@ -159,7 +159,6 @@
           <label class="form-label small text-muted mb-1">Order Status</label>
           <select name="order_status" class="form-select form-select-sm">
             <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
             <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
             <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
           </select>
