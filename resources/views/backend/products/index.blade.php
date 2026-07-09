@@ -52,6 +52,7 @@
         <th>Name</th>
         <th>Category</th>
         <th>Brand</th>
+        <th>Buy Price</th>
         <th>Price</th>
         <th>Stock</th>
         <th>Sales</th>
@@ -74,6 +75,7 @@
           <td>{{ $product->name }}</td>
           <td>{{ $product->category->name ?? '-' }}</td>
           <td>{{ $product->brand->name ?? '-' }}</td>
+          <td>{{ $product->buy_price ? '$' . number_format($product->buy_price, 2) : '-' }}</td>
           <td>${{ number_format($product->price, 2) }}</td>
           <td>{{ $product->stock }}</td>
           <td>{{ $product->sales_count }}</td>

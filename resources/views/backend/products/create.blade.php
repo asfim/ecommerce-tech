@@ -77,26 +77,32 @@
       </div>
       <div class="col-md-3 mb-3">
         <label class="form-label">Main Image</label>
-        <input type="file" name="image" class="form-control">
+        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*">
+        <div id="mainImagePreview" class="mt-2" style="display:none;"></div>
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-3 mb-3">
+      <div class="col-md-2 mb-3">
+        <label class="form-label">Buy Price</label>
+        <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price') }}">
+      </div>
+      <div class="col-md-2 mb-3">
         <label class="form-label">Price</label>
         <input type="number" name="price" step="0.01" class="form-control" value="{{ old('price') }}" required>
       </div>
-      <div class="col-md-3 mb-3">
+      <div class="col-md-2 mb-3">
         <label class="form-label">Stock</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required>
       </div>
-      <div class="col-md-3 mb-3">
+      <div class="col-md-2 mb-3">
         <label class="form-label">Sales Count</label>
         <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', 0) }}" required>
       </div>
-      <div class="col-md-3 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
-        <input type="file" name="images[]" class="form-control" multiple>
+        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*">
+        <div id="galleryImagesPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
       </div>
     </div>
 
@@ -372,6 +378,46 @@
 
     syncVariants();
   })();
+
+  // ─── Image Previews ───────────────────────────────────────────────
+  const mainImageInput = document.getElementById('mainImageInput');
+  const mainImagePreview = document.getElementById('mainImagePreview');
+  const galleryImagesInput = document.getElementById('galleryImagesInput');
+  const galleryImagesPreview = document.getElementById('galleryImagesPreview');
+
+  if (mainImageInput) {
+    mainImageInput.addEventListener('change', function () {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          mainImagePreview.innerHTML = `<img src="${e.target.result}" class="rounded border" style="height:60px; object-fit:cover;">`;
+          mainImagePreview.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (galleryImagesInput) {
+    galleryImagesInput.addEventListener('change', function () {
+      galleryImagesPreview.innerHTML = '';
+      if (this.files) {
+        [...this.files].forEach(file => {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            const imgWrapper = document.createElement('div');
+            imgWrapper.className = 'border rounded p-1 bg-white';
+            imgWrapper.style.width = '60px';
+            imgWrapper.style.height = '60px';
+            imgWrapper.innerHTML = `<img src="${e.target.result}" class="rounded" style="width:100%; height:100%; object-fit:cover;">`;
+            galleryImagesPreview.appendChild(imgWrapper);
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+  }
 </script>
 @endpush
 

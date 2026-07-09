@@ -67,14 +67,14 @@
       <div class="stat-card p-4" style="background: #fff; border-radius: 8px; border: 1px solid #eee; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
         <h5 class="fw-bold mb-3"><i class="bi bi-plus-circle me-1 text-primary"></i> Add Value</h5>
         <p class="text-muted small">Create a new value for the attribute <strong>{{ $attribute->name }}</strong>.</p>
-        
+
         <form method="POST" action="{{ route('admin.attributes.values.store', $attribute) }}">
           @csrf
           <div class="mb-3">
             <label class="form-label small fw-bold">Value Name</label>
-            <input type="text" name="value" class="form-control" placeholder="e.g., Red, XL, 128GB" value="{{ old('value') }}" required autocomplete="off">
-            @error('value') 
-              <div class="text-danger small mt-1">{{ $message }}</div> 
+            <input type="text" name="value" class="form-control" placeholder="e.g., Red" value="{{ old('value') }}" required autocomplete="off">
+            @error('value')
+              <div class="text-danger small mt-1">{{ $message }}</div>
             @enderror
           </div>
           <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check-lg"></i> Save Value</button>
@@ -117,7 +117,7 @@
                         <i class="bi bi-pencil"></i>
                       </a>
                       <form action="{{ route('admin.attributes.values.destroy', [$attribute, $val]) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this value?')">
-                        @csrf 
+                        @csrf
                         @method('DELETE')
                         <button class="btn btn-sm btn-outline-danger" title="Delete">
                           <i class="bi bi-trash"></i>
@@ -129,7 +129,7 @@
               </tbody>
             </table>
           </div>
-          
+
           <div class="mt-3">
             {{ $values->links() }}
           </div>
