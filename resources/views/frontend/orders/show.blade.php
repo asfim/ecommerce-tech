@@ -48,7 +48,7 @@
             <tr>
               <td>
                 @if($item->product_image)
-                  <img src="{{ asset('storage/' . $item->product_image) }}" style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid #eee;">
+                  <img src="{{ str_starts_with($item->product_image, 'http') ? $item->product_image : asset('storage/' . $item->product_image) }}" style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid #eee;">
                 @else
                   <div style="width:48px;height:48px;background:#f0f0f0;border-radius:6px;display:flex;align-items:center;justify-content:center;">
                     <i class="bi bi-image text-muted"></i>

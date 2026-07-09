@@ -40,13 +40,9 @@
   <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
     @csrf
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-12 mb-3">
         <label class="form-label">Product Name</label>
         <input type="text" name="name" id="productName" class="form-control" value="{{ old('name') }}" required>
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Slug</label>
-        <input type="text" name="slug" id="productSlug" class="form-control" value="{{ old('slug') }}" required>
       </div>
     </div>
 
@@ -244,11 +240,6 @@
     }
   })();
 
-  // ─── Slug Auto-generate ────────────────────────────────────────────
-  document.getElementById('productName').addEventListener('input', function () {
-    document.getElementById('productSlug').value = this.value
-      .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-  });
 
   // ─── Attribute Data map ────────────────────────────────────────────
   const attributeData = @json(

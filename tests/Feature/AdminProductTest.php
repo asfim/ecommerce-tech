@@ -43,7 +43,6 @@ test('admin can create a product with buy price', function () {
 
     $response = $this->actingAs($admin, 'admin')->post(route('admin.products.store'), [
         'name' => 'Galaxy S24 Ultra',
-        'slug' => 'galaxy-s24-ultra',
         'category_id' => $category->id,
         'brand_id' => $brand->id,
         'buy_price' => 850.00,
@@ -57,6 +56,7 @@ test('admin can create a product with buy price', function () {
     $response->assertRedirect(route('admin.products.index'));
     $this->assertDatabaseHas('products', [
         'name' => 'Galaxy S24 Ultra',
+        'slug' => 'galaxy-s24-ultra',
         'buy_price' => 850.00,
         'price' => 1299.00,
     ]);

@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -97,6 +98,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:manage-reviews,admin')->group(function () {
             Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
+        });
+
+        Route::middleware('permission:view-reports,admin')->group(function () {
+            Route::get('reports/sales', [ReportController::class, 'sales'])->name('reports.sales');
+            Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
         });
 
         Route::middleware('permission:manage-attributes,admin')->group(function () {

@@ -33,7 +33,7 @@
 
 <div class="row g-4">
   <!-- Order Info Card -->
-  <div class="col-md-8">
+  <div class="col-md-12">
     <div class="stat-card mb-4">
       <div class="d-flex justify-content-between align-items-start mb-3">
         <div>
@@ -69,7 +69,7 @@
             <tr>
               <td>
                 @if($item->product_image)
-                  <img src="{{ asset('storage/' . $item->product_image) }}" style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid #eee;">
+                  <img src="{{ str_starts_with($item->product_image, 'http') ? $item->product_image : asset('storage/' . $item->product_image) }}" style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid #eee;">
                 @else
                   <div style="width:48px;height:48px;background:#f0f0f0;border-radius:6px;display:flex;align-items:center;justify-content:center;">
                     <i class="bi bi-image text-muted"></i>
@@ -115,63 +115,6 @@
           </tr>
         </tfoot>
       </table>
-    </div>
-  </div>
-
-  <!-- Sidebar Info -->
-  <div class="col-md-4">
-    <!-- Customer Info -->
-    <div class="stat-card mb-3">
-      <h6 class="fw-bold mb-3"><i class="bi bi-person me-2"></i>Customer</h6>
-      <p class="mb-1 fw-bold">{{ $order->customer_name }}</p>
-      <p class="mb-1 text-muted small"><i class="bi bi-telephone me-1"></i> {{ $order->customer_phone }}</p>
-      <p class="mb-0 text-muted small"><i class="bi bi-geo-alt me-1"></i> {{ $order->customer_address }}</p>
-    </div>
-
-    <!-- Payment Info -->
-    <div class="stat-card mb-3">
-      <h6 class="fw-bold mb-3"><i class="bi bi-wallet2 me-2"></i>Payment</h6>
-      <p class="mb-1">
-        <strong>Method:</strong>
-        @if($order->payment_method === 'cod')
-          <span class="badge bg-info text-dark">Cash on Delivery</span>
-        @else
-          <span class="badge bg-primary">SSL Commerz</span>
-        @endif
-      </p>
-      <p class="mb-0">
-        <strong>Status:</strong>
-        @if($order->payment_status === 'paid')
-          <span class="badge bg-success">Paid</span>
-        @else
-          <span class="badge bg-warning text-dark">Pending</span>
-        @endif
-      </p>
-    </div>
-
-    <!-- Update Status -->
-    <div class="stat-card">
-      <h6 class="fw-bold mb-3"><i class="bi bi-arrow-repeat me-2"></i>Update Status</h6>
-      <form method="POST" action="{{ route('admin.orders.update-status', $order) }}">
-        @csrf
-        @method('PATCH')
-        <div class="mb-2">
-          <label class="form-label small text-muted mb-1">Order Status</label>
-          <select name="order_status" class="form-select form-select-sm">
-            <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-            <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-          </select>
-        </div>
-        <div class="mb-3">
-          <label class="form-label small text-muted mb-1">Payment Status</label>
-          <select name="payment_status" class="form-select form-select-sm">
-            <option value="pending" {{ $order->payment_status === 'pending' ? 'selected' : '' }}>Pending</option>
-            <option value="paid" {{ $order->payment_status === 'paid' ? 'selected' : '' }}>Paid</option>
-          </select>
-        </div>
-        <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-check-lg me-1"></i> Update Status</button>
-      </form>
     </div>
   </div>
 </div>

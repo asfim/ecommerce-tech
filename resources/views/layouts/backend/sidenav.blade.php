@@ -44,6 +44,13 @@
   @can('manage-reviews')
     <a href="{{ route('admin.reviews.index') }}" class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}"><i class="bi bi-star"></i> Reviews</a>
   @endcan
+  @can('view-reports')
+    <a href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubmenu" aria-expanded="false" class="dropdown-toggle {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"><i class="bi bi-bar-chart-line"></i> Reports</a>
+    <div class="collapse {{ request()->routeIs('admin.reports.*') ? 'show' : '' }}" id="reportsSubmenu">
+      <a href="{{ route('admin.reports.sales') }}" class="ps-4 {{ request()->routeIs('admin.reports.sales') ? 'active' : '' }}"><i class="bi bi-graph-up-arrow"></i> Sales Report</a>
+      <a href="{{ route('admin.reports.stock') }}" class="ps-4 {{ request()->routeIs('admin.reports.stock') ? 'active' : '' }}"><i class="bi bi-boxes"></i> Stock Report</a>
+    </div>
+  @endcan
   @role('Super Admin')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#staffSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-shield-lock"></i> Staff Management</a>
     <div class="collapse {{ request()->routeIs(['admin.users.*', 'admin.roles.*', 'admin.permissions.*', 'admin.activity-logs.*']) ? 'show' : '' }}" id="staffSubmenu">

@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\SubCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -31,7 +32,7 @@ class ProductController extends Controller
     public function create()
     {
         $categories = Category::all();
-        $subCategories = SubCategory::where('is_active', true)->get();
+        $subCategories = SubCategory::query()->where('is_active', true)->get();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
 
@@ -40,6 +41,10 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge([
+            'slug' => $request->slug ?: Str::slug($request->name),
+        ]);
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'slug' => 'required|string|max:255|unique:products',
@@ -101,7 +106,7 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::all();
-        $subCategories = SubCategory::where('is_active', true)->get();
+        $subCategories = SubCategory::query()->where('is_active', true)->get();
         $brands = Brand::all();
         $attributes = Attribute::with('values')->get();
 
@@ -202,7 +207,8 @@ class ProductController extends Controller
 
     public function toggleFeatured(Product $product): JsonResponse
     {
-        $product->update(['is_featured' => ! $product->is_featured]);
+        $product->is_featured = ! $product->is_featured;
+        $product->save();
 
         return response()->json([
             'is_featured' => $product->is_featured,
@@ -212,7 +218,8 @@ class ProductController extends Controller
 
     public function toggleActive(Product $product): JsonResponse
     {
-        $product->update(['is_active' => ! $product->is_active]);
+        $product->is_active = ! $product->is_active;
+        $product->save();
 
         return response()->json([
             'is_active' => $product->is_active,

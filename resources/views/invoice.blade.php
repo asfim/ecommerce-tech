@@ -342,7 +342,7 @@
             <tr>
               <td>
                 @if($item->product_image)
-                  <img src="{{ asset('storage/' . $item->product_image) }}" class="item-img" alt="{{ $item->product_name }}">
+                  <img src="{{ str_starts_with($item->product_image, 'http') ? $item->product_image : asset('storage/' . $item->product_image) }}" class="item-img" alt="{{ $item->product_name }}">
                 @endif
                 <span class="item-name">{{ $item->product_name }}</span>
                 @if(is_array($item->variants) && count($item->variants) > 0)
