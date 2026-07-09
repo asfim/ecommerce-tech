@@ -6,10 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
 
-class BlogPostController extends Controller
+class BlogPostController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-blogs,admin', only: ['index', 'show']),
+            new Middleware('permission:create-blogs,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-blogs,admin', only: ['edit', 'update']),
+            new Middleware('permission:delete-blogs,admin', only: ['destroy']),
+        ];
+    }
+
     /**
      * Display a listing of the blog posts.
      */

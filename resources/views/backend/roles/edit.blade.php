@@ -34,18 +34,42 @@
       </div>
     </div>
 
-    <div class="mb-3">
-      <label class="form-label d-block fw-semibold mb-2">Assign Permissions</label>
+    @php
+      $groupedPermissions = $permissions->groupBy(function($permission) {
+          $parts = explode('-', $permission->name);
+          if (count($parts) > 1) {
+              return ucfirst($parts[1]);
+          }
+          return 'Others';
+      });
+    @endphp
+
+    <div class="mb-4">
+      <label class="form-label d-block fw-bold mb-3">Assign Permissions</label>
       
-      <div class="row g-2 border rounded p-3 bg-light">
-        @foreach($permissions as $permission)
-          <div class="col-md-4">
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->id }}" id="perm_{{ $permission->id }}"
-                {{ $role->hasPermissionTo($permission) ? 'checked' : '' }}>
-              <label class="form-check-label small" for="perm_{{ $permission->id }}">
-                {{ $permission->name }} <span class="text-muted text-xsmall">({{ $permission->guard_name }})</span>
-              </label>
+      <div id="permissions-container" class="row g-3">
+        @foreach($groupedPermissions as $moduleName => $modulePerms)
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="card h-100 border border-light shadow-sm">
+              <div class="card-header bg-light border-0 fw-bold py-2">
+                {{ preg_replace('/(?<!^)(?=[A-Z])/', ' ', $moduleName) }}
+              </div>
+              <div class="card-body p-3">
+                <div class="row g-2">
+                  @foreach($modulePerms as $permission)
+                    <div class="col-6">
+                      <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="permissions[]" value="{{ $permission->id }}" id="perm_{{ $permission->id }}"
+                          {{ $role->hasPermissionTo($permission) ? 'checked' : '' }}>
+                        <label class="form-check-label small text-capitalize" for="perm_{{ $permission->id }}">
+                          {{ str_replace('-', ' ', explode('-', $permission->name)[0]) }}
+                          <span class="text-muted text-xsmall">({{ $permission->guard_name }})</span>
+                        </label>
+                      </div>
+                    </div>
+                  @endforeach
+                </div>
+              </div>
             </div>
           </div>
         @endforeach

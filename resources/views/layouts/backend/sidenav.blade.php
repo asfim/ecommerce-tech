@@ -15,36 +15,38 @@
     </a>
   </div>
   <a href="{{ route('admin.dashboard') }}" class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"><i class="bi bi-speedometer2"></i> Dashboard</a>
-  @can('manage-products')
+  @can('view-products')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#productsSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-box-seam"></i> Products</a>
   @endcan
   <div class="collapse {{ request()->routeIs(['admin.products.*', 'admin.categories.*', 'admin.sub-categories.*', 'admin.brands.*', 'admin.attributes.*', 'admin.attribute-values.*']) ? 'show' : '' }}" id="productsSubmenu">
-    @can('manage-products')
+    @can('view-products')
       <a href="{{ route('admin.products.index') }}" class="ps-4 {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"><i class="bi bi-grid"></i> All Products</a>
-      <a href="{{ route('admin.products.create') }}" class="ps-4 {{ request()->routeIs('admin.products.create') ? 'active' : '' }}"><i class="bi bi-plus-circle"></i> Add Product</a>
+      @can('create-products')
+        <a href="{{ route('admin.products.create') }}" class="ps-4 {{ request()->routeIs('admin.products.create') ? 'active' : '' }}"><i class="bi bi-plus-circle"></i> Add Product</a>
+      @endcan
     @endcan
-    @can('manage-categories')
+    @can('view-categories')
       <a href="{{ route('admin.categories.index') }}" class="ps-4 {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"><i class="bi bi-tags"></i> Categories</a>
       <a href="{{ route('admin.sub-categories.index') }}" class="ps-4 {{ request()->routeIs('admin.sub-categories.*') ? 'active' : '' }}"><i class="bi bi-diagram-3"></i> Sub Categories</a>
     @endcan
-    @can('manage-brands')
+    @can('view-brands')
       <a href="{{ route('admin.brands.index') }}" class="ps-4 {{ request()->routeIs('admin.brands.*') ? 'active' : '' }}"><i class="bi bi-tags"></i> Brands</a>
     @endcan
-    @can('manage-attributes')
+    @can('view-attributes')
       <a href="{{ route('admin.attributes.index') }}" class="ps-4 {{ request()->routeIs('admin.attributes.index', 'admin.attributes.create', 'admin.attributes.edit') ? 'active' : '' }}"><i class="bi bi-palette"></i> Attributes</a>
       <a href="{{ route('admin.attribute-values.index') }}" class="ps-4 {{ request()->routeIs('admin.attribute-values.index', 'admin.attributes.values.*') ? 'active' : '' }}"><i class="bi bi-list-ul"></i> Attribute Values</a>
     @endcan
   </div>
-  @can('manage-orders')
+  @can('view-orders')
     <a href="{{ route('admin.orders.index') }}" class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"><i class="bi bi-receipt"></i> Orders</a>
   @endcan
-  @can('manage-coupons')
+  @can('view-coupons')
     <a href="{{ route('admin.coupons.index') }}" class="{{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}"><i class="bi bi-ticket-perforated"></i> Coupons</a>
   @endcan
-  @can('manage-reviews')
+  @can('view-reviews')
     <a href="{{ route('admin.reviews.index') }}" class="{{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}"><i class="bi bi-star"></i> Reviews</a>
   @endcan
-  @can('manage-blogs')
+  @can('view-blogs')
     <a href="{{ route('admin.blog-posts.index') }}" class="{{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}"><i class="bi bi-journal-text"></i> Blog Posts</a>
   @endcan
   @can('view-reports')
@@ -54,18 +56,30 @@
       <a href="{{ route('admin.reports.stock') }}" class="ps-4 {{ request()->routeIs('admin.reports.stock') ? 'active' : '' }}"><i class="bi bi-boxes"></i> Stock Report</a>
     </div>
   @endcan
-  @role('Super Admin')
+  @canany(['view-staffs', 'view-customers', 'view-roles', 'view-permissions', 'view-activitylogs'])
     <a href="#" data-bs-toggle="collapse" data-bs-target="#staffSubmenu" aria-expanded="false" class="dropdown-toggle"><i class="bi bi-shield-lock"></i> Staff Management</a>
     <div class="collapse {{ request()->routeIs(['admin.users.*', 'admin.roles.*', 'admin.permissions.*', 'admin.activity-logs.*']) ? 'show' : '' }}" id="staffSubmenu">
-      <a href="{{ route('admin.users.admins') }}" class="ps-4 {{ request()->routeIs('admin.users.admins') ? 'active' : '' }}"><i class="bi bi-person-badge"></i> Staffs</a>
-      <a href="{{ route('admin.users.staff') }}" class="ps-4 {{ request()->routeIs('admin.users.staff') ? 'active' : '' }}"><i class="bi bi-people"></i> Customers</a>
-      <a href="{{ route('admin.roles.index') }}" class="ps-4 {{ request()->routeIs(['admin.roles.index', 'admin.roles.create', 'admin.roles.edit']) ? 'active' : '' }}"><i class="bi bi-shield-check"></i> Roles</a>
-      <a href="{{ route('admin.permissions.index') }}" class="ps-4 {{ request()->routeIs('admin.permissions.index') ? 'active' : '' }}"><i class="bi bi-key"></i> Permissions</a>
-      <a href="{{ route('admin.activity-logs.index') }}" class="ps-4 {{ request()->routeIs('admin.activity-logs.index') ? 'active' : '' }}"><i class="bi bi-list-columns-reverse"></i> Activity Logs</a>
+      @can('view-staffs')
+        <a href="{{ route('admin.users.admins') }}" class="ps-4 {{ request()->routeIs('admin.users.admins') ? 'active' : '' }}"><i class="bi bi-person-badge"></i> Staffs</a>
+      @endcan
+      @can('view-customers')
+        <a href="{{ route('admin.users.staff') }}" class="ps-4 {{ request()->routeIs('admin.users.staff') ? 'active' : '' }}"><i class="bi bi-people"></i> Customers</a>
+      @endcan
+      @can('view-roles')
+        <a href="{{ route('admin.roles.index') }}" class="ps-4 {{ request()->routeIs(['admin.roles.index', 'admin.roles.create', 'admin.roles.edit']) ? 'active' : '' }}"><i class="bi bi-shield-check"></i> Roles</a>
+      @endcan
+      @can('view-permissions')
+        <a href="{{ route('admin.permissions.index') }}" class="ps-4 {{ request()->routeIs('admin.permissions.index') ? 'active' : '' }}"><i class="bi bi-key"></i> Permissions</a>
+      @endcan
+      @can('view-activitylogs')
+        <a href="{{ route('admin.activity-logs.index') }}" class="ps-4 {{ request()->routeIs('admin.activity-logs.index') ? 'active' : '' }}"><i class="bi bi-list-columns-reverse"></i> Activity Logs</a>
+      @endcan
     </div>
-  @endrole
-  @role('Super Admin')
+  @endcanany
+  @can('manage-homepage-settings')
     <a href="{{ route('admin.settings.homepage') }}" class="{{ request()->routeIs('admin.settings.homepage') ? 'active' : '' }}"><i class="bi bi-house"></i> Homepage Settings</a>
+  @endcan
+  @can('manage-company-settings')
     <a href="{{ route('admin.settings.company') }}" class="{{ request()->routeIs('admin.settings.company') ? 'active' : '' }}"><i class="bi bi-building"></i> Company Settings</a>
-  @endrole
+  @endcan
 </div>

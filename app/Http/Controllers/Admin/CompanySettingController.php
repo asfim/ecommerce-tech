@@ -6,11 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\HomepageSetting;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
-class CompanySettingController extends Controller
+class CompanySettingController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:manage-company-settings,admin'),
+        ];
+    }
+
     public function index(): View
     {
         $settings = HomepageSetting::get('company_settings', []);

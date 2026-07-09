@@ -6,10 +6,21 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
 
-class OrderController extends Controller
+class OrderController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-orders,admin', only: ['index', 'show']),
+            new Middleware('permission:edit-orders,admin', only: ['updateStatus']),
+            new Middleware('permission:delete-orders,admin', only: ['destroy']),
+        ];
+    }
+
     public function index(Request $request): View
     {
         $query = Order::query()->with('items')->latest();

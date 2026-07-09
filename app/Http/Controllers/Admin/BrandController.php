@@ -5,9 +5,21 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class BrandController extends Controller
+class BrandController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-brands,admin', only: ['index', 'show']),
+            new Middleware('permission:create-brands,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-brands,admin', only: ['edit', 'update']),
+            new Middleware('permission:delete-brands,admin', only: ['destroy']),
+        ];
+    }
+
     public function index()
     {
         $brands = Brand::latest()->paginate(10);

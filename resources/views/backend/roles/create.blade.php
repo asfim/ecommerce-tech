@@ -22,31 +22,48 @@
     @csrf
     
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col-md-12 mb-3">
         <label class="form-label">Role Name</label>
         <input type="text" name="name" class="form-control" placeholder="e.g. Manager" value="{{ old('name') }}" required>
       </div>
-      
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Guard Name</label>
-        <select name="guard_name" id="guardSelect" class="form-select" required>
-          <option value="admin" {{ old('guard_name') == 'admin' ? 'selected' : '' }}>admin (Backend)</option>
-          <option value="web" {{ old('guard_name') == 'web' ? 'selected' : '' }}>web (Frontend)</option>
-        </select>
-      </div>
+      <input type="hidden" name="guard_name" id="guardSelect" value="admin">
     </div>
 
-    <div class="mb-3">
-      <label class="form-label d-block fw-semibold mb-2">Assign Permissions</label>
+    @php
+      $groupedPermissions = $permissions->groupBy(function($permission) {
+          $parts = explode('-', $permission->name);
+          if (count($parts) > 1) {
+              return ucfirst($parts[1]);
+          }
+          return 'Others';
+      });
+    @endphp
+
+    <div class="mb-4">
+      <label class="form-label d-block fw-bold mb-3">Assign Permissions</label>
       
-      <div class="row g-2 border rounded p-3 bg-light">
-        @foreach($permissions as $permission)
-          <div class="col-md-4 permission-checkbox-item" data-guard="{{ $permission->guard_name }}">
-            <div class="form-check">
-              <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="{{ $permission->id }}" id="perm_{{ $permission->id }}">
-              <label class="form-check-label small" for="perm_{{ $permission->id }}">
-                {{ $permission->name }} <span class="text-muted text-xsmall">({{ $permission->guard_name }})</span>
-              </label>
+      <div id="permissions-container" class="row g-3">
+        @foreach($groupedPermissions as $moduleName => $modulePerms)
+          <div class="col-12 col-md-6 col-lg-4 permission-module-card">
+            <div class="card h-100 border border-light shadow-sm">
+              <div class="card-header bg-light border-0 fw-bold py-2">
+                {{ preg_replace('/(?<!^)(?=[A-Z])/', ' ', $moduleName) }}
+              </div>
+              <div class="card-body p-3">
+                <div class="row g-2">
+                  @foreach($modulePerms as $permission)
+                    <div class="col-6 permission-checkbox-item" data-guard="{{ $permission->guard_name }}">
+                      <div class="form-check">
+                        <input class="form-check-input permission-checkbox" type="checkbox" name="permissions[]" value="{{ $permission->id }}" id="perm_{{ $permission->id }}">
+                        <label class="form-check-label small text-capitalize" for="perm_{{ $permission->id }}">
+                          {{ str_replace('-', ' ', explode('-', $permission->name)[0]) }}
+                          <span class="text-muted text-xsmall">({{ $permission->guard_name }})</span>
+                        </label>
+                      </div>
+                    </div>
+                  @endforeach
+                </div>
+              </div>
             </div>
           </div>
         @endforeach
@@ -64,18 +81,28 @@
   document.addEventListener('DOMContentLoaded', function () {
       const guardSelect = document.getElementById('guardSelect');
       const items = document.querySelectorAll('.permission-checkbox-item');
+      const cards = document.querySelectorAll('.permission-module-card');
 
       function filterPermissions() {
           const selectedGuard = guardSelect.value;
+          
           items.forEach(item => {
               const guard = item.getAttribute('data-guard');
               if (guard === selectedGuard) {
-                  item.style.display = 'block';
+                  item.classList.remove('d-none');
               } else {
-                  item.style.display = 'none';
-                  // Uncheck hidden checkboxes
+                  item.classList.add('d-none');
                   const checkbox = item.querySelector('.permission-checkbox');
                   if (checkbox) checkbox.checked = false;
+              }
+          });
+
+          cards.forEach(card => {
+              const visibleItems = card.querySelectorAll('.permission-checkbox-item:not(.d-none)');
+              if (visibleItems.length > 0) {
+                  card.classList.remove('d-none');
+              } else {
+                  card.classList.add('d-none');
               }
           });
       }

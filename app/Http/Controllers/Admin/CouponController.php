@@ -6,10 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\Coupon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\View\View;
 
-class CouponController extends Controller
+class CouponController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-coupons,admin', only: ['index', 'show']),
+            new Middleware('permission:create-coupons,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-coupons,admin', only: ['edit', 'update']),
+            new Middleware('permission:delete-coupons,admin', only: ['destroy']),
+        ];
+    }
+
     public function index(): View
     {
         $coupons = Coupon::latest()->paginate(10);

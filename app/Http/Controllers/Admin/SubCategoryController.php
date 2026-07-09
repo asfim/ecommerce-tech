@@ -6,10 +6,22 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Str;
 
-class SubCategoryController extends Controller
+class SubCategoryController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-subcategories,admin', only: ['index', 'show']),
+            new Middleware('permission:create-subcategories,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-subcategories,admin', only: ['edit', 'update']),
+            new Middleware('permission:delete-subcategories,admin', only: ['destroy']),
+        ];
+    }
+
     public function index()
     {
         $subCategories = SubCategory::with('category')->latest()->get();

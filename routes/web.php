@@ -65,47 +65,49 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::middleware(AdminMiddleware::class)->group(function () {
         Route::get('dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-        Route::middleware('permission:manage-categories,admin')->group(function () {
+        Route::middleware('permission:view-categories|create-categories|edit-categories|delete-categories,admin')->group(function () {
             Route::resource('categories', AdminCategoryController::class);
             Route::patch('categories/{category}/toggle-status', [AdminCategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
             Route::patch('categories/{category}/toggle-trending', [AdminCategoryController::class, 'toggleTrending'])->name('categories.toggle-trending');
             Route::resource('sub-categories', AdminSubCategoryController::class);
         });
 
-        Route::middleware('role:Super Admin,admin')->group(function () {
+        Route::middleware('permission:manage-homepage-settings,admin')->group(function () {
             Route::get('settings/homepage', [AdminHomepageSettingController::class, 'index'])->name('settings.homepage');
             Route::post('settings/homepage/{section}', [AdminHomepageSettingController::class, 'update'])->name('settings.homepage.update');
+        });
 
+        Route::middleware('permission:manage-company-settings,admin')->group(function () {
             Route::get('settings/company', [AdminCompanySettingController::class, 'index'])->name('settings.company');
             Route::post('settings/company', [AdminCompanySettingController::class, 'update'])->name('settings.company.update');
         });
 
-        Route::middleware('permission:manage-brands,admin')->group(function () {
+        Route::middleware('permission:view-brands|create-brands|edit-brands|delete-brands,admin')->group(function () {
             Route::resource('brands', AdminBrandController::class);
         });
 
-        Route::middleware('permission:manage-products,admin')->group(function () {
+        Route::middleware('permission:view-products|create-products|edit-products|delete-products,admin')->group(function () {
             Route::resource('products', AdminProductController::class);
             Route::patch('products/{product}/toggle-featured', [AdminProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
             Route::patch('products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggle-active');
         });
 
-        Route::middleware('permission:manage-orders,admin')->group(function () {
+        Route::middleware('permission:view-orders|edit-orders|delete-orders,admin')->group(function () {
             Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
             Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
             Route::delete('orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
         });
 
-        Route::middleware('permission:manage-coupons,admin')->group(function () {
+        Route::middleware('permission:view-coupons|create-coupons|edit-coupons|delete-coupons,admin')->group(function () {
             Route::resource('coupons', AdminCouponController::class);
         });
 
-        Route::middleware('permission:manage-reviews,admin')->group(function () {
+        Route::middleware('permission:view-reviews|delete-reviews,admin')->group(function () {
             Route::resource('reviews', App\Http\Controllers\Admin\ReviewController::class)->only(['index', 'destroy']);
         });
 
-        Route::middleware('permission:manage-blogs,admin')->group(function () {
+        Route::middleware('permission:view-blogs|create-blogs|edit-blogs|delete-blogs,admin')->group(function () {
             Route::resource('blog-posts', BlogPostController::class);
         });
 
@@ -114,32 +116,40 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::get('reports/stock', [ReportController::class, 'stock'])->name('reports.stock');
         });
 
-        Route::middleware('permission:manage-attributes,admin')->group(function () {
+        Route::middleware('permission:view-attributes|create-attributes|edit-attributes|delete-attributes,admin')->group(function () {
             Route::get('attribute-values', [AdminAttributeValueController::class, 'globalIndex'])->name('attribute-values.index');
             Route::resource('attributes', AdminAttributeController::class);
             Route::resource('attributes.values', AdminAttributeValueController::class);
         });
 
-        Route::middleware('role:Super Admin,admin')->group(function () {
+        Route::middleware('permission:view-roles|create-roles|edit-roles|delete-roles,admin')->group(function () {
             Route::resource('roles', AdminRoleController::class);
+        });
+
+        Route::middleware('permission:view-permissions|create-permissions,admin')->group(function () {
             Route::get('permissions', [AdminRoleController::class, 'permissionsIndex'])->name('permissions.index');
             Route::post('permissions', [AdminRoleController::class, 'storePermission'])->name('permissions.store');
+        });
 
-            // User & Staff Management
+        Route::middleware('permission:view-staffs|create-staffs|edit-staffs|delete-staffs,admin')->group(function () {
             Route::redirect('users', 'users/admins');
             Route::get('users/admins', [AdminUserController::class, 'adminsIndex'])->name('users.admins');
             Route::get('users/admins/create', [AdminUserController::class, 'createAdmin'])->name('users.admins.create');
             Route::post('users/admins', [AdminUserController::class, 'storeAdmin'])->name('users.admins.store');
             Route::get('users/admins/{id}/edit', [AdminUserController::class, 'editAdmin'])->name('users.admins.edit');
             Route::put('users/admins/{id}', [AdminUserController::class, 'updateAdmin'])->name('users.admins.update');
+        });
+
+        Route::middleware('permission:view-customers|create-customers|edit-customers|delete-customers,admin')->group(function () {
             Route::get('users/staff', [AdminUserController::class, 'staffIndex'])->name('users.staff');
             Route::get('users/create', [AdminUserController::class, 'create'])->name('users.create');
             Route::post('users', [AdminUserController::class, 'store'])->name('users.store');
             Route::get('users/{type}/{id}/edit', [AdminUserController::class, 'edit'])->name('users.edit');
             Route::put('users/{type}/{id}', [AdminUserController::class, 'update'])->name('users.update');
             Route::delete('users/{type}/{id}', [AdminUserController::class, 'destroy'])->name('users.destroy');
+        });
 
-            // Activity Logs
+        Route::middleware('permission:view-activitylogs,admin')->group(function () {
             Route::get('activity-logs', [AdminActivityLogController::class, 'index'])->name('activity-logs.index');
         });
     });

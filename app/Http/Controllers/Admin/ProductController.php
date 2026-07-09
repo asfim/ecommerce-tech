@@ -11,10 +11,22 @@ use App\Models\Product;
 use App\Models\SubCategory;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Str;
 
-class ProductController extends Controller
+class ProductController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-products,admin', only: ['index', 'show']),
+            new Middleware('permission:create-products,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-products,admin', only: ['edit', 'update', 'toggleFeatured', 'toggleActive']),
+            new Middleware('permission:delete-products,admin', only: ['destroy']),
+        ];
+    }
+
     public function index(Request $request)
     {
         $perPage = $request->query('per_page', 10);

@@ -17,35 +17,52 @@ class RolePermissionSeeder extends Seeder
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         // 1. Create permissions for 'admin' guard
-        $manageProducts = Permission::firstOrCreate(['name' => 'manage-products', 'guard_name' => 'admin']);
-        $manageCategories = Permission::firstOrCreate(['name' => 'manage-categories', 'guard_name' => 'admin']);
-        $manageBrands = Permission::firstOrCreate(['name' => 'manage-brands', 'guard_name' => 'admin']);
-        $manageAttributes = Permission::firstOrCreate(['name' => 'manage-attributes', 'guard_name' => 'admin']);
-        $manageOrders = Permission::firstOrCreate(['name' => 'manage-orders', 'guard_name' => 'admin']);
-        $manageCoupons = Permission::firstOrCreate(['name' => 'manage-coupons', 'guard_name' => 'admin']);
-        $manageReviews = Permission::firstOrCreate(['name' => 'manage-reviews', 'guard_name' => 'admin']);
-        $viewReports = Permission::firstOrCreate(['name' => 'view-reports', 'guard_name' => 'admin']);
-        $manageBlogs = Permission::firstOrCreate(['name' => 'manage-blogs', 'guard_name' => 'admin']);
+        $permissions = [];
+        $modules = [
+            'products' => ['view', 'create', 'edit', 'delete'],
+            'categories' => ['view', 'create', 'edit', 'delete'],
+            'subcategories' => ['view', 'create', 'edit', 'delete'],
+            'brands' => ['view', 'create', 'edit', 'delete'],
+            'attributes' => ['view', 'create', 'edit', 'delete'],
+            'orders' => ['view', 'edit', 'delete'],
+            'coupons' => ['view', 'create', 'edit', 'delete'],
+            'reviews' => ['view', 'delete'],
+            'blogs' => ['view', 'create', 'edit', 'delete'],
+            'staffs' => ['view', 'create', 'edit', 'delete'],
+            'customers' => ['view', 'create', 'edit', 'delete'],
+            'roles' => ['view', 'create', 'edit', 'delete'],
+            'permissions' => ['view', 'create'],
+            'activitylogs' => ['view'],
+        ];
+
+        foreach ($modules as $module => $actions) {
+            foreach ($actions as $action) {
+                $name = "{$action}-{$module}";
+                $permissions[] = Permission::firstOrCreate(['name' => $name, 'guard_name' => 'admin']);
+            }
+        }
+
+        $permissions[] = Permission::firstOrCreate(['name' => 'view-reports', 'guard_name' => 'admin']);
+        $permissions[] = Permission::firstOrCreate(['name' => 'manage-homepage-settings', 'guard_name' => 'admin']);
+        $permissions[] = Permission::firstOrCreate(['name' => 'manage-company-settings', 'guard_name' => 'admin']);
 
         // 2. Create roles for 'admin' guard and assign permissions
         $superAdminRole = Role::firstOrCreate(['name' => 'Super Admin', 'guard_name' => 'admin']);
-        $superAdminRole->givePermissionTo([
-            $manageProducts,
-            $manageCategories,
-            $manageBrands,
-            $manageAttributes,
-            $manageOrders,
-            $manageCoupons,
-            $manageReviews,
-            $viewReports,
-            $manageBlogs,
-        ]);
+        $superAdminRole->syncPermissions($permissions);
 
         $editorRole = Role::firstOrCreate(['name' => 'Editor', 'guard_name' => 'admin']);
-        $editorRole->givePermissionTo([
-            $manageProducts,
-            $manageBlogs,
-        ]);
+        $editorPermissions = Permission::where('guard_name', 'admin')
+            ->where(function ($query) {
+                $query->where('name', 'like', '%-products')
+                    ->orWhere('name', 'like', '%-categories')
+                    ->orWhere('name', 'like', '%-subcategories')
+                    ->orWhere('name', 'like', '%-brands')
+                    ->orWhere('name', 'like', '%-attributes')
+                    ->orWhere('name', 'like', '%-blogs');
+            })
+            ->where('name', 'not like', 'delete-%')
+            ->get();
+        $editorRole->syncPermissions($editorPermissions);
 
         // 3. Create permissions & roles for 'web' (User) guard
         Permission::firstOrCreate(['name' => 'view-orders', 'guard_name' => 'web']);

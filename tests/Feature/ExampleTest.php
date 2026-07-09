@@ -91,7 +91,7 @@ test('home page ajax pagination returns next batch of products', function () {
     $brand = Brand::create(['name' => 'Zara']);
 
     for ($i = 1; $i <= 20; $i++) {
-        Product::create([
+        Product::forceCreate([
             'name' => "Product {$i}",
             'slug' => "product-{$i}",
             'category_id' => $category->id,
@@ -99,14 +99,19 @@ test('home page ajax pagination returns next batch of products', function () {
             'price' => 10.00,
             'stock' => 10,
             'is_active' => true,
+            'created_at' => now()->addMinutes($i),
         ]);
     }
 
     $response = $this->actingAs($user)->get('/');
     $response->assertStatus(200)
-        ->assertSee('Product 20')
-        ->assertDontSee('Product 8')
         ->assertSee('Load more');
+
+    $response->assertViewHas('products', function ($products) {
+        return $products->count() === 12
+            && $products->pluck('name')->contains('Product 20')
+            && ! $products->pluck('name')->contains('Product 8');
+    });
 
     $response = $this->actingAs($user)->get('/?page=2', [
         'HTTP_X-Requested-With' => 'XMLHttpRequest',

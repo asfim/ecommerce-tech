@@ -7,11 +7,27 @@ use App\Models\ActivityLog;
 use App\Models\Admin;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
-class UserController extends Controller
+class UserController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-staffs,admin', only: ['adminsIndex']),
+            new Middleware('permission:create-staffs,admin', only: ['createAdmin', 'storeAdmin']),
+            new Middleware('permission:edit-staffs,admin', only: ['editAdmin', 'updateAdmin']),
+
+            new Middleware('permission:view-customers,admin', only: ['staffIndex']),
+            new Middleware('permission:create-customers,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-customers,admin', only: ['edit', 'update']),
+            new Middleware('permission:delete-customers,admin', only: ['destroy']),
+        ];
+    }
+
     public function adminsIndex()
     {
         $admins = Admin::with('roles')

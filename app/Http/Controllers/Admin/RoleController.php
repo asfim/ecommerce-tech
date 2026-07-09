@@ -5,11 +5,26 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
-class RoleController extends Controller
+class RoleController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view-roles,admin', only: ['index']),
+            new Middleware('permission:create-roles,admin', only: ['create', 'store']),
+            new Middleware('permission:edit-roles,admin', only: ['edit', 'update']),
+            new Middleware('permission:delete-roles,admin', only: ['destroy']),
+
+            new Middleware('permission:view-permissions,admin', only: ['permissionsIndex']),
+            new Middleware('permission:create-permissions,admin', only: ['storePermission']),
+        ];
+    }
+
     public function index()
     {
         $roles = Role::with('permissions')->get();
