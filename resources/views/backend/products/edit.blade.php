@@ -95,7 +95,8 @@
       </div>
       <div class="col-md-2 mb-3">
         <label class="form-label">Price</label>
-        <input type="number" name="price" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required>
+        <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required>
+        <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
       <div class="col-md-2 mb-3">
         <label class="form-label">Stock</label>
@@ -115,7 +116,7 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Type</label>
-        <select name="discount_type" class="form-select">
+        <select name="discount_type" id="discountTypeSelect" class="form-select">
           <option value="">No Discount</option>
           <option value="percent" {{ old('discount_type', $product->discount_type) == 'percent' ? 'selected' : '' }}>Percentage (%)</option>
           <option value="fixed" {{ old('discount_type', $product->discount_type) == 'fixed' ? 'selected' : '' }}>Fixed Amount ($)</option>
@@ -123,7 +124,7 @@
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Value</label>
-        <input type="number" name="discount_value" step="0.01" class="form-control" value="{{ old('discount_value', $product->discount_value) }}">
+        <input type="number" name="discount_value" id="discountValueInput" step="0.01" class="form-control" value="{{ old('discount_value', $product->discount_value) }}">
       </div>
     </div>
 
@@ -458,6 +459,46 @@
         });
       }
     });
+  }
+
+  // ─── Discount Calculation ──────────────────────────────────────────
+  const priceInput = document.getElementById('priceInput');
+  const discountTypeSelect = document.getElementById('discountTypeSelect');
+  const discountValueInput = document.getElementById('discountValueInput');
+  const discountedPriceText = document.getElementById('discountedPriceText');
+
+  function calculateDiscountedPrice() {
+    const price = parseFloat(priceInput.value) || 0;
+    const discountType = discountTypeSelect.value;
+    const discountValue = parseFloat(discountValueInput.value) || 0;
+
+    if (price <= 0 || !discountType || discountValue <= 0) {
+      discountedPriceText.style.display = 'none';
+      return;
+    }
+
+    let discountedPrice = price;
+    if (discountType === 'percent') {
+      discountedPrice = price - (price * (discountValue / 100));
+    } else if (discountType === 'fixed') {
+      discountedPrice = price - discountValue;
+    }
+
+    if (discountedPrice < 0) {
+      discountedPrice = 0;
+    }
+
+    discountedPriceText.textContent = `After Discount: $${discountedPrice.toFixed(2)}`;
+    discountedPriceText.style.display = 'block';
+  }
+
+  if (priceInput && discountTypeSelect && discountValueInput && discountedPriceText) {
+    priceInput.addEventListener('input', calculateDiscountedPrice);
+    discountTypeSelect.addEventListener('change', calculateDiscountedPrice);
+    discountValueInput.addEventListener('input', calculateDiscountedPrice);
+
+    // Run once on load
+    calculateDiscountedPrice();
   }
 </script>
 @endpush
