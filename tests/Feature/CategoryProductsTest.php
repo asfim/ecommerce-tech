@@ -47,7 +47,7 @@ test('category products page renders successfully with products', function () {
     $response->assertStatus(200);
     $response->assertSee('Fashion & Apparels');
     $response->assertSee('Premium Silk Saree Test');
-    $response->assertSee('$3,500.00');
+    $response->assertSee('Tk 3,500');
     $response->assertDontSee('Smart Watch Pro Test');
 });
 

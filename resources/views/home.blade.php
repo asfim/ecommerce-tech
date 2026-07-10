@@ -158,14 +158,15 @@
                                     </div>
                                     <div class="t text-dark hover-blue">{{ Str::limit($bp->name, 35) }}</div>
                                 </a>
-                                <div class="p">${{ number_format($bp->price, 2) }}</div>
+                                <div class="code">Code: {{ $bp->id < 100 ? 'P' . $bp->id : $bp->id }}</div>
+                                <div class="p">Tk {{ number_format($bp->price, 0) }}</div>
                                 <div class="mt-2">
-                                    <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 px-2 mb-1"
-                                        style="border-radius:15px; font-weight:600; font-size:11px;"
+                                    <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                                        style="font-size: 12px; font-weight: 600; border-radius: 6px;"
                                         data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
                                         data-price="{{ $bp->price }}"
                                         data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}">
-                                        <i class="bi bi-cart3"></i> Add to cart
+                                        <i class="bi bi-cart3"></i> Add to Cart
                                     </button>
                                 </div>
                             </div>
@@ -343,23 +344,30 @@
                                         </div>
                                         <div class="t text-dark hover-blue">{{ Str::limit($dp->name, 35) }}</div>
                                     </a>
+                                    <div class="code">Code: {{ $dp->id < 100 ? 'P' . $dp->id : $dp->id }}</div>
                                     <div class="p">
                                         @if ($hasDiscount)
-                                            ${{ number_format($discountedPrice, 2) }}
+                                            Tk {{ number_format($discountedPrice, 0) }}
                                             <span class="old text-decoration-line-through text-muted"
-                                                style="font-size:10px;">${{ number_format($dp->price, 2) }}</span>
+                                                style="font-size:10px;">Tk {{ number_format($dp->price, 0) }}</span>
                                         @else
-                                            ${{ number_format($dp->price, 2) }}
+                                            Tk {{ number_format($dp->price, 0) }}
                                         @endif
                                     </div>
-                                    <div class="rating">★★★★★</div>
-                                    <div class="mt-2">
-                                        <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 px-2 mb-1"
-                                            style="border-radius:15px; font-weight:600; font-size:11px;"
+                                    <div class="mt-2 d-flex gap-2">
+                                        <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                                            style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                                             data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
                                             data-price="{{ $discountedPrice }}"
                                             data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}">
-                                            <i class="bi bi-cart3"></i> Add to cart
+                                            <i class="bi bi-cart3"></i> Add
+                                        </button>
+                                        <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                                            style="font-size: 11px; font-weight: 600; border-radius: 6px;"
+                                            data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
+                                            data-price="{{ $discountedPrice }}"
+                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}">
+                                            Buy Now
                                         </button>
                                     </div>
                                 </div>
@@ -410,101 +418,7 @@
                 color: #1a73e8 !important;
             }
 
-            /* Premium product card styles and transitions (aligned with user request image) */
-            .prod-card {
-                position: relative;
-                overflow: hidden;
-                background: #FAF5E6;
-                /* warm cream background like the image */
-                border: 1px solid transparent;
-                border-radius: 16px;
-                /* rounded corners */
-                text-align: left;
-                /* left align text */
-                height: 100%;
-                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            }
 
-            .prod-card:hover {
-                transform: translateY(-5px);
-                border-color: #0066b9 !important;
-                box-shadow: 0 12px 30px rgba(0, 102, 185, 0.15) !important;
-            }
-
-            .prod-img-wrap {
-                position: relative;
-                width: 100%;
-                height: 180px;
-                overflow: hidden;
-                background: transparent;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-            }
-
-            .prod-img-wrap img {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
-                transition: transform 0.3s ease;
-            }
-
-            .prod-card:hover .prod-img-wrap img {
-                transform: scale(1.06);
-            }
-
-            .prod-info {
-                padding: 12px;
-                flex-grow: 1;
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-            }
-
-            .prod-card .t {
-                font-size: 13px;
-                font-weight: 700;
-                color: #0c1e1a;
-                margin-bottom: 4px;
-                min-height: 34px;
-                line-height: 1.3;
-            }
-
-            .prod-card .p {
-                font-weight: 800;
-                font-size: 15px;
-                color: #0c1e1a;
-                margin-bottom: 8px;
-            }
-
-            .prod-card .p .old {
-                font-size: 12.5px;
-                font-weight: 400;
-                color: #888;
-                text-decoration: line-through;
-                margin-left: 6px;
-            }
-
-            .badge-new-arrival {
-                position: absolute;
-                top: 10px;
-                left: 10px;
-                font-size: 10px;
-                font-weight: 800;
-                background: #0D1F1C;
-                /* dark pill like image */
-                color: #FFC107;
-                /* gold text like image */
-                padding: 4px 12px;
-                border-radius: 20px;
-                letter-spacing: 0.5px;
-                z-index: 2;
-            }
 
 
             /* Mini product cards (Best Selling & Discounted sections) styled like the main product cards */
@@ -642,46 +556,7 @@
                 }
             }
 
-            .mini-img-wrap {
-                position: relative;
-                width: 100%;
-                height: 110px;
-                margin-bottom: 6px;
-                overflow: hidden;
-                border-radius: 10px;
-                background: transparent;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-            }
 
-            .mini-img-wrap img {
-                max-width: 100%;
-                max-height: 100%;
-                object-fit: contain;
-                transition: transform 0.3s ease;
-            }
-
-            .mini-prod:hover .mini-img-wrap img {
-                transform: scale(1.06);
-            }
-
-            .mini-prod .t {
-                font-size: 11.5px;
-                font-weight: 700;
-                color: #0c1e1a;
-                margin-bottom: 3px;
-                min-height: 30px;
-                line-height: 1.2;
-            }
-
-            .mini-prod .p {
-                font-weight: 800;
-                font-size: 13px;
-                color: #0c1e1a;
-                margin-bottom: 4px;
-            }
 
             /* Custom Toast Notifications */
             .custom-cart-toast {

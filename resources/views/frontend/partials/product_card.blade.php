@@ -15,21 +15,22 @@
             <div class="prod-img-wrap">
                 @if ($hasDiscount)
                     @if ($product->discount_type === 'percent')
-                        <span class="badge-new-arrival">-{{ round($product->discount_value) }}%</span>
+                        <span class="badge-new-arrival">{{ round($product->discount_value) }} %</span>
                     @else
-                        <span
-                            class="badge-new-arrival">-${{ number_format($product->discount_value, 0) }}</span>
+                        <span class="badge-new-arrival">{{ round($product->discount_value) }} Tk</span>
                     @endif
-                @else
-                    <span class="badge-new-arrival">NEW</span>
                 @endif
+
+                <span class="wishlist-heart" title="Add to Wishlist">
+                    <i class="bi bi-heart"></i>
+                </span>
 
                 @if ($product->stock <= 5 && $product->stock > 0)
                     <span class="badge bg-primary position-absolute"
-                        style="top:10px;right:10px;font-size:9px;">Limited Stock</span>
+                        style="top:10px;right:10px;font-size:9px;z-index:5;">Limited Stock</span>
                 @elseif($product->stock == 0)
                     <span class="badge bg-danger position-absolute"
-                        style="top:10px;right:10px;font-size:9px;">Out of Stock</span>
+                        style="top:10px;right:10px;font-size:9px;z-index:5;">Out of Stock</span>
                 @endif
 
                 @if ($product->image)
@@ -46,23 +47,31 @@
                 <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
                     <div class="t text-dark hover-blue">{{ Str::limit($product->name, 35) }}</div>
                 </a>
+                <div class="code">Code: {{ $product->id < 100 ? 'P' . $product->id : $product->id }}</div>
                 <div class="p">
                     @if ($hasDiscount)
-                        ${{ number_format($discountedPrice, 2) }}
-                        <span class="old">${{ number_format($product->price, 2) }}</span>
+                        Tk {{ number_format($discountedPrice, 0) }}
+                        <span class="old">Tk {{ number_format($product->price, 0) }}</span>
                     @else
-                        ${{ number_format($product->price, 2) }}
+                        Tk {{ number_format($product->price, 0) }}
                     @endif
                 </div>
             </div>
 
-            <div class="mt-2">
-                <button type="button" class="btn btn-custom-cart w-100 add-to-cart-btn py-1 mb-1"
-                    style="border-radius:15px; font-weight:600; font-size:11px;"
+            <div class="mt-2 d-flex gap-2">
+                <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                    style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                     data-price="{{ $discountedPrice }}"
                     data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
-                    <i class="bi bi-cart3"></i> Add to cart
+                    <i class="bi bi-cart3"></i> Add
+                </button>
+                <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                    style="font-size: 11px; font-weight: 600; border-radius: 6px;"
+                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                    data-price="{{ $discountedPrice }}"
+                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
+                    Buy Now
                 </button>
             </div>
         </div>

@@ -32,56 +32,9 @@
             </div>
         @else
             <!-- Products Grid -->
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
+            <div class="row g-3">
                 @foreach($products as $product)
-                    <div class="col">
-                        <div class="card h-100 border-0 shadow-sm product-card transition-all" style="border-radius: 12px; overflow: hidden; background: #fff;">
-                            <a href="{{ route('product.details', $product->slug) }}" class="d-block text-decoration-none">
-                                <div class="position-relative overflow-hidden bg-light d-flex align-items-center justify-content-center" style="height: 200px; padding: 15px;">
-                                    @if($product->image)
-                                        <img src="{{ asset('storage/' . $product->image) }}" class="img-fluid product-img transition-all" alt="{{ $product->name }}" style="max-height: 100%; object-fit: contain;">
-                                    @else
-                                        <img src="https://placehold.co/200x200/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}" class="img-fluid product-img transition-all" alt="{{ $product->name }}" style="max-height: 100%; object-fit: contain;">
-                                    @endif
-                                </div>
-                            </a>
-                            <div class="card-body d-flex flex-column p-4">
-                                <div class="mb-2">
-                                    <span class="badge bg-light text-muted fw-normal px-2.5 py-1 text-uppercase" style="font-size: 10px; letter-spacing: 0.5px;">{{ $category->name }}</span>
-                                </div>
-                                <h5 class="card-title mb-2" style="font-size: 14.5px; font-weight: 600; line-height: 1.4; min-height: 40px;">
-                                    <a href="{{ route('product.details', $product->slug) }}" class="text-dark text-decoration-none hover-blue">{{ Str::limit($product->name, 48) }}</a>
-                                </h5>
-                                <div class="mt-auto">
-                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                        <span class="fs-5 fw-bold text-dark">${{ number_format($product->price, 2) }}</span>
-                                    </div>
-                                    <div class="row g-2">
-                                        <div class="col-6">
-                                            <button type="button" class="btn btn-outline-primary btn-custom-cart w-100 add-to-cart-btn py-2 px-1 d-inline-flex align-items-center justify-content-center gap-1.5 transition-all"
-                                                style="border-radius: 8px; font-weight: 600; font-size: 11px;"
-                                                data-id="{{ $product->id }}"
-                                                data-name="{{ $product->name }}"
-                                                data-price="{{ $product->price }}"
-                                                data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
-                                                <i class="bi bi-cart-plus" style="font-size: 13px;"></i> Add
-                                            </button>
-                                        </div>
-                                        <div class="col-6">
-                                            <button type="button" class="btn btn-primary btn-custom-buy w-100 btn-bid py-2 px-1 d-inline-flex align-items-center justify-content-center gap-1.5 transition-all"
-                                                style="border-radius: 8px; font-weight: 600; font-size: 11px;"
-                                                data-id="{{ $product->id }}"
-                                                data-name="{{ $product->name }}"
-                                                data-price="{{ $product->price }}"
-                                                data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
-                                                Buy Now
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @include('frontend.partials.product_card', ['product' => $product])
                 @endforeach
             </div>
 
