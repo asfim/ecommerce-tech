@@ -72,13 +72,7 @@
           <label class="form-label small fw-semibold">Permission Name</label>
           <input type="text" name="name" class="form-control" placeholder="e.g. manage-users" required>
         </div>
-        <div class="mb-3">
-          <label class="form-label small fw-semibold">Guard Name</label>
-          <select name="guard_name" class="form-select" required>
-            <option value="admin">admin (Backend)</option>
-            <option value="web">web (Frontend)</option>
-          </select>
-        </div>
+        <input type="hidden" name="guard_name" value="admin">
         <button type="submit" class="btn btn-primary btn-sm w-100"><i class="bi bi-plus-lg"></i> Create Permission</button>
       </form>
     </div>

@@ -1215,3 +1215,24 @@ footer.main-footer h6 {
     display:block;
     margin-top:-2px;
 }
+
+/* Custom Global Button Styling Override (Make all buttons blue background, white text & slight zoom on hover) */
+button:not(.btn-close):not(.icon-btn):not(.navbar-toggler),
+.btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler),
+input[type="button"],
+input[type="submit"] {
+    background-color: var(--blue, #1a73e8) !important;
+    border-color: var(--blue, #1a73e8) !important;
+    color: #fff !important;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out !important;
+}
+
+button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):hover,
+.btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+    background-color: var(--blue-hover, #1e6fd9) !important;
+    border-color: var(--blue-hover, #1e6fd9) !important;
+    color: #fff !important;
+    transform: scale(1.03) !important;
+}

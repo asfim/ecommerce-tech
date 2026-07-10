@@ -36,6 +36,26 @@
         .sidebar::-webkit-scrollbar-thumb { background:#333; border-radius:4px; }
         .sidebar::-webkit-scrollbar-thumb:hover { background:#555; }
         .main { margin-left:240px; padding-left:20px; padding-top: 20px; position:relative; }
+        
+        /* Custom Global Button Styling Override (Make all buttons blue background, white text & slight zoom on hover) */
+        button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.user-chip),
+        .btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.user-chip),
+        input[type="button"],
+        input[type="submit"] {
+            background-color: #1a73e8 !important;
+            border-color: #1a73e8 !important;
+            color: #fff !important;
+            transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out !important;
+        }
+        button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.user-chip):hover,
+        .btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.user-chip):hover,
+        input[type="button"]:hover,
+        input[type="submit"]:hover {
+            background-color: #1e6fd9 !important;
+            border-color: #1e6fd9 !important;
+            color: #fff !important;
+            transform: scale(1.03) !important;
+        }
     </style>
     @stack('styles')
 </head>

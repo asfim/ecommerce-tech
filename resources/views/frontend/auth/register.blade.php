@@ -13,8 +13,8 @@
         .auth-card p { color:#888; font-size:13px; margin-bottom:20px; }
         .form-control { border-radius:8px; border:1.5px solid #015475; padding:10px 14px; }
         .form-control:focus { box-shadow:none; border-color:#1a73e8; }
-        .btn-auth { background:#1a73e8; color:#fff; border:none; border-radius:8px; padding:10px; font-weight:600; width:100%; }
-        .btn-auth:hover { background:#1557b0; }
+        .btn-auth { background:#1a73e8; color:#fff; border:none; border-radius:8px; padding:10px; font-weight:600; width:100%; transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out !important; }
+        .btn-auth:hover { background:#1e6fd9 !important; transform: scale(1.03) !important; color:#fff !important; }
         .auth-footer { text-align:center; margin-top:16px; font-size:13px; color:#888; }
         .auth-footer a { color:#1a73e8; font-weight:600; }
     </style>
