@@ -82,4 +82,7 @@
   @can('manage-company-settings')
     <a href="{{ route('admin.settings.company') }}" class="{{ request()->routeIs('admin.settings.company') ? 'active' : '' }}"><i class="bi bi-building"></i> Company Settings</a>
   @endcan
+  @can('manage-company-settings')
+    <a href="{{ route('admin.settings.courier') }}" class="{{ request()->routeIs('admin.settings.courier') ? 'active' : '' }}"><i class="bi bi-truck"></i> Courier Settings</a>
+  @endcan
 </div>

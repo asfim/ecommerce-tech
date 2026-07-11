@@ -1,9 +1,12 @@
 <?php
 
 use App\Models\Admin;
+use App\Models\HomepageSetting;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use SabitAhmad\SteadFast\DTO\OrderResponse;
+use SabitAhmad\SteadFast\Facades\SteadFast;
 
 uses(RefreshDatabase::class);
 
@@ -67,6 +70,37 @@ test('admin can update order status on the order index page and delivery sets pa
         'id' => $order->id,
         'order_status' => 'delivered',
         'payment_status' => 'paid',
+    ]);
+});
+
+test('admin cannot update status of an already delivered order', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $order = Order::create([
+        'invoice_no' => 'INV-20260709-9999',
+        'customer_name' => 'John Doe',
+        'customer_phone' => '01712345678',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'paid',
+        'order_status' => 'delivered',
+        'subtotal' => 1000,
+        'tax' => 50,
+        'total' => 1110,
+    ]);
+
+    $response = $this->actingAs($admin, 'admin')->patch(route('admin.orders.update-status', $order), [
+        'order_status' => 'pending',
+    ]);
+
+    $response->assertRedirect();
+    $response->assertSessionHas('error', 'Cannot update status of a delivered order.');
+    $this->assertDatabaseHas('orders', [
+        'id' => $order->id,
+        'order_status' => 'delivered',
     ]);
 });
 
@@ -224,4 +258,92 @@ test('admin can view bulk print invoice page with multiple order details', funct
         ->assertSee('Bulk Product B')
         ->assertSee('John Doe')
         ->assertSee('Jane Smith');
+});
+
+test('admin can view courier settings page', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $response = $this->actingAs($admin, 'admin')->get(route('admin.settings.courier'));
+    $response->assertSuccessful();
+    $response->assertSee('Courier Settings');
+    $response->assertSee('Steadfast API Key');
+});
+
+test('admin can update courier settings', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $response = $this->actingAs($admin, 'admin')->post(route('admin.settings.courier.update'), [
+        'api_key' => 'new-api-key',
+        'secret_key' => 'new-secret-key',
+        'base_url' => 'https://portal.packnplay.com/api/v1',
+    ]);
+
+    $response->assertRedirect();
+    $settings = HomepageSetting::get('steadfast_settings');
+    expect($settings['api_key'])->toBe('new-api-key');
+    expect($settings['secret_key'])->toBe('new-secret-key');
+    expect($settings['base_url'])->toBe('https://portal.packnplay.com/api/v1');
+});
+
+test('admin can send orders to Steadfast Courier in bulk', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    // Set configuration for the test
+    config([
+        'steadfast.api_key' => 'test-api-key',
+        'steadfast.secret_key' => 'test-secret-key',
+        'steadfast.base_url' => 'https://portal.packnplay.com/api/v1',
+    ]);
+
+    $order1 = Order::create([
+        'invoice_no' => 'INV-BULK-0001',
+        'customer_name' => 'John Doe',
+        'customer_phone' => '01712345678',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 1000,
+        'tax' => 0,
+        'total' => 1060,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order1->id,
+        'product_name' => 'Bulk Product A',
+        'price' => 1000,
+        'quantity' => 1,
+        'line_total' => 1000,
+    ]);
+
+    // Mock Steadfast Facade
+    SteadFast::shouldReceive('createOrder')
+        ->once()
+        ->andReturn(new OrderResponse(200, 'Success', [
+            'consignment_id' => 12345,
+            'tracking_code' => 'TRACK-12345',
+            'invoice' => 'INV-BULK-0001',
+            'status' => 'pending',
+            'cod_amount' => 1060.00,
+        ]));
+
+    $response = $this->actingAs($admin, 'admin')->postJson(route('admin.orders.send-steadfast'), [
+        'ids' => [$order1->id],
+    ]);
+
+    $response->assertSuccessful();
+    $response->assertJson([
+        'success' => true,
+        'message' => 'Successfully sent 1 order(s) to Steadfast Courier!',
+    ]);
+
+    $this->assertDatabaseHas('orders', [
+        'id' => $order1->id,
+        'order_status' => 'delivered',
+    ]);
 });

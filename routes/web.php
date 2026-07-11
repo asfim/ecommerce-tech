@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\BrandController as AdminBrandController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\CompanySettingController as AdminCompanySettingController;
 use App\Http\Controllers\Admin\CouponController as AdminCouponController;
+use App\Http\Controllers\Admin\CourierSettingController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
@@ -80,6 +81,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('permission:manage-company-settings,admin')->group(function () {
             Route::get('settings/company', [AdminCompanySettingController::class, 'index'])->name('settings.company');
             Route::post('settings/company', [AdminCompanySettingController::class, 'update'])->name('settings.company.update');
+            Route::get('settings/courier', [CourierSettingController::class, 'index'])->name('settings.courier');
+            Route::post('settings/courier', [CourierSettingController::class, 'update'])->name('settings.courier.update');
         });
 
         Route::middleware('permission:view-brands|create-brands|edit-brands|delete-brands,admin')->group(function () {
@@ -95,6 +98,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::middleware('permission:view-orders|edit-orders|delete-orders,admin')->group(function () {
             Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
             Route::get('orders/bulk-print', [AdminOrderController::class, 'bulkPrint'])->name('orders.bulk-print');
+            Route::post('orders/send-steadfast', [AdminOrderController::class, 'sendToSteadfast'])->name('orders.send-steadfast');
             Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
             Route::delete('orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');

@@ -39,9 +39,12 @@
       Delivered <span class="badge bg-success ms-1">{{ $statusCounts['delivered'] }}</span>
     </a>
   </div>
-  <div>
+  <div class="d-flex gap-2">
     <button type="button" id="bulkPrintBtn" class="btn btn-sm btn-info text-white" style="display: none; background-color: #0dcaf0 !important; border-color: #0dcaf0 !important;">
       <i class="bi bi-printer me-1"></i> Print Selected Invoices (<span id="selectedCount">0</span>)
+    </button>
+    <button type="button" id="bulkSendSteadfastBtn" class="btn btn-sm btn-warning text-dark fw-bold" style="display: none; background-color: #ffc107 !important; border-color: #ffc107 !important;">
+      <i class="bi bi-truck me-1"></i> Send Selected to Steadfast (<span id="selectedCountSteadfast">0</span>)
     </button>
   </div>
 </div>
@@ -84,7 +87,10 @@
   </div>
 
   @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="alert alert-success" style="white-space: pre-line;">{{ session('success') }}</div>
+  @endif
+  @if(session('error'))
+    <div class="alert alert-danger" style="white-space: pre-line;">{{ session('error') }}</div>
   @endif
 
   <table class="table table-bordered align-middle">
@@ -99,7 +105,7 @@
         <th style="width:170px;">Payment</th>
         <th style="width:190px;">Status</th>
         <th>Date</th>
-        <th style="width:100px;">Actions</th>
+        <th style="width:150px;">Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -123,29 +129,40 @@
             @endif
           </td>
           <td>
-            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
-              @csrf
-              @method('PATCH')
-              <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
-                <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
-                <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-              </select>
-              <button type="submit" class="btn btn-sm btn-primary" title="Update Status">
-                <i class="bi bi-check-lg"></i>
-              </button>
-            </form>
+            @if($order->order_status === 'delivered')
+              <span class="badge bg-success">Delivered</span>
+            @else
+              <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
+                @csrf
+                @method('PATCH')
+                <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
+                  <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
+                  <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                  <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-primary" title="Update Status">
+                  <i class="bi bi-check-lg"></i>
+                </button>
+              </form>
+            @endif
           </td>
           <td class="text-muted small">{{ $order->created_at->format('d M Y') }}</td>
           <td>
-            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View">
-              <i class="bi bi-eye"></i>
-            </a>
-            <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
-              @csrf
-              @method('DELETE')
-              <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
-            </form>
+            <div class="d-flex gap-1">
+              <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-sm btn-outline-primary" title="View">
+                <i class="bi bi-eye"></i>
+              </a>
+              @if($order->order_status === 'pending')
+                <button type="button" class="btn btn-sm btn-warning text-dark send-single-steadfast-btn" data-id="{{ $order->id }}" title="Send to Steadfast">
+                  <i class="bi bi-truck"></i>
+                </button>
+              @endif
+              <form action="{{ route('admin.orders.destroy', $order) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this order?')">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+              </form>
+            </div>
           </td>
         </tr>
       @empty
@@ -164,6 +181,7 @@
 </div>
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const selectAllCheckbox = document.getElementById('selectAllOrders');
@@ -171,15 +189,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const bulkPrintBtn = document.getElementById('bulkPrintBtn');
     const selectedCountSpan = document.getElementById('selectedCount');
 
+    const bulkSendSteadfastBtn = document.getElementById('bulkSendSteadfastBtn');
+    const selectedCountSteadfastSpan = document.getElementById('selectedCountSteadfast');
+
     function updateBulkPrintButton() {
         const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
         const count = checkedBoxes.length;
         
         if (count > 0) {
             bulkPrintBtn.style.display = 'inline-block';
+            bulkSendSteadfastBtn.style.display = 'inline-block';
             selectedCountSpan.textContent = count;
+            selectedCountSteadfastSpan.textContent = count;
         } else {
             bulkPrintBtn.style.display = 'none';
+            bulkSendSteadfastBtn.style.display = 'none';
         }
     }
 
@@ -215,6 +239,84 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    function sendOrdersToSteadfast(ids) {
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you want to send this order(s) to Steadfast Courier?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#1a73e8',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, send!'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Sending to Steadfast...',
+                    text: 'Please wait while we process the request.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                fetch("{{ route('admin.orders.send-steadfast') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: data.message,
+                            icon: 'success',
+                            confirmButtonColor: '#1a73e8'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: data.message,
+                            icon: 'error',
+                            confirmButtonColor: '#1a73e8'
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        title: 'Error!',
+                        text: 'An error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonColor: '#1a73e8'
+                    });
+                });
+            }
+        });
+    }
+
+    if (bulkSendSteadfastBtn) {
+        bulkSendSteadfastBtn.addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+            const ids = Array.from(checkedBoxes).map(cb => cb.value);
+            if (ids.length > 0) {
+                sendOrdersToSteadfast(ids);
+            }
+        });
+    }
+
+    document.querySelectorAll('.send-single-steadfast-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            sendOrdersToSteadfast([id]);
+        });
+    });
 });
 </script>
 @endpush
