@@ -160,3 +160,68 @@ test('admin can change per page items pagination on admin order index page', fun
     $responseAll->assertSee('Order Item Product 20');
     $responseAll->assertSee('Order Item Product 01');
 });
+
+test('admin can view bulk print invoice page with multiple order details', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    // Create two dummy orders
+    $order1 = Order::create([
+        'invoice_no' => 'INV-BULK-0001',
+        'customer_name' => 'John Doe',
+        'customer_phone' => '01712345678',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 1000,
+        'tax' => 0,
+        'total' => 1060,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order1->id,
+        'product_name' => 'Bulk Product A',
+        'price' => 1000,
+        'quantity' => 1,
+        'line_total' => 1000,
+    ]);
+
+    $order2 = Order::create([
+        'invoice_no' => 'INV-BULK-0002',
+        'customer_name' => 'Jane Smith',
+        'customer_phone' => '01787654321',
+        'customer_address' => 'Chittagong',
+        'shipping_method' => 'outside_dhaka',
+        'shipping_cost' => 120,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 500,
+        'tax' => 0,
+        'total' => 620,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $order2->id,
+        'product_name' => 'Bulk Product B',
+        'price' => 500,
+        'quantity' => 1,
+        'line_total' => 500,
+    ]);
+
+    // Request the bulk print page with the order IDs
+    $response = $this->actingAs($admin, 'admin')->get(route('admin.orders.bulk-print', [
+        'ids' => implode(',', [$order1->id, $order2->id]),
+    ]));
+
+    $response->assertSuccessful();
+    $response->assertSee('INV-BULK-0001')
+        ->assertSee('INV-BULK-0002')
+        ->assertSee('Bulk Product A')
+        ->assertSee('Bulk Product B')
+        ->assertSee('John Doe')
+        ->assertSee('Jane Smith');
+});

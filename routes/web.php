@@ -94,6 +94,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:view-orders|edit-orders|delete-orders,admin')->group(function () {
             Route::get('orders', [AdminOrderController::class, 'index'])->name('orders.index');
+            Route::get('orders/bulk-print', [AdminOrderController::class, 'bulkPrint'])->name('orders.bulk-print');
             Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
             Route::delete('orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');

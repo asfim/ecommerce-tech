@@ -56,6 +56,20 @@ class OrderController extends Controller implements HasMiddleware
         return view('backend.orders.index', compact('orders', 'statusCounts'));
     }
 
+    public function bulkPrint(Request $request): View
+    {
+        $idsString = $request->input('ids', '');
+        $ids = array_filter(explode(',', $idsString));
+
+        if (empty($ids)) {
+            abort(404, 'No orders selected.');
+        }
+
+        $orders = Order::whereIn('id', $ids)->with('items')->latest()->get();
+
+        return view('backend.orders.bulk-print', compact('orders'));
+    }
+
     public function show(Order $order): View
     {
         $order->load('items');

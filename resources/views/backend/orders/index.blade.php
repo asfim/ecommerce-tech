@@ -27,16 +27,23 @@
 </div>
 
 <!-- Status Filter Tabs -->
-<div class="d-flex gap-2 mb-3 flex-wrap">
-  <a href="{{ route('admin.orders.index') }}" class="btn btn-sm {{ !request('status') ? 'btn-dark' : 'btn-outline-secondary' }}">
-    All <span class="badge bg-secondary ms-1">{{ $statusCounts['all'] }}</span>
-  </a>
-  <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="btn btn-sm {{ request('status') === 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
-    Pending <span class="badge bg-warning text-dark ms-1">{{ $statusCounts['pending'] }}</span>
-  </a>
-  <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="btn btn-sm {{ request('status') === 'delivered' ? 'btn-success' : 'btn-outline-success' }}">
-    Delivered <span class="badge bg-success ms-1">{{ $statusCounts['delivered'] }}</span>
-  </a>
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <div class="d-flex gap-2">
+    <a href="{{ route('admin.orders.index') }}" class="btn btn-sm {{ !request('status') ? 'btn-dark' : 'btn-outline-secondary' }}">
+      All <span class="badge bg-secondary ms-1">{{ $statusCounts['all'] }}</span>
+    </a>
+    <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}" class="btn btn-sm {{ request('status') === 'pending' ? 'btn-warning' : 'btn-outline-warning' }}">
+      Pending <span class="badge bg-warning text-dark ms-1">{{ $statusCounts['pending'] }}</span>
+    </a>
+    <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="btn btn-sm {{ request('status') === 'delivered' ? 'btn-success' : 'btn-outline-success' }}">
+      Delivered <span class="badge bg-success ms-1">{{ $statusCounts['delivered'] }}</span>
+    </a>
+  </div>
+  <div>
+    <button type="button" id="bulkPrintBtn" class="btn btn-sm btn-info text-white" style="display: none; background-color: #0dcaf0 !important; border-color: #0dcaf0 !important;">
+      <i class="bi bi-printer me-1"></i> Print Selected Invoices (<span id="selectedCount">0</span>)
+    </button>
+  </div>
 </div>
 
 <div class="stat-card">
@@ -83,6 +90,7 @@
   <table class="table table-bordered align-middle">
     <thead>
       <tr>
+        <th style="width:40px; text-align:center;"><input type="checkbox" id="selectAllOrders" class="form-check-input"></th>
         <th style="width:60px;">#</th>
         <th>Product Name</th>
         <th>Customer</th>
@@ -97,6 +105,7 @@
     <tbody>
       @forelse($orders as $order)
         <tr>
+          <td class="text-center"><input type="checkbox" class="order-checkbox form-check-input" value="{{ $order->id }}"></td>
           <td>{{ $loop->iteration}}</td>
           <td>
             @foreach($order->items as $item)
@@ -141,7 +150,7 @@
         </tr>
       @empty
         <tr>
-          <td colspan="9" class="text-center text-muted py-4">No orders found.</td>
+          <td colspan="10" class="text-center text-muted py-4">No orders found.</td>
         </tr>
       @endforelse
     </tbody>
@@ -153,4 +162,60 @@
     </div>
   @endif
 </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const selectAllCheckbox = document.getElementById('selectAllOrders');
+    const orderCheckboxes = document.querySelectorAll('.order-checkbox');
+    const bulkPrintBtn = document.getElementById('bulkPrintBtn');
+    const selectedCountSpan = document.getElementById('selectedCount');
+
+    function updateBulkPrintButton() {
+        const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+        const count = checkedBoxes.length;
+        
+        if (count > 0) {
+            bulkPrintBtn.style.display = 'inline-block';
+            selectedCountSpan.textContent = count;
+        } else {
+            bulkPrintBtn.style.display = 'none';
+        }
+    }
+
+    if (selectAllCheckbox) {
+        selectAllCheckbox.addEventListener('change', function() {
+            orderCheckboxes.forEach(cb => {
+                cb.checked = selectAllCheckbox.checked;
+            });
+            updateBulkPrintButton();
+        });
+    }
+
+    orderCheckboxes.forEach(cb => {
+        cb.addEventListener('change', function() {
+            if (!this.checked && selectAllCheckbox) {
+                selectAllCheckbox.checked = false;
+            }
+            const allChecked = Array.from(orderCheckboxes).every(c => c.checked);
+            if (allChecked && selectAllCheckbox) {
+                selectAllCheckbox.checked = true;
+            }
+            updateBulkPrintButton();
+        });
+    });
+
+    if (bulkPrintBtn) {
+        bulkPrintBtn.addEventListener('click', function() {
+            const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
+            const ids = Array.from(checkedBoxes).map(cb => cb.value);
+            if (ids.length > 0) {
+                const url = "{{ route('admin.orders.bulk-print') }}?ids=" + ids.join(',');
+                window.open(url, '_blank');
+            }
+        });
+    }
+});
+</script>
+@endpush
 @endsection
