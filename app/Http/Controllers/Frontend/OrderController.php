@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use Raziul\Sslcommerz\Facades\Sslcommerz;
 
 class OrderController extends Controller
 {
@@ -85,6 +86,34 @@ class OrderController extends Controller
 
             return $order;
         });
+
+        if ($order->payment_method === 'sslcommerz') {
+            try {
+                $response = Sslcommerz::setOrder((float) $order->total, $order->invoice_no, 'Online Order')
+                    ->setCustomer($order->customer_name, auth()->user()->email ?? 'customer@example.com', $order->customer_phone, $order->customer_address)
+                    ->setShippingInfo(count($validated['items']), $order->customer_address)
+                    ->makePayment();
+
+                if ($response->success()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Redirecting to payment gateway...',
+                        'invoice_no' => $order->invoice_no,
+                        'redirect' => $response->gatewayPageURL(),
+                    ]);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'SSLCommerz payment initiation failed: '.($response->failedReason() ?? 'Unknown error'),
+                    ], 400);
+                }
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'SSLCommerz integration error: '.$e->getMessage(),
+                ], 500);
+            }
+        }
 
         return response()->json([
             'success' => true,

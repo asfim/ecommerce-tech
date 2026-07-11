@@ -551,7 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Redirect to invoice page
                 window.location.href = data.redirect;
             } else {
-                alert('Something went wrong. Please try again.');
+                alert(data.message || 'Something went wrong. Please try again.');
                 placeOrderBtn.disabled = false;
                 placeOrderBtn.innerHTML = 'Place order <i class="bi bi-arrow-right"></i>';
             }

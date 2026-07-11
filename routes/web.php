@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\CourierSettingController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\Frontend\DashboardController as UserDashboardController
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\OrderController;
 use App\Http\Controllers\Frontend\ReviewController;
+use App\Http\Controllers\Frontend\SslcommerzController;
 use App\Http\Middleware\AdminMiddleware;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +42,17 @@ Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
 Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
 Route::get('/order/invoice/{invoiceNo}', [OrderController::class, 'invoice'])->name('order.invoice');
+
+/* ========== SSLCommerz Callbacks ========== */
+Route::controller(SslcommerzController::class)
+    ->prefix('sslcommerz')
+    ->name('sslc.')
+    ->group(function () {
+        Route::post('success', 'success')->name('success');
+        Route::post('failure', 'failure')->name('failure');
+        Route::post('cancel', 'cancel')->name('cancel');
+        Route::post('ipn', 'ipn')->name('ipn');
+    });
 Route::post('/product/{product}/review', [ReviewController::class, 'store'])->name('product.review.store');
 
 /* ========== Frontend (User) ========== */
@@ -83,6 +96,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('settings/company', [AdminCompanySettingController::class, 'update'])->name('settings.company.update');
             Route::get('settings/courier', [CourierSettingController::class, 'index'])->name('settings.courier');
             Route::post('settings/courier', [CourierSettingController::class, 'update'])->name('settings.courier.update');
+            Route::get('settings/payment', [PaymentSettingController::class, 'index'])->name('settings.payment');
+            Route::post('settings/payment', [PaymentSettingController::class, 'update'])->name('settings.payment.update');
         });
 
         Route::middleware('permission:view-brands|create-brands|edit-brands|delete-brands,admin')->group(function () {
