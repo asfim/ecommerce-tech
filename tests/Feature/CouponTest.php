@@ -96,8 +96,8 @@ test('authenticated user can place an order applying valid coupon discount', fun
         'shipping_cost' => 60.00,
         'payment_method' => 'cod',
         'subtotal' => 500.00,
-        'tax' => 25.00,
-        'total' => 585.00,
+        'tax' => 0.00,
+        'total' => 510.00,
         'coupon_code' => 'SAVE10',
         'items' => [
             [
@@ -119,8 +119,8 @@ test('authenticated user can place an order applying valid coupon discount', fun
     $order = Order::latest()->first();
 
     // Check database to ensure coupon is applied and totals recalculated securely
-    // Subtotal 500 - Discount (10% of 500 = 50) + Shipping 60 + Tax (5% of 500 = 25) = 535
+    // Subtotal 500 - Discount (10% of 500 = 50) + Shipping 60 = 510
     expect($order->coupon_code)->toBe('SAVE10')
         ->and($order->discount_amount)->toEqual(50.00)
-        ->and($order->total)->toEqual(535.00);
+        ->and($order->total)->toEqual(510.00);
 });

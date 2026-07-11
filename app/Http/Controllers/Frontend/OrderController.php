@@ -48,8 +48,8 @@ class OrderController extends Controller
 
         $shippingCost = (float) $validated['shipping_cost'];
         $subtotal = (float) $validated['subtotal'];
-        $tax = round($subtotal * 0.05, 2);
-        $total = max(0, $subtotal - $discountAmount + $shippingCost + $tax);
+        $tax = 0.00;
+        $total = max(0, $subtotal - $discountAmount + $shippingCost);
 
         $order = DB::transaction(function () use ($validated, $couponCode, $discountAmount, $tax, $total) {
             $order = Order::create([

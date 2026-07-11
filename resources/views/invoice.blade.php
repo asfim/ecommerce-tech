@@ -375,10 +375,12 @@
           <span>Shipping ({{ $order->shipping_method === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka' }})</span>
           <span class="val">৳{{ number_format($order->shipping_cost, 2) }}</span>
         </div>
+        @if($order->tax > 0)
         <div class="t-line">
           <span>Tax (5%)</span>
           <span class="val">৳{{ number_format($order->tax, 2) }}</span>
         </div>
+        @endif
         <div class="t-line t-grand">
           <span>Total</span>
           <span class="val">৳{{ number_format($order->total, 2) }}</span>

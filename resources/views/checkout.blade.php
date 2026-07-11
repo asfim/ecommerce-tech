@@ -260,7 +260,7 @@
       <div class="t-row"><span>Subtotal</span><span class="mono" id="summarySubtotal">৳0.00</span></div>
       <div class="t-row discount text-success" id="discountRow" style="display:none; color: #2e7d32 !important;"><span>Discount (<span id="discountCodeLabel"></span>)</span><span class="mono" id="summaryDiscount">-৳0.00</span></div>
       <div class="t-row"><span>Shipping</span><span class="mono" id="summaryShipping">৳60.00</span></div>
-      <div class="t-row"><span>Estimated tax (5%)</span><span class="mono" id="summaryTax">৳0.00</span></div>
+      <div class="t-row" style="display: none !important;"><span>Estimated tax (5%)</span><span class="mono" id="summaryTax">৳0.00</span></div>
       <div class="t-row grand"><span>Total</span><span class="mono" id="summaryTotal">৳0.00</span></div>
       <button type="button" id="placeOrderBtn" class="btn-place">Place order <i class="bi bi-arrow-right"></i></button>
       <div class="trust-row">
@@ -364,8 +364,8 @@ document.addEventListener('DOMContentLoaded', function() {
             discountRow.style.display = 'none';
         }
 
-        const tax = subtotal * 0.05; // 5% tax
-        const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost + tax);
+        const tax = 0; // 0% tax
+        const grandTotal = Math.max(0, subtotal - discountAmount + shippingCost);
 
         subtotalEl.textContent = `৳${subtotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
         shippingEl.textContent = `৳${shippingCost.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
@@ -492,8 +492,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Calculate subtotal
         const subtotal = calculateSubtotal();
-        const tax = subtotal * 0.05;
-        const total = Math.max(0, subtotal - discountAmount + shippingCost + tax);
+        const tax = 0;
+        const total = Math.max(0, subtotal - discountAmount + shippingCost);
 
         // Build order items
         const orderItems = checkoutItems.map(item => ({

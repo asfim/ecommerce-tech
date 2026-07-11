@@ -10,11 +10,24 @@ class ReviewController extends Controller
 {
     public function store(Request $request, Product $product)
     {
+        if (! auth()->check()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You must be logged in to write a review.',
+                ], 401);
+            }
+
+            return redirect()->route('user.login')->with('error', 'Please log in to write a review.');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'rating' => 'required|integer|min:1|max:5',
             'comment' => 'required|string|max:1000',
         ]);
+
+        $validated['name'] = auth()->user()->name;
 
         $review = $product->reviews()->create($validated);
 

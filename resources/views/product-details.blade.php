@@ -206,16 +206,30 @@
     color: #ffc107 !important;
 }
 
-.nav-tabs .nav-link {
-    cursor: pointer;
-    border: none;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -1px;
+#productDetailTabs button.nav-link {
+    cursor: pointer !important;
+    border: none !important;
+    background-color: transparent !important;
+    color: #000000 !important;
+    padding: 10px 20px !important;
+    border-radius: 6px 6px 0 0 !important;
+    transition: background-color 0.3s ease, color 0.3s ease !important;
+    transform: none !important;
 }
 
-.nav-tabs .nav-link.active {
-    border-bottom-color: #1a73e8;
-    font-weight: 600;
+#productDetailTabs button.nav-link:hover {
+    background-color: #1a73e8 !important;
+    color: #ffffff !important;
+    border: none !important;
+    transform: none !important;
+}
+
+#productDetailTabs button.nav-link.active {
+    background-color: #1a73e8 !important;
+    color: #ffffff !important;
+    font-weight: 600 !important;
+    border: none !important;
+    transform: none !important;
 }
 
 .related-card {
@@ -398,7 +412,7 @@
 
 <!-- ================= DESCRIPTION & REVIEWS ================= -->
 <section class="container pb-5">
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs" id="productDetailTabs">
         <li class="nav-item">
             <button class="nav-link active" data-tab="0">Description</button>
         </li>
@@ -464,6 +478,10 @@
             <div class="alert alert-success">{{ session('success') }}</div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-danger">{{ session('error') }}</div>
+        @endif
+
         @if($errors->any())
             <div class="alert alert-danger">
                 <ul class="mb-0">
@@ -474,30 +492,38 @@
             </div>
         @endif
 
-        <form id="reviewForm" method="POST" action="{{ route('product.review.store', $product) }}">
-            @csrf
+        @auth
+            <form id="reviewForm" method="POST" action="{{ route('product.review.store', $product) }}">
+                @csrf
 
-            <div class="mb-3">
-                <label class="form-label small fw-semibold">Your Name</label>
-                <input type="text" class="form-control form-control-sm" id="reviewName" name="name" value="{{ old('name') }}" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label small fw-semibold d-block">Rating</label>
-                <div id="starRating">
-                    <i class="bi bi-star text-warning" data-value="1"></i>
-                    <i class="bi bi-star text-warning" data-value="2"></i>
-                    <i class="bi bi-star text-warning" data-value="3"></i>
-                    <i class="bi bi-star text-warning" data-value="4"></i>
-                    <i class="bi bi-star text-warning" data-value="5"></i>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Your Name</label>
+                    <input type="text" class="form-control form-control-sm" id="reviewName" name="name" value="{{ auth()->user()->name }}" readonly required>
                 </div>
-                <input type="hidden" id="ratingValue" name="rating" value="{{ old('rating', 0) }}">
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold d-block">Rating</label>
+                    <div id="starRating">
+                        <i class="bi bi-star text-warning" data-value="1"></i>
+                        <i class="bi bi-star text-warning" data-value="2"></i>
+                        <i class="bi bi-star text-warning" data-value="3"></i>
+                        <i class="bi bi-star text-warning" data-value="4"></i>
+                        <i class="bi bi-star text-warning" data-value="5"></i>
+                    </div>
+                    <input type="hidden" id="ratingValue" name="rating" value="{{ old('rating', 0) }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Your Review</label>
+                    <textarea class="form-control form-control-sm" id="reviewText" name="comment" rows="3" required>{{ old('comment') }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm px-3">Submit Review</button>
+            </form>
+        @else
+            <div class="alert alert-light border text-center py-4 my-3" style="border-radius: 8px;">
+                <i class="bi bi-info-circle text-muted fs-3 d-block mb-2"></i>
+                <p class="text-muted mb-3">You must be logged in to submit a review for this product.</p>
+                <a href="{{ route('user.login') }}" class="btn btn-primary btn-sm px-4">Log In Here</a>
             </div>
-            <div class="mb-3">
-                <label class="form-label small fw-semibold">Your Review</label>
-                <textarea class="form-control form-control-sm" id="reviewText" name="comment" rows="3" required>{{ old('comment') }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-sm px-3">Submit Review</button>
-        </form>
+        @endauth
     </div>
 </section>
 

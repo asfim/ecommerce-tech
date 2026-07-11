@@ -105,10 +105,12 @@
             <td colspan="4" class="text-end">Shipping ({{ $order->shipping_method === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka' }})</td>
             <td>৳{{ number_format($order->shipping_cost, 2) }}</td>
           </tr>
+          @if($order->tax > 0)
           <tr>
             <td colspan="4" class="text-end">Tax (5%)</td>
             <td>৳{{ number_format($order->tax, 2) }}</td>
           </tr>
+          @endif
           <tr>
             <td colspan="4" class="text-end fw-bold fs-5">Grand Total</td>
             <td class="fw-bold fs-5 text-danger">৳{{ number_format($order->total, 2) }}</td>
