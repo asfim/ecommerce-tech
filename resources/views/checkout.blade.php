@@ -15,7 +15,7 @@
     --muted:#767066;
     --danger:#c0432e;
   }
-  
+
   .mono{ font-family:'IBM Plex Mono',monospace; }
   .display{ font-family:'Fraunces',serif; }
 
@@ -214,12 +214,12 @@
         <h2><span class="idx">03</span> Payment</h2>
         <div class="hint">All transactions are encrypted and secure.</div>
         <div class="pay-tabs">
-          <div class="pay-tab active" data-method="sslcommerz"><i class="bi bi-wallet2"></i> SSL Commerz</div>
+          <div class="pay-tab active" data-method="sslcommerz"><i class="bi bi-wallet2"></i> Online Payment</div>
           <div class="pay-tab" data-method="cod"><i class="bi bi-cash-stack"></i> Cash on Delivery</div>
         </div>
-        
+
         <input type="hidden" id="paymentMethod" value="sslcommerz">
-        
+
         <div id="sslcommerzInfo" class="p-3 border rounded" style="background:#f8f9fa; font-size:13.5px;">
           <div class="d-flex align-items-center gap-2 mb-2">
             <i class="bi bi-shield-lock-fill text-primary" style="font-size: 20px;"></i>
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const taxEl = document.getElementById('summaryTax');
     const totalEl = document.getElementById('summaryTotal');
     const itemsCountEl = document.querySelector('.summary-head .count');
-    
+
     // Coupon variables
     const couponCodeInput = document.getElementById('couponCode');
     const applyCouponBtn = document.getElementById('applyCouponBtn');
@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
         itemsCountEl.textContent = `${totalItems} ${totalItems === 1 ? 'item' : 'items'}`;
 
         const shippingCost = getShippingCost();
-        
+
         // Dynamic discount recalculation
         if (appliedCouponCode) {
             discountRow.style.display = 'flex';
@@ -412,11 +412,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success) {
                 appliedCouponCode = data.code;
                 discountAmount = parseFloat(data.discount);
-                
+
                 couponMessage.style.display = 'block';
                 couponMessage.style.color = '#2e7d32';
                 couponMessage.textContent = data.message;
-                
+
                 renderSummary();
             }
             applyCouponBtn.disabled = false;
@@ -425,11 +425,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             appliedCouponCode = null;
             discountAmount = 0.00;
-            
+
             couponMessage.style.display = 'block';
             couponMessage.style.color = '#c0432e';
             couponMessage.textContent = error.message || 'Invalid coupon code.';
-            
+
             renderSummary();
             applyCouponBtn.disabled = false;
             applyCouponBtn.textContent = 'Apply';
@@ -446,7 +446,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            
+
             const selectedMethod = tab.dataset.method;
             paymentMethodInput.value = selectedMethod;
 

@@ -53,6 +53,7 @@ class OrderController extends Controller implements HasMiddleware
         $statusCounts = [
             'all' => Order::count(),
             'pending' => Order::where('order_status', '=', 'pending', 'and')->count('*'),
+            'confirmed' => Order::where('order_status', '=', 'confirmed', 'and')->count('*'),
             'delivered' => Order::where('order_status', '=', 'delivered', 'and')->count('*'),
         ];
 
@@ -87,7 +88,7 @@ class OrderController extends Controller implements HasMiddleware
         }
 
         $validated = $request->validate([
-            'order_status' => 'nullable|in:pending,delivered,cancelled',
+            'order_status' => 'nullable|in:pending,confirmed,delivered,cancelled',
             'payment_status' => 'nullable|in:pending,paid',
         ]);
 
@@ -128,7 +129,7 @@ class OrderController extends Controller implements HasMiddleware
             'ids.*' => 'integer|exists:orders,id',
         ]);
 
-        $orders = Order::query()->whereIn('id', $validated['ids'], 'and', false)->where('order_status', '=', 'pending', 'and')->with('items')->get();
+        $orders = Order::query()->whereIn('id', $validated['ids'], 'and', false)->whereIn('order_status', ['pending', 'confirmed'])->with('items')->get();
 
         $successCount = 0;
         $errors = [];

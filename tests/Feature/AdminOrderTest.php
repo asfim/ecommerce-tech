@@ -49,15 +49,15 @@ test('admin can update order status on the order index page and delivery sets pa
     $response->assertSee('order_status');
     $response->assertDontSee('name="payment_status"', false);
 
-    // Update order status to confirmed should fail validation
+    // Update order status to confirmed should succeed
     $patchResponse1 = $this->actingAs($admin, 'admin')->patch(route('admin.orders.update-status', $order), [
         'order_status' => 'confirmed',
     ]);
 
-    $patchResponse1->assertSessionHasErrors(['order_status']);
+    $patchResponse1->assertRedirect();
     $this->assertDatabaseHas('orders', [
         'id' => $order->id,
-        'order_status' => 'pending',
+        'order_status' => 'confirmed',
     ]);
 
     // Update order status to delivered should succeed and set payment status to paid automatically
