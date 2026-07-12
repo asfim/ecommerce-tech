@@ -88,4 +88,7 @@
   @can('manage-company-settings')
     <a href="{{ route('admin.settings.payment') }}" class="{{ request()->routeIs('admin.settings.payment') ? 'active' : '' }}"><i class="bi bi-credit-card"></i> Payment Settings</a>
   @endcan
+  @can('manage-company-settings')
+    <a href="{{ route('admin.settings.sms') }}" class="{{ request()->routeIs('admin.settings.sms') ? 'active' : '' }}"><i class="bi bi-chat-left-text"></i> SMS Settings</a>
+  @endcan
 </div>

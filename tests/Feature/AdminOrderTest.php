@@ -5,6 +5,8 @@ use App\Models\HomepageSetting;
 use App\Models\Order;
 use App\Models\OrderItem;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use SabitAhmad\SteadFast\DTO\OrderResponse;
 use SabitAhmad\SteadFast\Facades\SteadFast;
 
@@ -346,4 +348,124 @@ test('admin can send orders to Steadfast Courier in bulk', function () {
         'id' => $order1->id,
         'order_status' => 'delivered',
     ]);
+});
+
+test('admin can view SMS settings page', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $response = $this->actingAs($admin, 'admin')->get(route('admin.settings.sms'));
+
+    $response->assertSuccessful();
+    $response->assertSee('SMS Gateway Integration');
+    $response->assertSee('SMS Gateway Provider');
+});
+
+test('admin can update SMS settings', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $response = $this->actingAs($admin, 'admin')->post(route('admin.settings.sms.update'), [
+        'enabled' => '1',
+        'gateway' => 'mim_sms',
+        'api_key' => 'test-api-key',
+        'sender_id' => 'test-sender-id',
+        'message_template' => 'Hello {customer_name}, order {invoice_no} is delivered.',
+    ]);
+
+    $response->assertRedirect();
+    $settings = HomepageSetting::get('sms_settings');
+    expect($settings['enabled'])->toBe(true);
+    expect($settings['gateway'])->toBe('mim_sms');
+    expect($settings['api_key'])->toBe('test-api-key');
+    expect($settings['sender_id'])->toBe('test-sender-id');
+    expect($settings['message_template'])->toBe('Hello {customer_name}, order {invoice_no} is delivered.');
+});
+
+test('SMS is sent automatically when order status is updated to delivered', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    // Enable SMS settings
+    HomepageSetting::set('sms_settings', [
+        'enabled' => true,
+        'gateway' => 'mim_sms',
+        'api_key' => 'test-api-key',
+        'sender_id' => 'test-sender-id',
+        'message_template' => 'Hello {customer_name}, order {invoice_no} is delivered.',
+    ]);
+
+    $order = Order::create([
+        'invoice_no' => 'INV-SMS-0001',
+        'customer_name' => 'Jane Customer',
+        'customer_phone' => '01712345678',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 1000,
+        'tax' => 50,
+        'total' => 1110,
+    ]);
+
+    Http::fake([
+        'api.mimsms.com/*' => Http::response('Success', 200),
+    ]);
+
+    // Update order status to delivered
+    $response = $this->actingAs($admin, 'admin')->patch(route('admin.orders.update-status', $order), [
+        'order_status' => 'delivered',
+    ]);
+
+    $response->assertRedirect();
+
+    // Assert that SMS was sent
+    Http::assertSent(function (Request $request) {
+        return str_contains($request->url(), 'api.mimsms.com/api/sendsms') &&
+            $request['contacts'] === '01712345678' &&
+            $request['msg'] === 'Hello Jane Customer, order INV-SMS-0001 is delivered.';
+    });
+});
+
+test('SMS is not sent when SMS notifications are disabled', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    // Disable SMS settings
+    HomepageSetting::set('sms_settings', [
+        'enabled' => false,
+        'gateway' => 'mim_sms',
+        'api_key' => 'test-api-key',
+        'sender_id' => 'test-sender-id',
+        'message_template' => 'Hello {customer_name}, order {invoice_no} is delivered.',
+    ]);
+
+    $order = Order::create([
+        'invoice_no' => 'INV-SMS-0002',
+        'customer_name' => 'Jane Customer',
+        'customer_phone' => '01712345678',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 1000,
+        'tax' => 50,
+        'total' => 1110,
+    ]);
+
+    Http::fake();
+
+    // Update order status to delivered
+    $response = $this->actingAs($admin, 'admin')->patch(route('admin.orders.update-status', $order), [
+        'order_status' => 'delivered',
+    ]);
+
+    $response->assertRedirect();
+
+    // Assert that no SMS requests were sent
+    Http::assertNothingSent();
 });

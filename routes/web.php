@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
+use App\Http\Controllers\Admin\SmsSettingController;
 use App\Http\Controllers\Admin\SubCategoryController as AdminSubCategoryController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Backend\Auth\LoginController as AdminLoginController;
@@ -98,6 +99,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('settings/courier', [CourierSettingController::class, 'update'])->name('settings.courier.update');
             Route::get('settings/payment', [PaymentSettingController::class, 'index'])->name('settings.payment');
             Route::post('settings/payment', [PaymentSettingController::class, 'update'])->name('settings.payment.update');
+            Route::get('settings/sms', [SmsSettingController::class, 'index'])->name('settings.sms');
+            Route::post('settings/sms', [SmsSettingController::class, 'update'])->name('settings.sms.update');
         });
 
         Route::middleware('permission:view-brands|create-brands|edit-brands|delete-brands,admin')->group(function () {

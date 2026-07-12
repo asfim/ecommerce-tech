@@ -2,12 +2,37 @@
 
 namespace App\Models;
 
+use App\Services\SmsService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class Order extends Model
 {
+    protected static function booted(): void
+    {
+        static::updated(function (Order $order) {
+            if ($order->isDirty('order_status') && $order->order_status === 'delivered') {
+                try {
+                    $settings = HomepageSetting::get('sms_settings', []);
+                    if (! empty($settings['enabled'])) {
+                        $message = strtr($settings['message_template'] ?? '', [
+                            '{customer_name}' => $order->customer_name,
+                            '{invoice_no}' => $order->invoice_no,
+                            '{total_amount}' => $order->total,
+                            '{order_status}' => $order->order_status,
+                        ]);
+
+                        SmsService::send($order->customer_phone, $message);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Failed to process order delivered SMS: '.$e->getMessage());
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'user_id',
         'invoice_no',
