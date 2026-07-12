@@ -40,7 +40,7 @@
 
             <!-- Pagination -->
             <div class="d-flex justify-content-center mt-5">
-                {{ $products->links() }}
+                {{-- {{ $products->links() }} --}}
             </div>
         @endif
     </div>

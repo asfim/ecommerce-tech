@@ -100,13 +100,17 @@
                             </div>
                         </td>
                         <td>
-                            <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning"><i
-                                    class="bi bi-pencil"></i></a>
-                            <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline"
-                                onsubmit="return confirm('Are you sure?')">
-                                @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
-                            </form>
+                            <div class="d-flex align-items-center gap-2">
+                                <a href="{{ route('product.details', $product->slug) }}" target="_blank" class="btn btn-sm btn-info text-white" title="View Product"><i
+                                        class="bi bi-eye"></i></a>
+                                <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning"><i
+                                        class="bi bi-pencil"></i></a>
+                                <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline-block m-0"
+                                    onsubmit="return confirm('Are you sure?')">
+                                    @csrf @method('DELETE')
+                                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                 @endforeach
