@@ -367,7 +367,7 @@ test('admin can update SMS settings', function () {
 
     $response = $this->actingAs($admin, 'admin')->post(route('admin.settings.sms.update'), [
         'enabled' => '1',
-        'gateway' => 'mim_sms',
+        'gateway' => 'bulksmsbd',
         'api_key' => 'test-api-key',
         'sender_id' => 'test-sender-id',
         'message_template' => 'Hello {customer_name}, order {invoice_no} is delivered.',
@@ -376,7 +376,7 @@ test('admin can update SMS settings', function () {
     $response->assertRedirect();
     $settings = HomepageSetting::get('sms_settings');
     expect($settings['enabled'])->toBe(true);
-    expect($settings['gateway'])->toBe('mim_sms');
+    expect($settings['gateway'])->toBe('bulksmsbd');
     expect($settings['api_key'])->toBe('test-api-key');
     expect($settings['sender_id'])->toBe('test-sender-id');
     expect($settings['message_template'])->toBe('Hello {customer_name}, order {invoice_no} is delivered.');
@@ -389,7 +389,7 @@ test('SMS is sent automatically when order status is updated to delivered', func
     // Enable SMS settings
     HomepageSetting::set('sms_settings', [
         'enabled' => true,
-        'gateway' => 'mim_sms',
+        'gateway' => 'bulksmsbd',
         'api_key' => 'test-api-key',
         'sender_id' => 'test-sender-id',
         'message_template' => 'Hello {customer_name}, order {invoice_no} is delivered.',
@@ -411,7 +411,10 @@ test('SMS is sent automatically when order status is updated to delivered', func
     ]);
 
     Http::fake([
-        'api.mimsms.com/*' => Http::response('Success', 200),
+        'bulksmsbd.net/*' => Http::response([
+            'response_code' => 1000,
+            'success' => true,
+        ], 200),
     ]);
 
     // Update order status to delivered
@@ -423,9 +426,9 @@ test('SMS is sent automatically when order status is updated to delivered', func
 
     // Assert that SMS was sent
     Http::assertSent(function (Request $request) {
-        return str_contains($request->url(), 'api.mimsms.com/api/sendsms') &&
-            $request['contacts'] === '01712345678' &&
-            $request['msg'] === 'Hello Jane Customer, order INV-SMS-0001 is delivered.';
+        return str_contains($request->url(), 'bulksmsbd.net/api/smsapi') &&
+            $request['number'] === '01712345678' &&
+            $request['message'] === 'Hello Jane Customer, order INV-SMS-0001 is delivered.';
     });
 });
 
@@ -436,7 +439,7 @@ test('SMS is not sent when SMS notifications are disabled', function () {
     // Disable SMS settings
     HomepageSetting::set('sms_settings', [
         'enabled' => false,
-        'gateway' => 'mim_sms',
+        'gateway' => 'bulksmsbd',
         'api_key' => 'test-api-key',
         'sender_id' => 'test-sender-id',
         'message_template' => 'Hello {customer_name}, order {invoice_no} is delivered.',

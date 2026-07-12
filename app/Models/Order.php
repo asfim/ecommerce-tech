@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Services\SmsService;
+use App\Services\BulkSmsService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,11 +20,12 @@ class Order extends Model
                         $message = strtr($settings['message_template'] ?? '', [
                             '{customer_name}' => $order->customer_name,
                             '{invoice_no}' => $order->invoice_no,
-                            '{total_amount}' => $order->total,
+                            '{total_amount}' => number_format($order->total, 2),
                             '{order_status}' => $order->order_status,
                         ]);
 
-                        SmsService::send($order->customer_phone, $message);
+                        $sms = new BulkSmsService;
+                        $sms->send($order->customer_phone, $message);
                     }
                 } catch (\Exception $e) {
                     Log::error('Failed to process order delivered SMS: '.$e->getMessage());
