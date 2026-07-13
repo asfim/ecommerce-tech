@@ -111,6 +111,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         });
 
         Route::middleware('permission:view-products|create-products|edit-products|delete-products,admin')->group(function () {
+            Route::post('products/bulk-delete', [AdminProductController::class, 'bulkDestroy'])->name('products.bulk-destroy');
             Route::resource('products', AdminProductController::class);
             Route::patch('products/{product}/toggle-featured', [AdminProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
             Route::patch('products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggle-active');

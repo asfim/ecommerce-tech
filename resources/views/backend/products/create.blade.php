@@ -92,10 +92,10 @@
         <label class="form-label">Stock</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required>
       </div>
-      <div class="col-md-2 mb-3">
+      {{-- <div class="col-md-2 mb-3">
         <label class="form-label">Sales Count</label>
         <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', 0) }}" required>
-      </div>
+      </div> --}}
       <div class="col-md-4 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
         <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*">
@@ -136,10 +136,10 @@
               @forelse($attribute->values as $val)
                 @php $uid = 'chk_' . $attribute->id . '_' . $val->id; @endphp
                 <label class="form-check-label d-flex align-items-center gap-1 cursor-pointer" style="font-weight: 500;" for="{{ $uid }}">
-                  <input type="checkbox" 
-                         class="form-check-input attribute-value-checkbox" 
-                         id="{{ $uid }}" 
-                         data-attr-name="{{ $attribute->name }}" 
+                  <input type="checkbox"
+                         class="form-check-input attribute-value-checkbox"
+                         id="{{ $uid }}"
+                         data-attr-name="{{ $attribute->name }}"
                          value="{{ $val->value }}">
                   {{ $val->value }}
                 </label>
@@ -375,4 +375,3 @@
 </script>
 @endpush
 
-  

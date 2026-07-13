@@ -122,3 +122,37 @@ test('admin cannot create a product with negative buy price', function () {
 
     $response->assertSessionHasErrors(['buy_price']);
 });
+
+test('admin can bulk delete products', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $category = Category::create(['name' => 'Electronics']);
+    $brand = Brand::create(['name' => 'Samsung']);
+
+    $product1 = Product::create([
+        'name' => 'Product 1',
+        'slug' => 'product-1',
+        'category_id' => $category->id,
+        'brand_id' => $brand->id,
+        'price' => 100.00,
+        'stock' => 10,
+    ]);
+
+    $product2 = Product::create([
+        'name' => 'Product 2',
+        'slug' => 'product-2',
+        'category_id' => $category->id,
+        'brand_id' => $brand->id,
+        'price' => 200.00,
+        'stock' => 10,
+    ]);
+
+    $response = $this->actingAs($admin, 'admin')->post(route('admin.products.bulk-destroy'), [
+        'ids' => [$product1->id, $product2->id],
+    ]);
+
+    $response->assertRedirect();
+    $this->assertDatabaseMissing('products', ['id' => $product1->id]);
+    $this->assertDatabaseMissing('products', ['id' => $product2->id]);
+});

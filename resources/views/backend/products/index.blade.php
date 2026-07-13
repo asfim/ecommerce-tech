@@ -42,8 +42,13 @@
                 </select>
                 <label class="form-label mb-0 fw-semibold small">entries</label>
             </div>
-            <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add
-                Product</a>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" id="bulkDeleteBtn" class="btn btn-danger btn-sm" style="display: none;">
+                    <i class="bi bi-trash me-1"></i> Delete Selected (<span id="selectedCount">0</span>)
+                </button>
+                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add
+                    Product</a>
+            </div>
         </div>
 
         @if (session('success'))
@@ -53,6 +58,7 @@
         <table class="table table-bordered align-middle">
             <thead>
                 <tr>
+                    <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllProducts" class="form-check-input"></th>
                     <th style="width: 60px;">#</th>
                     <th style="width: 70px;">Image</th>
                     <th>Name</th>
@@ -70,6 +76,7 @@
             <tbody>
                 @foreach ($products as $product)
                     <tr>
+                        <td class="text-center"><input type="checkbox" class="product-checkbox form-check-input" value="{{ $product->id }}"></td>
                         <td>{{ $loop->iteration }}</td>
                         <td>
                             @if ($product->image)
@@ -117,10 +124,17 @@
             </tbody>
         </table>
 
-        @if ($perPage !== 'all' && $products instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            {{-- {{ $products->links() }} --}}
+        @if ($perPage !== 'all' && $products instanceof \Illuminate\Pagination\LengthAwarePaginator && $products->hasPages())
+            <div class="d-flex justify-content-center mt-3">
+                {{ $products->withQueryString()->links() }}
+            </div>
         @endif
     </div>
+
+    <form id="bulkDeleteForm" action="{{ route('admin.products.bulk-destroy') }}" method="POST" style="display: none;">
+        @csrf
+        <div id="bulkDeleteInputs"></div>
+    </form>
 
     <script>
         document.getElementById('perPageSelect').addEventListener('change', function() {
@@ -173,5 +187,64 @@
                     });
             });
         });
+
+        // Bulk delete logic
+        const selectAllCheckbox = document.getElementById('selectAllProducts');
+        const productCheckboxes = document.querySelectorAll('.product-checkbox');
+        const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+        const selectedCountSpan = document.getElementById('selectedCount');
+        const bulkDeleteForm = document.getElementById('bulkDeleteForm');
+        const bulkDeleteInputs = document.getElementById('bulkDeleteInputs');
+
+        function updateBulkDeleteButton() {
+            const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
+            const count = checkedBoxes.length;
+            
+            if (count > 0) {
+                bulkDeleteBtn.style.display = 'inline-block';
+                selectedCountSpan.textContent = count;
+            } else {
+                bulkDeleteBtn.style.display = 'none';
+            }
+        }
+
+        if (selectAllCheckbox) {
+            selectAllCheckbox.addEventListener('change', function() {
+                productCheckboxes.forEach(cb => {
+                    cb.checked = selectAllCheckbox.checked;
+                });
+                updateBulkDeleteButton();
+            });
+        }
+
+        productCheckboxes.forEach(cb => {
+            cb.addEventListener('change', function() {
+                if (!this.checked && selectAllCheckbox) {
+                    selectAllCheckbox.checked = false;
+                }
+                const allChecked = Array.from(productCheckboxes).every(c => c.checked);
+                if (allChecked && selectAllCheckbox) {
+                    selectAllCheckbox.checked = true;
+                }
+                updateBulkDeleteButton();
+            });
+        });
+
+        if (bulkDeleteBtn) {
+            bulkDeleteBtn.addEventListener('click', function() {
+                if (confirm('Are you sure you want to delete selected products?')) {
+                    const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
+                    bulkDeleteInputs.innerHTML = '';
+                    checkedBoxes.forEach(cb => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'ids[]';
+                        input.value = cb.value;
+                        bulkDeleteInputs.appendChild(input);
+                    });
+                    bulkDeleteForm.submit();
+                }
+            });
+        }
     </script>
 @endsection

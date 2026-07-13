@@ -23,7 +23,7 @@ class ProductController extends Controller implements HasMiddleware
             new Middleware('permission:view-products,admin', only: ['index', 'show']),
             new Middleware('permission:create-products,admin', only: ['create', 'store']),
             new Middleware('permission:edit-products,admin', only: ['edit', 'update', 'toggleFeatured', 'toggleActive']),
-            new Middleware('permission:delete-products,admin', only: ['destroy']),
+            new Middleware('permission:delete-products,admin', only: ['destroy', 'bulkDestroy']),
         ];
     }
 
@@ -214,7 +214,22 @@ class ProductController extends Controller implements HasMiddleware
 
         ActivityLog::log('product_deleted', "Deleted product: {$name}");
 
-        return redirect()->route('admin.products.index')->with('success', 'Product deleted successfully.');
+        return redirect()->back()->with('success', 'Product deleted successfully.');
+    }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'exists:products,id',
+        ]);
+
+        $ids = $request->input('ids');
+        $count = Product::whereIn('id', $ids)->delete();
+
+        ActivityLog::log('product_deleted', "Bulk deleted {$count} products");
+
+        return redirect()->back()->with('success', "{$count} products deleted successfully.");
     }
 
     public function toggleFeatured(Product $product): JsonResponse

@@ -40,13 +40,13 @@
   <form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
-    
+
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Product Name</label>
         <input type="text" name="name" id="productName" class="form-control" value="{{ old('name', $product->name) }}" required>
       </div>
-      <div class="col-md-6 mb-3">
+       <div class="col-md-6 mb-3">
         <label class="form-label">Slug</label>
         <input type="text" name="slug" id="productSlug" class="form-control" value="{{ old('slug', $product->slug) }}" required>
       </div>
@@ -90,11 +90,11 @@
 
     <div class="row">
       <div class="col-md-2 mb-3">
-        <label class="form-label">Buy Price</label>
+        <label class="form-label">purchase Price</label>
         <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price', $product->buy_price) }}">
       </div>
       <div class="col-md-2 mb-3">
-        <label class="form-label">Price</label>
+        <label class="form-label">Sell Price</label>
         <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required>
         <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
@@ -102,10 +102,10 @@
         <label class="form-label">Stock</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
       </div>
-      <div class="col-md-2 mb-3">
+      {{-- <div class="col-md-2 mb-3">
         <label class="form-label">Sales Count</label>
         <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', $product->sales_count) }}" required>
-      </div>
+      </div> --}}
       <div class="col-md-4 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
         <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*">
@@ -163,10 +163,10 @@
               @forelse($attribute->values as $val)
                 @php $uid = 'chk_' . $attribute->id . '_' . $val->id; @endphp
                 <label class="form-check-label d-flex align-items-center gap-1 cursor-pointer" style="font-weight: 500;" for="{{ $uid }}">
-                  <input type="checkbox" 
-                         class="form-check-input attribute-value-checkbox" 
-                         id="{{ $uid }}" 
-                         data-attr-name="{{ $attribute->name }}" 
+                  <input type="checkbox"
+                         class="form-check-input attribute-value-checkbox"
+                         id="{{ $uid }}"
+                         data-attr-name="{{ $attribute->name }}"
                          value="{{ $val->value }}">
                   {{ $val->value }}
                 </label>
