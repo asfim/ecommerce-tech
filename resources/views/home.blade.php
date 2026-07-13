@@ -31,13 +31,14 @@
                         <h6><i class="bi bi-fire text-danger"></i> Hot Categories</h6>
                         <div class="row g-2 mt-1">
                             @foreach ($hotCategories as $cat)
-                                <div class="col-3">
+                                <div class="col-4">
                                     <a href="{{ route('category.products', $cat->id) }}" class="hotcat-item">
                                         @if ($cat->image)
-                                            <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}">
+                                            <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}" class="hotcat-image">
                                         @else
-                                            <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($cat->name, 8, '')) }}"
-                                                alt="{{ $cat->name }}">
+                                            <img src="https://placehold.co/160x120/eee/aaa?text={{ urlencode(Str::limit($cat->name, 8, '')) }}"
+                                                alt="{{ $cat->name }}"
+                                                class="hotcat-image">
                                         @endif
                                         <div class="name">{{ $cat->name }}</div>
                                     </a>
@@ -59,7 +60,7 @@
                                     @if ($fp->image)
                                         <a href="{{ route('product.details', $fp->slug) }}">
                                             <img src="{{ asset('storage/' . $fp->image) }}"
-                                                style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                                style="width:60px;height:90px;object-fit:cover;border-radius:6px;">
                                         </a>
                                     @else
                                         <a href="{{ route('product.details', $fp->slug) }}">
@@ -119,7 +120,7 @@
                             @else
                                 <img src="https://placehold.co/74x74/eee/aaa?text={{ urlencode(Str::limit($tc->name, 8, '')) }}"
                                     alt="{{ $tc->name }}"
-                                    style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
+                                    style="width:94px; height:94px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
                             @endif
                             <div class="name" style="font-size:11.5px;">{{ $tc->name }}</div>
                         </a>
