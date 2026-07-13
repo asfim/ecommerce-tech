@@ -292,15 +292,11 @@
     <div class="wrap">
         <!-- Discounted Products -->
         <div class="preorder-panel my-4">
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
                 <h5 class="fw-bold mb-0">Discounted Products</h5>
-                <div class="d-flex gap-1 align-items-center">
-                    <span class="arrow d-inline-flex" id="discountedPrev"
-                        style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                            class="bi bi-chevron-left"></i></span>
-                    <span class="arrow d-inline-flex" id="discountedNext"
-                        style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                            class="bi bi-chevron-right"></i></span>
+                <div class="d-flex gap-1 align-items-center discounted-controls">
+                    <span class="arrow d-inline-flex" id="discountedPrev" title="Previous"><i class="bi bi-chevron-left"></i></span>
+                    <span class="arrow d-inline-flex" id="discountedNext" title="Next"><i class="bi bi-chevron-right"></i></span>
                 </div>
             </div>
             <div class="row g-3">
@@ -318,8 +314,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-lg-9">
-                    <div style="overflow: hidden;">
-                        <div id="discountedSlider" style="display: flex; gap: 15px; transition: transform .4s ease;">
+                    <div class="discounted-slider-wrapper">
+                        <div id="discountedSlider" class="discounted-slider">
                             @forelse($discountedProducts as $dp)
                                 @php
                                     $hasDiscount = $dp->discount_type && $dp->discount_value > 0;
@@ -332,8 +328,7 @@
                                         }
                                     }
                                 @endphp
-                                <div class="mini-prod"
-                                    style="min-width: calc(25% - 11.25px); flex: 0 0 calc(25% - 11.25px);">
+                                <div class="mini-prod discounted-product-card">
                                     <a href="{{ route('product.details', $dp->slug) }}" class="text-decoration-none">
                                         <div class="mini-img-wrap">
                                             @if ($dp->image)
