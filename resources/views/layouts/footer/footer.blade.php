@@ -66,8 +66,8 @@
       <div class="col-12 col-lg-3 footer-col">
         <h6>My Account</h6>
         <ul class="list-unstyled small">
-          <li><a href="{{}}">Login</a></li>
-          <li><a href="#">Order History</a></li>
+          <li><a href="{{route('auth.login')}}">Login</a></li>
+          <li><a href="{{route('auth.register')}}">Register</a></li>
         </ul>
       </div>
     </div>
