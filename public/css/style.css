@@ -362,12 +362,13 @@ a {
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     z-index: 10050;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.3s ease;
 }
+
 .drawer-backdrop.show {
     opacity: 1;
     pointer-events: auto;
@@ -380,22 +381,26 @@ a {
     height: 100vh;
     background: #fff;
     z-index: 10060;
-    box-shadow: 0 0 20px rgba(0,0,0,0.15);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: flex;
     flex-direction: column;
 }
+
 .drawer-left {
     left: 0;
     transform: translateX(-100%);
 }
+
 .drawer-right {
     right: 0;
     transform: translateX(100%);
 }
+
 .mobile-drawer.show {
     transform: translateX(0);
 }
+
 .drawer-header {
     padding: 16px 20px;
     border-bottom: 1px solid #eee;
@@ -404,16 +409,19 @@ a {
     align-items: center;
     background: #f8f9fa;
 }
+
 .drawer-header h5 {
     margin: 0;
     font-weight: 700;
     font-size: 16px;
 }
+
 .drawer-body {
     padding: 20px;
     overflow-y: auto;
     flex-grow: 1;
 }
+
 .mobile-nav-links a {
     display: block;
     padding: 12px 16px;
@@ -423,7 +431,9 @@ a {
     margin-bottom: 6px;
     transition: background 0.2s;
 }
-.mobile-nav-links a:hover, .mobile-nav-links a.active {
+
+.mobile-nav-links a:hover,
+.mobile-nav-links a.active {
     background: #f4f8ff;
     color: var(--blue);
 }
@@ -494,7 +504,7 @@ a {
     border-radius: 10px;
     padding: 18px;
     min-height: 290px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .hotcat-panel h6 {
@@ -520,7 +530,7 @@ a {
     object-position: center;
     border-radius: 8px;
     margin-bottom: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     background: #f7f7f7;
 }
 
@@ -537,7 +547,7 @@ a {
     border-radius: 10px;
     padding: 16px 18px;
     margin-top: 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
 }
 
 .fs-item {
@@ -653,11 +663,11 @@ a {
     border: 1px solid #eaeaea !important;
     border-radius: 12px !important;
     overflow: hidden !important;
-    padding: 12px !important;
+    /* padding: 12px !important; */
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
     transition: all 0.3s ease !important;
     text-align: left !important;
     position: relative !important;
@@ -665,23 +675,23 @@ a {
 }
 
 .mini-prod:hover {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.06) !important;
+    /* transform: translateY(-4px) !important; */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06) !important;
     border-color: #d1d9e0 !important;
 }
 
 .mini-img-wrap {
     position: relative !important;
     width: 100% !important;
-    height: 180px !important;
+    height: 180% !important;
     overflow: hidden !important;
-    background: linear-gradient(135deg, #f8fafc 0%, #eef4f8 100%) !important;
+    background: white !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     border-radius: 10px !important;
-    margin-bottom: 10px !important;
-    padding: 10px !important;
+    /* margin-bottom: 10px !important; */
+    /* padding: 10px !important; */
 }
 
 .mini-img-wrap img {
@@ -773,7 +783,7 @@ a {
     font-weight: 800;
     letter-spacing: 6px;
     color: #fff;
-    text-shadow: 0 2px 4px rgba(0,0,0,.3);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, .3);
     writing-mode: vertical-rl;
     position: absolute;
     left: 20px;
@@ -985,7 +995,7 @@ a {
 }
 
 .shops-banner {
-    background: linear-gradient(120deg,#eef3fb,#dbe7fb);
+    background: linear-gradient(120deg, #eef3fb, #dbe7fb);
     border-radius: 6px;
     padding: 30px;
     display: flex;
@@ -1014,7 +1024,7 @@ a {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
     transition: all 0.3s ease !important;
     text-align: left !important;
     position: relative !important;
@@ -1022,7 +1032,7 @@ a {
 
 .prod-card:hover {
     transform: translateY(-5px) !important;
-    box-shadow: 0 12px 28px rgba(0,0,0,0.08) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08) !important;
     border-color: #d1d9e0 !important;
 }
 
@@ -1035,7 +1045,7 @@ a {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    padding: 14px !important;
+
 }
 
 .prod-img-wrap img {
@@ -1081,7 +1091,7 @@ a {
     cursor: pointer !important;
     z-index: 5 !important;
     transition: all 0.2s ease !important;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
 }
 
 .prod-img-wrap .wishlist-heart:hover {
@@ -1313,9 +1323,12 @@ footer.main-footer h6 {
 }
 
 @keyframes badge-bounce {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: scale(1);
     }
+
     50% {
         transform: scale(1.4);
     }
@@ -1416,7 +1429,8 @@ footer.main-footer h6 {
     text-decoration: none;
 }
 
-.sidebar a:hover, .sidebar a.active {
+.sidebar a:hover,
+.sidebar a.active {
     color: #fff;
     background: #222;
     text-decoration: none;
@@ -1429,57 +1443,64 @@ footer.main-footer h6 {
 }
 
 .main {
-    margin-left:240px;
-    padding:30px;
-    position:relative;
+    margin-left: 240px;
+    padding: 30px;
+    position: relative;
 }
 
 /* ==========================================================================
    CUSTOMER DASHBOARD SPECIFIC
    ========================================================================== */
 .stat-card {
-    background:#fff;
-    border-radius:10px;
-    padding:20px;
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .06);
 }
+
 .stat-card h2 {
-    font-weight:800;
-    margin:0;
+    font-weight: 800;
+    margin: 0;
 }
+
 .stat-card p {
-    color:#888;
-    margin:0;
-    font-size:13px;
+    color: #888;
+    margin: 0;
+    font-size: 13px;
 }
+
 .user-chip-dashboard {
-    display:flex;
-    align-items:center;
-    gap:8px;
-    padding:5px 12px 5px 5px;
-    border-radius:24px;
-    border:1.5px solid #eee;
-    text-decoration:none;
-    color:inherit;
-    float:right;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px 5px 5px;
+    border-radius: 24px;
+    border: 1.5px solid #eee;
+    text-decoration: none;
+    color: inherit;
+    float: right;
 }
+
 .user-chip-dashboard:hover {
-    border-color:#1a73e8;
+    border-color: #1a73e8;
 }
+
 .user-chip-dashboard img {
-    width:32px;
-    height:32px;
-    object-fit:cover;
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
 }
+
 .user-chip-dashboard .name {
-    font-size:13px;
-    font-weight:600;
+    font-size: 13px;
+    font-weight: 600;
 }
+
 .user-chip-dashboard .role {
-    font-size:10.5px;
-    color:#888;
-    display:block;
-    margin-top:-2px;
+    font-size: 10.5px;
+    color: #888;
+    display: block;
+    margin-top: -2px;
 }
 
 /* Custom Global Button Styling Override (Make all buttons blue background, white text & slight zoom on hover) */
@@ -1507,6 +1528,7 @@ input[type="submit"]:hover {
    MOBILE RESPONSIVE CART & BUY BUTTONS TO CIRCULAR ICONS
    ========================================================================== */
 @media (max-width: 767.98px) {
+
     /* Product card and home page action buttons: make them circular icon buttons */
     .btn-add-to-cart.add-to-cart-btn,
     .btn-buy-now.btn-bid,

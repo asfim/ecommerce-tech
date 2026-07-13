@@ -60,7 +60,7 @@
                                     @if ($fp->image)
                                         <a href="{{ route('product.details', $fp->slug) }}">
                                             <img src="{{ asset('storage/' . $fp->image) }}"
-                                                style="width:60px;height:90px;object-fit:cover;border-radius:6px;">
+                                                style="width:90px;height:100px;object-fit:cover;border-radius:6px;">
                                         </a>
                                     @else
                                         <a href="{{ route('product.details', $fp->slug) }}">
