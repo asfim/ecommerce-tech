@@ -116,7 +116,7 @@
                         <a href="{{ route('category.products', $tc->id) }}" class="tcat-item">
                             @if ($tc->image)
                                 <img src="{{ asset('storage/' . $tc->image) }}" alt="{{ $tc->name }}"
-                                    style="width:74px; height:74px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
+                                    style="width:90px; height:90px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
                             @else
                                 <img src="https://placehold.co/74x74/eee/aaa?text={{ urlencode(Str::limit($tc->name, 8, '')) }}"
                                     alt="{{ $tc->name }}"
