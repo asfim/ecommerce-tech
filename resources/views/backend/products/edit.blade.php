@@ -153,43 +153,33 @@
     <hr>
     <h5 class="fw-bold mb-3"><i class="bi bi-palette me-2 text-primary"></i>Attributes</h5>
 
-    {{-- Attribute + Checkbox Picker --}}
+    {{-- Attributes list with directly displayed values --}}
     <div class="card border-0 bg-light p-3 mb-3 rounded-3">
-      <div class="row g-3 align-items-start">
-
-        {{-- Step 1: Choose attribute --}}
-        <div class="col-md-4">
-          <label class="form-label fw-semibold small">1. Select Attribute</label>
-          <select id="attributeSelect" class="form-select form-select-sm">
-            <option value="">— Choose —</option>
-            @foreach($attributes as $attribute)
-              <option value="{{ $attribute->id }}" data-name="{{ $attribute->name }}">{{ $attribute->name }}</option>
-            @endforeach
-          </select>
-        </div>
-
-        {{-- Step 2: Checkbox values (shown dynamically) --}}
-        <div class="col-md-8">
-          <label class="form-label fw-semibold small">2. Select Values</label>
-          <div id="valueCheckboxes" class="p-2 rounded border bg-white" style="min-height:44px;">
-            <span class="text-muted small" id="valuePlaceholder">Select an attribute first…</span>
+      <div class="row g-3">
+        @foreach($attributes as $attribute)
+          <div class="col-12 pb-2 @if(!$loop->last) border-bottom @endif">
+            <label class="form-label fw-bold text-dark mb-2">{{ $attribute->name }}</label>
+            <div class="p-2 rounded border bg-white d-flex flex-wrap gap-3 align-items-center" style="min-height:44px;">
+              @forelse($attribute->values as $val)
+                @php $uid = 'chk_' . $attribute->id . '_' . $val->id; @endphp
+                <label class="form-check-label d-flex align-items-center gap-1 cursor-pointer" style="font-weight: 500;" for="{{ $uid }}">
+                  <input type="checkbox" 
+                         class="form-check-input attribute-value-checkbox" 
+                         id="{{ $uid }}" 
+                         data-attr-name="{{ $attribute->name }}" 
+                         value="{{ $val->value }}">
+                  {{ $val->value }}
+                </label>
+              @empty
+                <span class="text-muted small">No values for this attribute.</span>
+              @endforelse
+            </div>
           </div>
-        </div>
-
+        @endforeach
       </div>
     </div>
 
-    {{-- Summary table --}}
-    <table class="table table-bordered table-sm align-middle mb-3" id="attributeChipsTable" style="display:none;">
-      <thead class="table-light">
-        <tr>
-          <th style="width:160px;">Attribute</th>
-          <th>Selected Values</th>
-          <th style="width:50px;"></th>
-        </tr>
-      </thead>
-      <tbody id="attributeChipsTbody"></tbody>
-    </table>
+
 
     {{-- Hidden inputs (sent with form) --}}
     <div id="variantsContainer"></div>
@@ -281,18 +271,6 @@
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   });
 
-  // ─── Attribute Data map ────────────────────────────────────────────
-  const attributeData = @json(
-    $attributes->mapWithKeys(fn($attr) => [
-      $attr->id => $attr->values->map(fn($v) => ['id' => $v->id, 'value' => $v->value])->values()
-    ])
-  );
-
-  const attributeSelect   = document.getElementById('attributeSelect');
-  const valueCheckboxes   = document.getElementById('valueCheckboxes');
-  const valuePlaceholder  = document.getElementById('valuePlaceholder');
-  const tbody             = document.getElementById('attributeChipsTbody');
-  const table             = document.getElementById('attributeChipsTable');
   const container         = document.getElementById('variantsContainer');
 
   // Global state for selected variants: { "Color": ["Red", "Blue"], "Size": ["L"] }
@@ -301,12 +279,16 @@
   // ─── Sync global state to UI and hidden inputs ──────────────────────
   function syncVariants() {
     container.innerHTML = '';
-    tbody.innerHTML = '';
+
+    // Check/uncheck checkbox elements on screen to match selectedVariants state
+    document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
+      const attrName = chk.dataset.attrName;
+      const val = chk.value;
+      chk.checked = !!(selectedVariants[attrName] && selectedVariants[attrName].includes(val));
+    });
 
     const keys = Object.keys(selectedVariants);
-
     if (keys.length === 0) {
-      table.style.display = 'none';
       return;
     }
 
@@ -314,87 +296,27 @@
       const vals = selectedVariants[attrName];
       if (!vals || vals.length === 0) return;
 
-      // 1. Add hidden inputs
+      // Add hidden inputs
       vals.forEach(v => {
         container.insertAdjacentHTML('beforeend',
           `<input type="hidden" name="variant_labels[]" value="${attrName}">` +
           `<input type="hidden" name="variant_values[]" value="${v}">`
         );
       });
-
-      // 2. Add table row with chips
-      const chipsHtml = vals.map(v =>
-        `<span class="attr-chip"><i class="bi bi-check2"></i>${v}</span>`
-      ).join('');
-
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td><strong>${attrName}</strong></td>
-        <td>${chipsHtml}</td>
-        <td class="text-center">
-          <button type="button" class="btn btn-outline-danger btn-sm" title="Remove">
-            <i class="bi bi-trash"></i>
-          </button>
-        </td>
-      `;
-      tbody.appendChild(tr);
-
-      tr.querySelector('button').addEventListener('click', function () {
-        delete selectedVariants[attrName];
-        
-        const currentAttrName = attributeSelect.options[attributeSelect.selectedIndex]?.dataset?.name;
-        if (currentAttrName === attrName) {
-          [...valueCheckboxes.querySelectorAll('input[type=checkbox]')].forEach(chk => chk.checked = false);
-        }
-
-        syncVariants();
-      });
     });
-
-    table.style.display = '';
   }
 
-  // ─── Show checkboxes when attribute selected ───────────────────────
-  attributeSelect.addEventListener('change', function () {
-    const attrId = this.value;
-    const attrName = this.options[this.selectedIndex]?.dataset?.name;
-    valueCheckboxes.innerHTML = '';
-
-    if (!attrId || !attributeData[attrId] || attributeData[attrId].length === 0) {
-      valueCheckboxes.appendChild(Object.assign(document.createElement('span'), {
-        className: 'text-muted small',
-        textContent: attrId ? 'No values for this attribute.' : 'Select an attribute first…'
-      }));
-      return;
-    }
-
-    attributeData[attrId].forEach(function (item) {
-      const uid = 'chk_' + attrId + '_' + item.id;
-      const label = document.createElement('label');
-      label.htmlFor = uid;
-
-      const chk = document.createElement('input');
-      chk.type = 'checkbox';
-      chk.id   = uid;
-      chk.value = item.value;
-
-      if (selectedVariants[attrName] && selectedVariants[attrName].includes(item.value)) {
-        chk.checked = true;
+  // ─── Bind change event to checkboxes ───────────────────────────────
+  document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
+    chk.addEventListener('change', function () {
+      const attrName = this.dataset.attrName;
+      const checkedBoxes = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attrName}"]:checked`)];
+      if (checkedBoxes.length > 0) {
+        selectedVariants[attrName] = checkedBoxes.map(c => c.value);
+      } else {
+        delete selectedVariants[attrName];
       }
-
-      chk.addEventListener('change', function () {
-        const checked = [...valueCheckboxes.querySelectorAll('input[type=checkbox]:checked')];
-        if (checked.length > 0) {
-          selectedVariants[attrName] = checked.map(c => c.value);
-        } else {
-          delete selectedVariants[attrName];
-        }
-        syncVariants();
-      });
-
-      label.appendChild(chk);
-      label.appendChild(document.createTextNode(' ' + item.value));
-      valueCheckboxes.appendChild(label);
+      syncVariants();
     });
   });
 
