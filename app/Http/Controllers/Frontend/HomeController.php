@@ -135,8 +135,12 @@ class HomeController extends Controller
         return view('category-products', compact('category', 'products'));
     }
 
-    public function checkout(): View
+    public function checkout(): View|\Illuminate\Http\RedirectResponse
     {
+        if (! auth()->check()) {
+            return redirect()->route('user.login');
+        }
+
         return view('checkout');
     }
 }

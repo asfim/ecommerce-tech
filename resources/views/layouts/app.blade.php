@@ -125,7 +125,21 @@
                 }, 3000);
             }
 
+            function requireLogin() {
+                const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+                if (!isAuthenticated) {
+                    window.location.href = "{{ route('user.login') }}";
+                    return false;
+                }
+
+                return true;
+            }
+
             function addToCart(productId, productName, productPrice, productImage, quantity = 1, variants = null) {
+                if (!requireLogin()) {
+                    return;
+                }
+
                 const existing = cart.find(item => {
                     if (item.id != productId) return false;
                     return JSON.stringify(item.variants || {}) === JSON.stringify(variants || {});
@@ -159,6 +173,9 @@
                 const btn = e.target.closest('.add-to-cart-btn');
                 if (btn) {
                     e.preventDefault();
+                    if (!requireLogin()) {
+                        return;
+                    }
                     const id = btn.dataset.id;
                     const name = btn.dataset.name;
                     const price = btn.dataset.price;
@@ -204,6 +221,9 @@
                 const btn = e.target.closest('.checkout-dropdown-btn');
                 if (btn) {
                     e.preventDefault();
+                    if (!requireLogin()) {
+                        return;
+                    }
                     if (cart.length === 0) return;
                     localStorage.removeItem('checkout_items'); // Fallback to cart
                     window.location.href = "/checkout";
@@ -215,6 +235,9 @@
                 const btn = e.target.closest('.btn-bid');
                 if (btn) {
                     e.preventDefault();
+                    if (!requireLogin()) {
+                        return;
+                    }
                     const id = btn.dataset.id;
                     const name = btn.dataset.name;
                     const price = btn.dataset.price;

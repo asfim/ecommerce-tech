@@ -16,8 +16,12 @@ use Raziul\Sslcommerz\Facades\Sslcommerz;
 
 class OrderController extends Controller
 {
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse
     {
+        if (! auth()->check()) {
+            return redirect()->route('user.login');
+        }
+
         $sms = new BulkSmsService;
 
         $validated = $request->validate([

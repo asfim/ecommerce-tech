@@ -34,10 +34,12 @@
                 @endif
 
                 @if ($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}">
+                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="prod-product-img">
                 @else
                     <img
-                        src="https://placehold.co/200x200/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}">
+                        src="https://placehold.co/240x240/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}"
+                        alt="{{ $product->name }}"
+                        class="prod-product-img">
                 @endif
             </div>
         </a>

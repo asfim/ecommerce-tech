@@ -138,7 +138,7 @@
             </div>
         </div>
 
-         
+
         <div class="row g-3 mb-4">
             <div class="col-12">
                 <div class="bestselling-panel h-100">
@@ -336,10 +336,12 @@
                                     <a href="{{ route('product.details', $dp->slug) }}" class="text-decoration-none">
                                         <div class="mini-img-wrap">
                                             @if ($dp->image)
-                                                <img src="{{ asset('storage/' . $dp->image) }}">
+                                                <img src="{{ asset('storage/' . $dp->image) }}" alt="{{ $dp->name }}" class="mini-product-img">
                                             @else
                                                 <img
-                                                    src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($dp->name, 8, '')) }}">
+                                                    src="https://placehold.co/180x180/eee/aaa?text={{ urlencode(Str::limit($dp->name, 8, '')) }}"
+                                                    alt="{{ $dp->name }}"
+                                                    class="mini-product-img">
                                             @endif
                                         </div>
                                         <div class="t text-dark hover-blue">{{ Str::limit($dp->name, 35) }}</div>
@@ -881,18 +883,18 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const loadMoreBtn = document.getElementById('load-more-btn');
                 const productsGrid = document.getElementById('products-grid');
-                
+
                 if (loadMoreBtn) {
                     loadMoreBtn.addEventListener('click', function() {
                         const page = loadMoreBtn.getAttribute('data-page');
                         const spinner = loadMoreBtn.querySelector('.spinner-border');
-                        
+
                         spinner.classList.remove('d-none');
                         loadMoreBtn.disabled = true;
-                        
+
                         const urlParams = new URLSearchParams(window.location.search);
                         const search = urlParams.get('search') || '';
-                        
+
                         fetch(`/?page=${page}&search=${encodeURIComponent(search)}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
@@ -902,10 +904,10 @@
                         .then(data => {
                             productsGrid.insertAdjacentHTML('beforeend', data.html);
                             loadMoreBtn.setAttribute('data-page', parseInt(page) + 1);
-                            
+
                             spinner.classList.add('d-none');
                             loadMoreBtn.disabled = false;
-                            
+
                             if (!data.has_more) {
                                 loadMoreBtn.parentElement.remove();
                             }
