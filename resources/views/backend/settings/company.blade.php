@@ -82,6 +82,48 @@
       @error('phone') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
+    <hr class="my-4">
+    <h5 class="fw-bold mb-3"><i class="bi bi-share me-2 text-primary"></i>Social Media Links</h5>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label small fw-semibold">Facebook URL</label>
+        <input type="url" name="facebook" class="form-control form-control-sm" value="{{ old('facebook', $settings['facebook'] ?? '') }}" placeholder="https://facebook.com/yourpage">
+        @error('facebook') <div class="text-danger small">{{ $message }}</div> @enderror
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label small fw-semibold">Twitter / X URL</label>
+        <input type="url" name="twitter" class="form-control form-control-sm" value="{{ old('twitter', $settings['twitter'] ?? '') }}" placeholder="https://twitter.com/yourhandle">
+        @error('twitter') <div class="text-danger small">{{ $message }}</div> @enderror
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label small fw-semibold">YouTube URL</label>
+        <input type="url" name="youtube" class="form-control form-control-sm" value="{{ old('youtube', $settings['youtube'] ?? '') }}" placeholder="https://youtube.com/c/yourchannel">
+        @error('youtube') <div class="text-danger small">{{ $message }}</div> @enderror
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label small fw-semibold">Instagram URL</label>
+        <input type="url" name="instagram" class="form-control form-control-sm" value="{{ old('instagram', $settings['instagram'] ?? '') }}" placeholder="https://instagram.com/yourprofile">
+        @error('instagram') <div class="text-danger small">{{ $message }}</div> @enderror
+      </div>
+    </div>
+
+    <div class="row mb-4">
+      <div class="col-md-6 mb-3">
+        <label class="form-label small fw-semibold">Pinterest URL</label>
+        <input type="url" name="pinterest" class="form-control form-control-sm" value="{{ old('pinterest', $settings['pinterest'] ?? '') }}" placeholder="https://pinterest.com/yourprofile">
+        @error('pinterest') <div class="text-danger small">{{ $message }}</div> @enderror
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label small fw-semibold">LinkedIn URL</label>
+        <input type="url" name="linkedin" class="form-control form-control-sm" value="{{ old('linkedin', $settings['linkedin'] ?? '') }}" placeholder="https://linkedin.com/company/yourcompany">
+        @error('linkedin') <div class="text-danger small">{{ $message }}</div> @enderror
+      </div>
+    </div>
+
     <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Save Settings</button>
   </form>
 </div>

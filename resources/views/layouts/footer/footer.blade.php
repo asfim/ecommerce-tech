@@ -58,8 +58,8 @@
       <div class="col-12 col-lg-3 footer-col">
         <h6>Contacts</h6>
         <ul class="list-unstyled small">
-          <li>Address: Demo Address</li>
-          <li>Phone: +01 123 456 789</li>
+          <li>Address: {{ $companySettings['address'] ?? 'Demo Address' }}</li>
+          <li>Phone: {{ $companySettings['phone'] ?? '+01 123 456 789' }}</li>
           <li>Email: info@ecommerce.com</li>
         </ul>
       </div>
@@ -75,12 +75,24 @@
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center small flex-wrap gap-3">
       <span> eCommerce </span>
       <span class="d-flex align-items-center gap-2 flex-wrap">
-        <a href="#" class="social-ic"><i class="bi bi-facebook"></i></a>
-        <a href="#" class="social-ic"><i class="bi bi-twitter-x"></i></a>
-        <a href="#" class="social-ic"><i class="bi bi-youtube"></i></a>
-        <a href="#" class="social-ic"><i class="bi bi-instagram"></i></a>
-        <a href="#" class="social-ic"><i class="bi bi-pinterest"></i></a>
-        <a href="#" class="social-ic"><i class="bi bi-linkedin"></i></a>
+        @if(!empty($companySettings['facebook']))
+          <a href="{{ $companySettings['facebook'] }}" class="social-ic" target="_blank"><i class="bi bi-facebook"></i></a>
+        @endif
+        @if(!empty($companySettings['twitter']))
+          <a href="{{ $companySettings['twitter'] }}" class="social-ic" target="_blank"><i class="bi bi-twitter-x"></i></a>
+        @endif
+        @if(!empty($companySettings['youtube']))
+          <a href="{{ $companySettings['youtube'] }}" class="social-ic" target="_blank"><i class="bi bi-youtube"></i></a>
+        @endif
+        @if(!empty($companySettings['instagram']))
+          <a href="{{ $companySettings['instagram'] }}" class="social-ic" target="_blank"><i class="bi bi-instagram"></i></a>
+        @endif
+        @if(!empty($companySettings['pinterest']))
+          <a href="{{ $companySettings['pinterest'] }}" class="social-ic" target="_blank"><i class="bi bi-pinterest"></i></a>
+        @endif
+        @if(!empty($companySettings['linkedin']))
+          <a href="{{ $companySettings['linkedin'] }}" class="social-ic" target="_blank"><i class="bi bi-linkedin"></i></a>
+        @endif
       </span>
     </div>
   </div>

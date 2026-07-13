@@ -36,6 +36,12 @@ class CompanySettingController extends Controller implements HasMiddleware
             'favicon' => 'nullable|image',
             'address' => 'nullable|string',
             'phone' => 'nullable|string|max:50',
+            'facebook' => 'nullable|string|max:1000',
+            'twitter' => 'nullable|string|max:1000',
+            'youtube' => 'nullable|string|max:1000',
+            'instagram' => 'nullable|string|max:1000',
+            'pinterest' => 'nullable|string|max:1000',
+            'linkedin' => 'nullable|string|max:1000',
         ]);
 
         $existing = HomepageSetting::get('company_settings', []);
@@ -65,6 +71,12 @@ class CompanySettingController extends Controller implements HasMiddleware
             'favicon' => $faviconPath,
             'address' => $validated['address'] ?? '',
             'phone' => $validated['phone'] ?? '',
+            'facebook' => $validated['facebook'] ?? '',
+            'twitter' => $validated['twitter'] ?? '',
+            'youtube' => $validated['youtube'] ?? '',
+            'instagram' => $validated['instagram'] ?? '',
+            'pinterest' => $validated['pinterest'] ?? '',
+            'linkedin' => $validated['linkedin'] ?? '',
         ];
 
         HomepageSetting::set('company_settings', $settings);

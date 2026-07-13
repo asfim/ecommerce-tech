@@ -35,6 +35,12 @@ test('authorized admin can update company settings', function () {
         'favicon' => $favicon,
         'address' => 'Mirpur, Dhaka',
         'phone' => '+8801234567890',
+        'facebook' => 'https://facebook.com/techcorp',
+        'twitter' => 'https://twitter.com/techcorp',
+        'youtube' => 'https://youtube.com/techcorp',
+        'instagram' => 'https://instagram.com/techcorp',
+        'pinterest' => 'https://pinterest.com/techcorp',
+        'linkedin' => 'https://linkedin.com/company/techcorp',
     ]);
 
     $response->assertRedirect(route('admin.settings.company'));
@@ -45,7 +51,13 @@ test('authorized admin can update company settings', function () {
         ->and($stored['name'])->toBe('Tech Corp')
         ->and($stored['site_name'])->toBe('TechShop')
         ->and($stored['address'])->toBe('Mirpur, Dhaka')
-        ->and($stored['phone'])->toBe('+8801234567890');
+        ->and($stored['phone'])->toBe('+8801234567890')
+        ->and($stored['facebook'])->toBe('https://facebook.com/techcorp')
+        ->and($stored['twitter'])->toBe('https://twitter.com/techcorp')
+        ->and($stored['youtube'])->toBe('https://youtube.com/techcorp')
+        ->and($stored['instagram'])->toBe('https://instagram.com/techcorp')
+        ->and($stored['pinterest'])->toBe('https://pinterest.com/techcorp')
+        ->and($stored['linkedin'])->toBe('https://linkedin.com/company/techcorp');
 
     Storage::disk('public')->assertExists($stored['logo']);
     Storage::disk('public')->assertExists($stored['favicon']);
