@@ -387,22 +387,24 @@
                 </div>
 
                 <!-- Cart Actions -->
-                <div class="d-flex gap-2">
-                    <button type="button" class="btn btn-custom-cart btn-lg flex-fill add-to-cart-detail"
+                <div class="d-flex gap-2 align-items-center details-actions">
+                    <button type="button" class="btn btn-custom-cart btn-lg flex-fill add-to-cart-detail d-inline-flex align-items-center justify-content-center"
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"
                         data-image="{{ $allImages[0] }}"
-                        style="font-size: 15px; font-weight: 600; border-radius: 8px;">
-                        <i class="bi bi-cart3 me-2"></i> Add To Cart
+                        style="font-size: 15px; font-weight: 600; border-radius: 8px;"
+                        title="Add to Cart">
+                        <i class="bi bi-cart3 me-md-2"></i><span class="d-none d-md-inline"> Add To Cart</span>
                     </button>
-                    <button type="button" class="btn btn-custom-buy btn-lg flex-fill buy-now-detail"
+                    <button type="button" class="btn btn-custom-buy btn-lg flex-fill buy-now-detail d-inline-flex align-items-center justify-content-center"
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"
                         data-image="{{ $allImages[0] }}"
-                        style="font-size: 15px; font-weight: 600; border-radius: 8px;">
-                        Buy Now
+                        style="font-size: 15px; font-weight: 600; border-radius: 8px;"
+                        title="Buy Now">
+                        <i class="bi bi-lightning-fill me-md-2"></i><span class="d-none d-md-inline"> Buy Now</span>
                     </button>
                 </div>
             </div>

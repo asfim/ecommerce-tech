@@ -60,20 +60,22 @@
                 </div>
             </div>
 
-            <div class="mt-2 d-flex gap-2">
+            <div class="mt-2 d-flex gap-2 justify-content-center align-items-center product-card-actions">
                 <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                     style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                     data-price="{{ $discountedPrice }}"
-                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
-                    <i class="bi bi-cart3"></i> Add
+                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}"
+                    title="Add to Cart">
+                    <i class="bi bi-cart3"></i><span class="d-none d-md-inline"> Add</span>
                 </button>
                 <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                     style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                     data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                     data-price="{{ $discountedPrice }}"
-                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}">
-                    Buy Now
+                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}"
+                    title="Buy Now">
+                    <i class="bi bi-lightning-fill"></i><span class="d-none d-md-inline"> Buy Now</span>
                 </button>
             </div>
         </div>

@@ -161,13 +161,14 @@
                                 </a>
                                 <div class="code">Code: {{ $bp->id < 100 ? 'P' . $bp->id : $bp->id }}</div>
                                 <div class="p">Tk {{ number_format($bp->price, 0) }}</div>
-                                <div class="mt-2">
+                                <div class="mt-2 d-flex justify-content-center align-items-center">
                                     <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                                         style="font-size: 12px; font-weight: 600; border-radius: 6px;"
                                         data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
                                         data-price="{{ $bp->price }}"
-                                        data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}">
-                                        <i class="bi bi-cart3"></i> Add to Cart
+                                        data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}"
+                                        title="Add to Cart">
+                                        <i class="bi bi-cart3"></i><span class="d-none d-md-inline"> Add to Cart</span>
                                     </button>
                                 </div>
                             </div>
@@ -258,20 +259,22 @@
                                                             <div class="t">{{ Str::limit($np->name, 45) }}</div>
                                                         </a>
                                                         <div class="bid"><b>${{ number_format($np->price, 2) }}</b></div>
-                                                        <div class="d-flex gap-1 mt-1">
+                                                        <div class="d-flex gap-1 mt-1 justify-content-center align-items-center new-arrival-actions">
                                                             <button type="button" class="btn btn-sm btn-outline-primary btn-custom-cart add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
                                                                 style="height: 24px; font-size:11px; border-radius:10px;"
                                                                 data-id="{{ $np->id }}" data-name="{{ $np->name }}"
                                                                 data-price="{{ $np->price }}"
-                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}">
-                                                                <i class="bi bi-cart-plus"></i> Add
+                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}"
+                                                                title="Add to Cart">
+                                                                <i class="bi bi-cart-plus"></i><span class="d-none d-md-inline"> Add</span>
                                                             </button>
                                                             <button class="btn btn-sm btn-primary btn-custom-buy py-0 px-2 d-inline-flex align-items-center justify-content-center btn-bid"
                                                                 style="height: 24px; font-size:11px; border-radius:10px;"
                                                                 data-id="{{ $np->id }}"
                                                                 data-name="{{ $np->name }}"
                                                                 data-price="{{ $np->price }}"
-                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}">Buy Now</button>
+                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}"
+                                                                title="Buy Now"><i class="bi bi-lightning-fill"></i><span class="d-none d-md-inline"> Buy Now</span></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -352,20 +355,22 @@
                                             Tk {{ number_format($dp->price, 0) }}
                                         @endif
                                     </div>
-                                    <div class="mt-2 d-flex gap-2">
+                                    <div class="mt-2 d-flex gap-2 justify-content-center align-items-center product-card-actions">
                                         <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                                             style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                                             data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
                                             data-price="{{ $discountedPrice }}"
-                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}">
-                                            <i class="bi bi-cart3"></i> Add
+                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}"
+                                            title="Add to Cart">
+                                            <i class="bi bi-cart3"></i><span class="d-none d-md-inline"> Add</span>
                                         </button>
                                         <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                                             style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                                             data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
                                             data-price="{{ $discountedPrice }}"
-                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}">
-                                            Buy Now
+                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}"
+                                            title="Buy Now">
+                                            <i class="bi bi-lightning-fill"></i><span class="d-none d-md-inline"> Buy Now</span>
                                         </button>
                                     </div>
                                 </div>

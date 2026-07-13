@@ -95,7 +95,7 @@ a {
     color: #444;
     width: 38px;
     height: 38px;
-    border-radius: 50%;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1501,4 +1501,102 @@ input[type="submit"]:hover {
     border-color: var(--blue-hover, #1e6fd9) !important;
     color: #fff !important;
     transform: scale(1.03) !important;
+}
+
+/* ==========================================================================
+   MOBILE RESPONSIVE CART & BUY BUTTONS TO CIRCULAR ICONS
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    /* Product card and home page action buttons: make them circular icon buttons */
+    .btn-add-to-cart.add-to-cart-btn,
+    .btn-buy-now.btn-bid,
+    .product-card-actions .add-to-cart-btn,
+    .product-card-actions .btn-bid {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        border-radius: 2px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 14px !important;
+        flex: 0 0 36px !important;
+        margin: 0 !important;
+    }
+
+    /* Centering actions wrapper on mobile */
+    .product-card-actions,
+    .prod-info .mt-2.d-flex,
+    .mini-prod .mt-2 {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 12px !important;
+    }
+
+    /* Best selling mini product details page buttons */
+    /* .mini-prod .add-to-cart-btn {
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        border-radius: 9px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 14px !important;
+        flex: 0 0 36px !important;
+        margin: 0 auto !important;
+    } */
+
+    /* New Arrivals sliding items actions */
+    .new-arrival-actions .btn-custom-cart.add-to-cart-btn,
+    .new-arrival-actions .btn-custom-buy.btn-bid {
+        width: 26px !important;
+        height: 26px !important;
+        min-width: 26px !important;
+        border-radius: 2px !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 11px !important;
+        flex: 0 0 26px !important;
+    }
+
+    .new-arrival-actions {
+        display: flex !important;
+        justify-content: flex-start !important;
+        gap: 6px !important;
+    }
+
+    /* Product details page main cart/buy buttons */
+    /* .details-actions .add-to-cart-detail,
+    .details-actions .buy-now-detail {
+        width: 46px !important;
+        height: 46px !important;
+        min-width: 46px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 18px !important;
+        flex: 0 0 46px !important;
+    } */
+
+    .details-actions {
+        justify-content: flex-start !important;
+        gap: 15px !important;
+    }
+
+    /* Force hide text spans inside action buttons on mobile */
+    .btn-add-to-cart span,
+    .btn-buy-now span,
+    .add-to-cart-btn span,
+    .btn-bid span,
+    .add-to-cart-detail span,
+    .buy-now-detail span {
+        display: none !important;
+    }
 }
