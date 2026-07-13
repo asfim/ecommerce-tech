@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\CouponController as AdminCouponController;
 use App\Http\Controllers\Admin\CourierSettingController;
 use App\Http\Controllers\Admin\HomepageSettingController as AdminHomepageSettingController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
+use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\ReportController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Frontend\CustomerOrderController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
 use App\Http\Controllers\Frontend\HomeController;
 use App\Http\Controllers\Frontend\OrderController;
+use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\SslcommerzController;
 use App\Http\Middleware\AdminMiddleware;
@@ -39,6 +41,7 @@ Route::get('/category/{id}', [HomeController::class, 'categoryProducts'])->name(
 Route::get('/products/search-api', [HomeController::class, 'searchApi'])->name('products.search-api');
 Route::get('/blog', [BlogController::class, 'index'])->name('blogs.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blogs.show');
+Route::get('/page/{slug}', [FrontendPageController::class, 'show'])->name('page.show');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
 Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
@@ -147,6 +150,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::middleware('permission:view-roles|create-roles|edit-roles|delete-roles,admin')->group(function () {
             Route::resource('roles', AdminRoleController::class);
+        });
+
+        Route::middleware('permission:view-pages|edit-pages,admin')->group(function () {
+            Route::resource('pages', AdminPageController::class)->only(['index', 'edit', 'update']);
         });
 
         Route::middleware('permission:view-permissions|create-permissions,admin')->group(function () {

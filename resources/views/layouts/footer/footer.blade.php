@@ -12,10 +12,10 @@
 <!-- Foot links row -->
 <div class="footlinks">
   <div class="wrap row g-3 justify-content-center">
-    <div class="col-6 col-md-3 item"><i class="bi bi-file-text"></i> Terms &amp; Conditions</div>
-    <div class="col-6 col-md-3 item"><i class="bi bi-arrow-counterclockwise"></i> Return Policy</div>
-    <div class="col-6 col-md-3 item"><i class="bi bi-headset"></i> Support Policy</div>
-    <div class="col-6 col-md-3 item"><i class="bi bi-shield-check"></i> Privacy Policy</div>
+    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'terms-conditions') }}" class="text-decoration-none text-reset"><i class="bi bi-file-text"></i> Terms &amp; Conditions</a></div>
+    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'return-policy') }}" class="text-decoration-none text-reset"><i class="bi bi-arrow-counterclockwise"></i> Return Policy</a></div>
+    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'support-policy') }}" class="text-decoration-none text-reset"><i class="bi bi-headset"></i> Support Policy</a></div>
+    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'privacy-policy') }}" class="text-decoration-none text-reset"><i class="bi bi-shield-check"></i> Privacy Policy</a></div>
   </div>
 </div>
 
@@ -47,12 +47,12 @@
       <div class="col-12 col-lg-3 footer-col">
         <h6>Quick Links</h6>
         <ul class="list-unstyled small">
-          <li><a href="#">Support Policy Page</a></li>
-          <li><a href="#">Return Policy Page</a></li>
+          <li><a href="{{ route('page.show', 'support-policy') }}">Support Policy Page</a></li>
+          <li><a href="{{ route('page.show', 'return-policy') }}">Return Policy Page</a></li>
           <li><a href="#">About Us</a></li>
-          <li><a href="#">Privacy Policy Page</a></li>
+          <li><a href="{{ route('page.show', 'privacy-policy') }}">Privacy Policy Page</a></li>
           <li><a href="#">Seller Policy</a></li>
-          <li><a href="#">Term Conditions Page</a></li>
+          <li><a href="{{ route('page.show', 'terms-conditions') }}">Term Conditions Page</a></li>
         </ul>
       </div>
       <div class="col-12 col-lg-3 footer-col">

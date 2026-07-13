@@ -33,6 +33,7 @@ class RolePermissionSeeder extends Seeder
             'roles' => ['view', 'create', 'edit', 'delete'],
             'permissions' => ['view', 'create'],
             'activitylogs' => ['view'],
+            'pages' => ['view', 'edit'],
         ];
 
         foreach ($modules as $module => $actions) {

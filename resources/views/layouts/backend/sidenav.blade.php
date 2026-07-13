@@ -49,6 +49,9 @@
   @can('view-blogs')
     <a href="{{ route('admin.blog-posts.index') }}" class="{{ request()->routeIs('admin.blog-posts.*') ? 'active' : '' }}"><i class="bi bi-journal-text"></i> Blog Posts</a>
   @endcan
+  @can('view-pages')
+    <a href="{{ route('admin.pages.index') }}" class="{{ request()->routeIs('admin.pages.*') ? 'active' : '' }}"><i class="bi bi-file-text"></i> Pages</a>
+  @endcan
   @can('view-reports')
     <a href="#" data-bs-toggle="collapse" data-bs-target="#reportsSubmenu" aria-expanded="false" class="dropdown-toggle {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}"><i class="bi bi-bar-chart-line"></i> Reports</a>
     <div class="collapse {{ request()->routeIs('admin.reports.*') ? 'show' : '' }}" id="reportsSubmenu">
