@@ -118,7 +118,7 @@
                                         data-price="{{ $bp->price }}"
                                         data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}"
                                         title="Add to Cart">
-                                        <i class="bi bi-cart3"></i><span class="d-none d-md-inline"> Add to Cart</span>
+                                        <i class="bi bi-cart3"></i><span> Add to Cart</span>
                                     </button>
                                 </div>
                             </div>
@@ -268,7 +268,7 @@
                                                                 data-price="{{ $np->price }}"
                                                                 data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}"
                                                                 title="Add to Cart">
-                                                                <i class="bi bi-cart-plus"></i><span class="d-none d-md-inline"> Add</span>
+                                                                <i class="bi bi-cart-plus"></i><span> Add</span>
                                                             </button>
                                                             <button class="btn btn-sm btn-primary btn-custom-buy py-0 px-2 d-inline-flex align-items-center justify-content-center btn-bid"
                                                                 style="height: 24px; font-size:11px; border-radius:10px;"
@@ -276,7 +276,7 @@
                                                                 data-name="{{ $np->name }}"
                                                                 data-price="{{ $np->price }}"
                                                                 data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}"
-                                                                title="Buy Now"><i class="bi bi-lightning-fill"></i><span class="d-none d-md-inline"> Buy Now</span></button>
+                                                                title="Buy Now"><i class="bi bi-lightning-fill"></i><span> Buy Now</span></button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -364,7 +364,7 @@
                                             data-price="{{ $discountedPrice }}"
                                             data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}"
                                             title="Add to Cart">
-                                            <i class="bi bi-cart3"></i><span class="d-none d-md-inline"> Add</span>
+                                            <i class="bi bi-cart3"></i><span> Add</span>
                                         </button>
                                         <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                                             style="font-size: 11px; font-weight: 600; border-radius: 6px;"
@@ -372,7 +372,7 @@
                                             data-price="{{ $discountedPrice }}"
                                             data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}"
                                             title="Buy Now">
-                                            <i class="bi bi-lightning-fill"></i><span class="d-none d-md-inline"> Buy Now</span>
+                                            <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
                                         </button>
                                     </div>
                                 </div>

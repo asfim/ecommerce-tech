@@ -420,7 +420,7 @@
                         data-image="{{ $allImages[0] }}"
                         style="font-size: 15px; font-weight: 600; border-radius: 8px;"
                         title="Add to Cart">
-                        <i class="bi bi-cart3 me-md-2"></i><span class="d-none d-md-inline"> Add To Cart</span>
+                        <i class="bi bi-cart3 me-md-2"></i><span>Add To Cart</span>
                     </button>
                     <button type="button" class="btn btn-custom-buy btn-lg flex-fill buy-now-detail d-inline-flex align-items-center justify-content-center"
                         data-id="{{ $product->id }}"
@@ -429,7 +429,7 @@
                         data-image="{{ $allImages[0] }}"
                         style="font-size: 15px; font-weight: 600; border-radius: 8px;"
                         title="Buy Now">
-                        <i class="bi bi-lightning-fill me-md-2"></i><span class="d-none d-md-inline"> Buy Now</span>
+                        <i class="bi bi-lightning-fill me-md-2"></i><span>Buy Now</span>
                     </button>
                 </div>
             </div>

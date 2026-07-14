@@ -126,87 +126,94 @@
 
 <!-- ============ MOBILE & TABLET HEADER (Below 992px) ============ -->
 <div class="d-block d-lg-none">
-    <div class="header-row">
+    <div class="header-row py-2">
         <div class="wrap">
-            <!-- Top Row: Logo (left), Search (right) -->
-            <div class="d-flex justify-content-between align-items-center mb-3 gap-3">
-                <a class="d-flex align-items-center gap-2" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
-                    @if($companyLogo)
-                        <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 34px; border-radius: 4px;">
-                    @else
-                        <span class="logo-box">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
-                    @endif
-                </a>
+            <!-- Top Row: Toggles, Logo, Cart & Profile -->
+            <div class="d-flex justify-content-between align-items-center gap-2">
+                <!-- Left side: Toggles & Logo -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Nav Icon (Menu Drawer Trigger) -->
+                    <button type="button" class="icon-btn btn btn-link text-dark p-0" id="menuToggleBtn" style="text-decoration: none;">
+                        <i class="bi bi-list" style="font-size: 24px;"></i>
+                    </button>
 
-                <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative" style="max-width: 450px; width: 100%;">
-                    <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off">
-                    <button type="submit" class="btn"><i class="bi bi-search"></i></button>
-                    <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
-                </form>
+                    <!-- Category Icon (Category Drawer Trigger) -->
+                    <button type="button" class="icon-btn btn btn-link text-dark p-0" id="categoryToggleBtn" style="text-decoration: none;" title="Categories">
+                        <i class="bi bi-grid-3x3-gap-fill" style="font-size: 18px;"></i>
+                    </button>
+
+                    <!-- Logo -->
+                    <a class="d-flex align-items-center ms-1" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
+                        @if($companyLogo)
+                            <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 28px; border-radius: 4px;">
+                        @else
+                            <span class="logo-box" style="width:30px; height:30px; font-size:14px; border-radius:6px;">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+                        @endif
+                    </a>
+                </div>
+
+                <!-- Right side: Cart & Profile -->
+                <div class="d-flex align-items-center gap-2">
+                    <!-- Add to Cart Icon (Bag Icon) -->
+                    <div class="dropdown">
+                        <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownMobile" style="text-decoration:none;">
+                            <i class="bi bi-bag" style="font-size: 20px;"></i><span class="badge-num" style="width: 14px; height: 14px; font-size: 8px;">0</span>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end p-3 cart-dropdown-menu" aria-labelledby="cartDropdownMobile" style="width: 290px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
+                            <!-- Dynamically rendered cart items -->
+                        </ul>
+                    </div>
+
+                    <!-- Auth Icon with Dropdown -->
+                    <div class="dropdown">
+                        <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="authDropdownBtn" style="text-decoration: none;">
+                            @if (auth()->guard('admin')->check())
+                                <img src="https://placehold.co/26x26/1a73e8/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}"
+                                    class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
+                            @elseif(auth()->guard('web')->check())
+                                <img src="https://placehold.co/26x26/1a73e8/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"
+                                    class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
+                            @else
+                                <i class="bi bi-person" style="font-size: 22px;"></i>
+                            @endif
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end mt-2">
+                            @if (auth()->guard('admin')->check())
+                                <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->guard('admin')->user()->email }}</h6></li>
+                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('admin.logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                    </form>
+                                </li>
+                            @elseif(auth()->guard('web')->check())
+                                <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->user()->name }}</h6></li>
+                                <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="POST" action="{{ route('user.logout') }}">
+                                        @csrf
+                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                    </form>
+                                </li>
+                            @else
+                                <li><a class="dropdown-item" href="{{ route('user.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
+                                <li><a class="dropdown-item" href="{{ route('user.register') }}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
+                            @endif
+                        </ul>
+                    </div>
+                </div>
             </div>
 
-            <!-- Bottom Row: Nav Icon -> Category Icon -> Add to cart icon -> Auth Icon dropdown -->
-            <div class="d-flex align-items-center gap-3 pt-2 border-top">
-                <!-- Nav Icon (Menu Drawer Trigger) -->
-                <button type="button" class="icon-btn btn btn-link text-dark p-0" id="menuToggleBtn" style="text-decoration: none;">
-                    <i class="bi bi-list" style="font-size: 22px;"></i>
-                </button>
-
-                <!-- Category Icon (Category Drawer Trigger) -->
-                <button type="button" class="icon-btn btn btn-link text-dark p-0" id="categoryToggleBtn" style="text-decoration: none;" title="Categories">
-                    <i class="bi bi-grid-3x3-gap-fill" style="font-size: 18px;"></i>
-                </button>
-
-                <!-- Add to Cart Icon (Bag Icon) -->
-                <div class="dropdown">
-                    <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownMobile" style="text-decoration:none;">
-                        <i class="bi bi-bag"></i><span class="badge-num">0</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-start p-3 cart-dropdown-menu" aria-labelledby="cartDropdownMobile" style="width: 300px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
-                        <!-- Dynamically rendered cart items -->
-                    </ul>
-                </div>
-
-                <!-- Auth Icon with Dropdown -->
-                <div class="dropdown">
-                    <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="authDropdownBtn" style="text-decoration: none;">
-                        @if (auth()->guard('admin')->check())
-                            <img src="https://placehold.co/28x28/1a73e8/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}"
-                                class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
-                        @elseif(auth()->guard('web')->check())
-                            <img src="https://placehold.co/28x28/1a73e8/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"
-                                class="rounded-circle" style="width: 28px; height: 28px; object-fit: cover;">
-                        @else
-                            <i class="bi bi-person" style="font-size: 20px;"></i>
-                        @endif
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-start mt-2">
-                        @if (auth()->guard('admin')->check())
-                            <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->guard('admin')->user()->email }}</h6></li>
-                            <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('admin.logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                </form>
-                            </li>
-                        @elseif(auth()->guard('web')->check())
-                            <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->user()->name }}</h6></li>
-                            <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li>
-                                <form method="POST" action="{{ route('user.logout') }}">
-                                    @csrf
-                                    <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                </form>
-                            </li>
-                        @else
-                            <li><a class="dropdown-item" href="{{ route('user.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
-                            <li><a class="dropdown-item" href="{{ route('user.register') }}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
-                        @endif
-                    </ul>
-                </div>
+            <!-- Second Row: Full Width Search -->
+            <div class="mt-2 pt-2 border-top">
+                <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative w-100">
+                    <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="font-size: 13px; height: 38px;">
+                    <button type="submit" class="btn" style="height: 38px;"><i class="bi bi-search"></i></button>
+                    <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
+                </form>
             </div>
         </div>
     </div>

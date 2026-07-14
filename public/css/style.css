@@ -1590,96 +1590,91 @@ input[type="submit"]:hover {
    ========================================================================== */
 @media (max-width: 767.98px) {
 
-    /* Product card and home page action buttons: make them circular icon buttons */
-    .btn-add-to-cart.add-to-cart-btn,
-    .btn-buy-now.btn-bid,
-    .product-card-actions .add-to-cart-btn,
-    .product-card-actions .btn-bid {
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        border-radius: 2px !important;
-        padding: 0 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 14px !important;
-        flex: 0 0 36px !important;
-        margin: 0 !important;
-    }
-
-    /* Centering actions wrapper on mobile */
+    /* Stack actions vertically (one under the other) when they are together */
     .product-card-actions,
-    .prod-info .mt-2.d-flex,
-    .mini-prod .mt-2 {
+    .details-actions {
         display: flex !important;
-        justify-content: center !important;
-        gap: 12px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        gap: 6px !important;
     }
 
-    /* Best selling mini product details page buttons */
-    /* .mini-prod .add-to-cart-btn {
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        border-radius: 9px !important;
-        padding: 0 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 14px !important;
-        flex: 0 0 36px !important;
-        margin: 0 auto !important;
-    } */
-
-    /* New Arrivals sliding items actions */
-    .new-arrival-actions .btn-custom-cart.add-to-cart-btn,
-    .new-arrival-actions .btn-custom-buy.btn-bid {
-        width: 26px !important;
-        height: 26px !important;
-        min-width: 26px !important;
-        border-radius: 2px !important;
-        padding: 0 !important;
+    /* Style the action buttons on mobile (full width, proper height, visible text) */
+    .btn-add-to-cart,
+    .btn-buy-now,
+    .add-to-cart-btn,
+    .btn-bid,
+    .add-to-cart-detail,
+    .buy-now-detail {
+        width: 100% !important;
+        height: 34px !important;
+        min-width: 0 !important;
+        padding: 4px 8px !important;
+        border-radius: 6px !important;
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
         font-size: 11px !important;
-        flex: 0 0 26px !important;
+        font-weight: 600 !important;
+        flex: 1 1 auto !important;
+        margin: 0 !important;
+        transform: none !important;
     }
 
-    .new-arrival-actions {
+    /* Centering actions wrapper on mobile */
+    .prod-info .mt-2.d-flex,
+    .mini-prod .mt-2 {
         display: flex !important;
-        justify-content: flex-start !important;
+        justify-content: center !important;
         gap: 6px !important;
     }
 
-    /* Product details page main cart/buy buttons */
-    /* .details-actions .add-to-cart-detail,
-    .details-actions .buy-now-detail {
-        width: 46px !important;
-        height: 46px !important;
-        min-width: 46px !important;
-        border-radius: 50% !important;
-        padding: 0 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        font-size: 18px !important;
-        flex: 0 0 46px !important;
-    } */
-
-    .details-actions {
-        justify-content: flex-start !important;
-        gap: 15px !important;
+    /* Hide icons inside all details and list action buttons on mobile */
+    .add-to-cart-btn i,
+    .btn-bid i,
+    .add-to-cart-detail i,
+    .buy-now-detail i {
+        display: none !important;
     }
 
-    /* Force hide text spans inside action buttons on mobile */
-    .btn-add-to-cart span,
-    .btn-buy-now span,
+    /* Ensure text spans inside all action buttons are shown on mobile */
     .add-to-cart-btn span,
     .btn-bid span,
     .add-to-cart-detail span,
     .buy-now-detail span {
-        display: none !important;
+        display: inline !important;
+    }
+
+    /* Specific styles for New Arrival section on mobile */
+    .new-arrival-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: auto !important;
+    }
+
+    .new-arrival-actions .add-to-cart-btn,
+    .new-arrival-actions .btn-bid {
+        width: auto !important;
+        height: 24px !important;
+        min-width: 0 !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+        flex: 1 1 auto !important;
+        margin: 0 !important;
+    }
+
+    .newarrival-item img {
+        width: 75px !important;
+        height: 75px !important;
+        flex: 0 0 75px !important;
     }
 }
