@@ -47,13 +47,34 @@
                 <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
                     <div class="t text-dark hover-blue">{{ Str::limit($product->name, 35) }}</div>
                 </a>
-                <div class="code">Code: {{ $product->id < 100 ? 'P' . $product->id : $product->id }}</div>
+                <div class="prod-stars">
+                    @php $avgRating = $product->average_rating; @endphp
+                    @for ($s = 1; $s <= 5; $s++)
+                        @if ($s <= floor($avgRating))
+                            <i class="bi bi-star-fill star-filled"></i>
+                        @elseif ($s - $avgRating < 1 && $s - $avgRating > 0)
+                            <i class="bi bi-star-half star-filled"></i>
+                        @else
+                            <i class="bi bi-star star-empty"></i>
+                        @endif
+                    @endfor
+                    @if ($product->reviews_count > 0)
+                        <span class="prod-review-count">({{ $product->reviews_count }})</span>
+                    @endif
+                </div>
                 <div class="p">
                     @if ($hasDiscount)
                         Tk {{ number_format($discountedPrice, 0) }}
                         <span class="old">Tk {{ number_format($product->price, 0) }}</span>
                     @else
                         Tk {{ number_format($product->price, 0) }}
+                    @endif
+                </div>
+                <div class="prod-stock-badge">
+                    @if ($product->stock > 0)
+                        <span class="stock-in"><i class="bi bi-check-circle-fill"></i> In Stock</span>
+                    @else
+                        <span class="stock-out"><i class="bi bi-x-circle-fill"></i> Out of Stock</span>
                     @endif
                 </div>
             </div>

@@ -1128,7 +1128,7 @@ a {
     font-weight: 600 !important;
     color: #1a1a1a !important;
     line-height: 1.4 !important;
-    margin-bottom: 4px !important;
+    /* margin-bottom: 4px !important; */
     min-height: auto !important;
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important;
@@ -1160,6 +1160,51 @@ a {
     font-size: 12px !important;
     margin-left: 4px !important;
 }
+
+/* Star Rating */
+.prod-stars {
+    display: flex !important;
+    align-items: center !important;
+    gap: 2px !important;
+    margin-bottom: 6px !important;
+    font-size: 13px !important;
+}
+
+.prod-stars .star-filled {
+    color: #f5a623 !important;
+}
+
+.prod-stars .star-empty {
+    color: #000000 !important;
+}
+
+.prod-review-count {
+    font-size: 11px !important;
+    color: #888 !important;
+    margin-left: 3px !important;
+}
+
+/* Stock Badge */
+.prod-stock-badge {
+    margin-bottom: 10px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+.stock-in {
+    color: #0077e7 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
+.stock-out {
+    color: #c0392b !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+}
+
 
 .btn-buy-now {
     font-weight: 600 !important;

@@ -52,4 +52,14 @@ class Product extends Model
     {
         return $this->hasMany(Review::class)->latest();
     }
+
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->reviews_avg_rating ?? 0, 1);
+    }
+
+    public function getReviewsCountAttribute(): int
+    {
+        return (int) ($this->reviews_count ?? 0);
+    }
 }

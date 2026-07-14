@@ -52,25 +52,36 @@ class HomeController extends Controller
         $trendingCategories = Category::where('is_trending', true)->get();
         $featuredProducts = Product::where('is_featured', true)
             ->where('is_active', true)
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->latest()
             ->get();
 
         $bestSellingProducts = Product::where('is_active', true)
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->orderBy('sales_count', 'desc')
             ->take(5)
             ->get();
         $discountedProducts = Product::where('is_active', true)
             ->whereNotNull('discount_type')
             ->where('discount_value', '>', 0)
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->latest()
             ->take(5)
             ->get();
         $newArrivalProducts = Product::where('is_active', true)
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->latest()
             ->take(12)
             ->get();
         $search = request()->query('search');
-        $productsQuery = Product::where('is_active', true)->latest();
+        $productsQuery = Product::where('is_active', true)
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->latest();
 
         if (! empty($search)) {
             $productsQuery->where('name', 'like', '%'.$search.'%');
@@ -120,6 +131,8 @@ class HomeController extends Controller
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true)
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
             ->take(4)
             ->get();
 
@@ -140,7 +153,10 @@ class HomeController extends Controller
             $selectedSubCategory = SubCategory::find($subCatId);
         }
 
-        $products = $query->latest()
+        $products = $query
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->latest()
             ->paginate(12);
 
         return view('category-products', compact('category', 'products', 'selectedSubCategory'));
