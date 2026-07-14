@@ -35,6 +35,9 @@ test('authorized admin can update company settings', function () {
         'favicon' => $favicon,
         'address' => 'Mirpur, Dhaka',
         'phone' => '+8801234567890',
+        'email' => 'support@techcorp.com',
+        'whatsapp' => '+8801700000000',
+        'google_map' => 'https://google.com/maps/embed/test',
         'facebook' => 'https://facebook.com/techcorp',
         'twitter' => 'https://twitter.com/techcorp',
         'youtube' => 'https://youtube.com/techcorp',
@@ -52,6 +55,9 @@ test('authorized admin can update company settings', function () {
         ->and($stored['site_name'])->toBe('TechShop')
         ->and($stored['address'])->toBe('Mirpur, Dhaka')
         ->and($stored['phone'])->toBe('+8801234567890')
+        ->and($stored['email'])->toBe('support@techcorp.com')
+        ->and($stored['whatsapp'])->toBe('+8801700000000')
+        ->and($stored['google_map'])->toBe('https://google.com/maps/embed/test')
         ->and($stored['facebook'])->toBe('https://facebook.com/techcorp')
         ->and($stored['twitter'])->toBe('https://twitter.com/techcorp')
         ->and($stored['youtube'])->toBe('https://youtube.com/techcorp')

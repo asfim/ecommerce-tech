@@ -82,6 +82,25 @@
       @error('phone') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
+    <div class="mb-3">
+      <label class="form-label fw-bold">Company Email Address</label>
+      <input type="email" name="email" class="form-control" value="{{ old('email', $settings['email'] ?? '') }}" placeholder="e.g. info@ecommerce.com">
+      @error('email') <div class="text-danger small">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">WhatsApp Number</label>
+      <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp', $settings['whatsapp'] ?? '') }}" placeholder="e.g. +8801700000000">
+      @error('whatsapp') <div class="text-danger small">{{ $message }}</div> @enderror
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label fw-bold">Google Maps Embed Link (Iframe Src or URL)</label>
+      <textarea name="google_map" class="form-control" rows="3" placeholder="Paste Google Maps iframe src attribute or embed URL">{{ old('google_map', $settings['google_map'] ?? '') }}</textarea>
+      <div class="form-text text-muted">Paste the Google Maps embed URL (e.g. <code>https://www.google.com/maps/embed?pb=...</code>) or the full <code>&lt;iframe&gt;</code> HTML code.</div>
+      @error('google_map') <div class="text-danger small">{{ $message }}</div> @enderror
+    </div>
+
     <hr class="my-4">
     <h5 class="fw-bold mb-3"><i class="bi bi-share me-2 text-primary"></i>Social Media Links</h5>
 

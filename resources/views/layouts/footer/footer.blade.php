@@ -60,7 +60,7 @@
         <ul class="list-unstyled small">
           <li>Address: {{ $companySettings['address'] ?? 'Demo Address' }}</li>
           <li>Phone: {{ $companySettings['phone'] ?? '+01 123 456 789' }}</li>
-          <li>Email: info@ecommerce.com</li>
+          <li>Email: {{ $companySettings['email'] ?? 'info@ecommerce.com' }}</li>
         </ul>
       </div>
       <div class="col-12 col-lg-3 footer-col">

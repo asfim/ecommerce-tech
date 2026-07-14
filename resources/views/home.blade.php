@@ -49,57 +49,7 @@
                 </div>
             </div>
 
-            <!-- Featured products strip -->
-            <div class="featured-strip">
-                <div class="row align-items-center g-2">
-                    <div class="col-12 col-md-3"><b>Featured Products</b></div>
-                    <div class="col-10 col-md-8" style="overflow:hidden;">
-                        <div id="featuredSlider" style="display:flex;transition:transform .4s ease;gap:0;">
-                            @forelse($featuredProducts as $fp)
-                                <div class="fs-item" style="display:flex;align-items:center;gap:10px;">
-                                    @if ($fp->image)
-                                        <a href="{{ route('product.details', $fp->slug) }}">
-                                            <img src="{{ asset('storage/' . $fp->image) }}"
-                                                style="width:90px;height:100px;object-fit:cover;border-radius:6px;">
-                                        </a>
-                                    @else
-                                        <a href="{{ route('product.details', $fp->slug) }}">
-                                            <img src="https://placehold.co/50x50/eee/aaa?text=No+Img"
-                                                style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
-                                        </a>
-                                    @endif
-                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                        <div>
-                                            <a href="{{ route('product.details', $fp->slug) }}" class="text-dark hover-blue">
-                                                <div class="t">{{ Str::limit($fp->name, 35) }}</div>
-                                            </a>
-                                            <div class="p">${{ number_format($fp->price, 2) }}</div>
-                                        </div>
-                                        <button type="button"
-                                            class="btn btn-sm btn-outline-primary rounded-circle p-0 d-inline-flex align-items-center justify-content-center add-to-cart-btn"
-                                            style="width:24px;height:24px;min-width:24px;" data-id="{{ $fp->id }}"
-                                            data-name="{{ $fp->name }}" data-price="{{ $fp->price }}"
-                                            data-image="{{ $fp->image ? asset('storage/' . $fp->image) : 'https://placehold.co/50x50/eee/aaa?text=No+Img' }}"
-                                            title="Add to Cart">
-                                            <i class="bi bi-plus-lg" style="font-size:10px;"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-muted small px-2">No featured products yet.</div>
-                            @endforelse
-                        </div>
-                    </div>
-                    <div class="col-2 col-md-1 text-end d-flex justify-content-end gap-1">
-                        <span class="arrow d-inline-flex" id="featuredPrev"
-                            style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                                class="bi bi-chevron-left"></i></span>
-                        <span class="arrow d-inline-flex" id="featuredNext"
-                            style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                                class="bi bi-chevron-right"></i></span>
-                    </div>
-                </div>
-            </div>
+
         </div>
     </div>
 
@@ -179,10 +129,13 @@
                 </div>
             </div>
 
+
         </div>
+
 
         <!-- Promo 3 banners -->
         <div class="row g-3 mb-4">
+
             <div class="col-12 col-md-4">
                 <div class="promo3">
                     @if (!empty($bestSellingBanners[0]))
@@ -211,6 +164,57 @@
                 </div>
             </div>
         </div>
+        <!-- Featured products strip -->
+            <div class="featured-strip">
+                <div class="row align-items-center g-2">
+                    <div class="col-12 col-md-3"><b>Featured Products</b></div>
+                    <div class="col-10 col-md-8" style="overflow:hidden;">
+                        <div id="featuredSlider" style="display:flex;transition:transform .4s ease;gap:0;">
+                            @forelse($featuredProducts as $fp)
+                                <div class="fs-item" style="display:flex;align-items:center;gap:10px;">
+                                    @if ($fp->image)
+                                        <a href="{{ route('product.details', $fp->slug) }}">
+                                            <img src="{{ asset('storage/' . $fp->image) }}"
+                                                style="width:90px;height:100px;object-fit:cover;border-radius:6px;">
+                                        </a>
+                                    @else
+                                        <a href="{{ route('product.details', $fp->slug) }}">
+                                            <img src="https://placehold.co/50x50/eee/aaa?text=No+Img"
+                                                style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
+                                        </a>
+                                    @endif
+                                    <div class="d-flex align-items-center justify-content-between w-100">
+                                        <div>
+                                            <a href="{{ route('product.details', $fp->slug) }}" class="text-dark hover-blue">
+                                                <div class="t">{{ Str::limit($fp->name, 35) }}</div>
+                                            </a>
+                                            <div class="p">${{ number_format($fp->price, 2) }}</div>
+                                        </div>
+                                        <button type="button"
+                                            class="btn btn-sm btn-outline-primary rounded-circle p-0 d-inline-flex align-items-center justify-content-center add-to-cart-btn"
+                                            style="width:24px;height:24px;min-width:24px;" data-id="{{ $fp->id }}"
+                                            data-name="{{ $fp->name }}" data-price="{{ $fp->price }}"
+                                            data-image="{{ $fp->image ? asset('storage/' . $fp->image) : 'https://placehold.co/50x50/eee/aaa?text=No+Img' }}"
+                                            title="Add to Cart">
+                                            <i class="bi bi-plus-lg" style="font-size:10px;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="text-muted small px-2">No featured products yet.</div>
+                            @endforelse
+                        </div>
+                    </div>
+                    <div class="col-2 col-md-1 text-end d-flex justify-content-end gap-1">
+                        <span class="arrow d-inline-flex" id="featuredPrev"
+                            style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
+                                class="bi bi-chevron-left"></i></span>
+                        <span class="arrow d-inline-flex" id="featuredNext"
+                            style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
+                                class="bi bi-chevron-right"></i></span>
+                    </div>
+                </div>
+            </div>
 
         <!-- New Arrival -->
         <div class="row g-3 mb-4">
@@ -395,6 +399,7 @@
 
         <!-- Product grid -->
         <div id="products-grid" class="row g-3 mb-3">
+            <div><h5 class="fw-bold mb-0">All Products</h5></div>
             @forelse($products as $product)
                 @include('frontend.partials.product_card', ['product' => $product])
             @empty

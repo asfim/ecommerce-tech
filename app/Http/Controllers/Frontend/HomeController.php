@@ -154,4 +154,14 @@ class HomeController extends Controller
 
         return view('checkout');
     }
+
+    /**
+     * Display the contact page.
+     */
+    public function contact(): View
+    {
+        $companySettings = HomepageSetting::get('company_settings', []);
+
+        return view('frontend.contact', compact('companySettings'));
+    }
 }

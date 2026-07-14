@@ -118,7 +118,7 @@
                 <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
                 <li><a href="#">About</a></li>
                 <li><a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.*') ? 'active' : '' }}">Blog</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
             </ul>
         </div>
     </div>
@@ -227,7 +227,7 @@
             <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="bi bi-house-door me-2"></i>Home</a></li>
             <li><a href="#"><i class="bi bi-info-circle me-2"></i>About</a></li>
             <li><a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.*') ? 'active' : '' }}"><i class="bi bi-journal-text me-2"></i>Blog</a></li>
-            <li><a href="#"><i class="bi bi-envelope me-2"></i>Contact</a></li>
+            <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="bi bi-envelope me-2"></i>Contact</a></li>
         </ul>
     </div>
 </div>

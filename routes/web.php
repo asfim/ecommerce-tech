@@ -43,6 +43,7 @@ Route::get('/blog', [BlogController::class, 'index'])->name('blogs.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blogs.show');
 Route::get('/page/{slug}', [FrontendPageController::class, 'show'])->name('page.show');
 Route::get('/checkout', [HomeController::class, 'checkout'])->name('checkout');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/order/place', [OrderController::class, 'store'])->name('order.store');
 Route::post('/coupon/apply', [CouponController::class, 'apply'])->name('coupon.apply');
 Route::get('/order/invoice/{invoiceNo}', [OrderController::class, 'invoice'])->name('order.invoice');
