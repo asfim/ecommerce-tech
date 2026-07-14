@@ -33,12 +33,7 @@
             <h2>{{ $totalOrders }}</h2>
         </div>
     </div>
-    <div class="col-md-3">
-        <div class="stat-card">
-            <p>Wishlist</p>
-            <h2>0</h2>
-        </div>
-    </div>
+
     <div class="col-md-3">
         <div class="stat-card">
             <p>Coupons</p>

@@ -166,7 +166,7 @@
         </div>
         <!-- Featured products strip -->
             <div class="featured-strip">
-                <div class="row align-items-center g-2">
+                <div class="row align-items-center g-2" style="background-color: #d8d8d8;">
                     <div class="col-12 col-md-3"><b>Featured Products</b></div>
                     <div class="col-10 col-md-8" style="overflow:hidden;">
                         <div id="featuredSlider" style="display:flex;transition:transform .4s ease;gap:0;">

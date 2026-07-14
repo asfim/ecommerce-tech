@@ -28,7 +28,7 @@
             </form>
 
             <div class="d-flex align-items-center gap-2">
-                <a href="#" class="icon-btn"><i class="bi bi-heart"></i><span class="badge-num">3</span></a>
+
                 <div class="dropdown">
                     <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownDesktop" style="text-decoration:none;">
                         <i class="bi bi-bag"></i><span class="badge-num">0</span>

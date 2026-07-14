@@ -21,9 +21,7 @@
                     @endif
                 @endif
 
-                <span class="wishlist-heart" title="Add to Wishlist">
-                    <i class="bi bi-heart"></i>
-                </span>
+
 
                 @if ($product->stock <= 5 && $product->stock > 0)
                     <span class="badge bg-primary position-absolute"

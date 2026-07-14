@@ -493,11 +493,19 @@ a {
 
 .season-banner img {
     position: absolute;
-    bottom: 0;
-    right: 0;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
     object-fit: cover;
     opacity: .9;
+}
+
+@media (max-width: 767px) {
+    .brand-banner,
+    .season-banner {
+        height: 180px;
+    }
 }
 
 .season-banner .cap {
@@ -507,7 +515,7 @@ a {
 }
 
 .hotcat-panel {
-    background: #fff;
+    background: #d8d8d8;
     border-radius: 10px;
     padding: 18px;
     min-height: 290px;
@@ -590,6 +598,7 @@ a {
 
 .trending-box {
     /* border: 2px solid var(--blue); */
+    background: #d8d8d8;
     border-radius: 6px;
     padding: 16px;
     margin: 20px 0;
@@ -767,7 +776,7 @@ a {
 }
 
 .newarrival-banner {
-    background: #d8cdb8;
+    background: #d8d8d8;
     border-radius: 6px;
     min-height: 250px;
     display: flex;
@@ -798,7 +807,7 @@ a {
 }
 
 .newarrival-list-panel {
-    background: #e6dfd0;
+    background: #d8d8d8;
     border-radius: 6px;
 }
 
