@@ -174,6 +174,31 @@
     border-color: #1a73e8;
 }
 
+.variant-btn {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+    transition: all 0.2s ease-in-out;
+}
+
+.variant-btn:hover {
+    background-color: #f8f9fa !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
+}
+
+.variant-btn.active {
+    background-color: #1a73e8 !important;
+    color: #ffffff !important;
+    border-color: #1a73e8 !important;
+}
+
+.variant-btn.active:hover {
+    background-color: #155cb0 !important;
+    color: #ffffff !important;
+    border-color: #155cb0 !important;
+}
+
 .tab-content-panel {
     display: none;
     padding: 20px;

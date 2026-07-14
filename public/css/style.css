@@ -1569,9 +1569,9 @@ button:not(.btn-close):not(.icon-btn):not(.navbar-toggler),
 .btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler),
 input[type="button"],
 input[type="submit"] {
-    background-color: var(--blue, #1a73e8) !important;
-    border-color: var(--blue, #1a73e8) !important;
-    color: #fff !important;
+    background-color: var(--blue, #1a73e8) ;
+    border-color: var(--blue, #1a73e8) ;
+    color: #fff ;
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out !important;
 }
 

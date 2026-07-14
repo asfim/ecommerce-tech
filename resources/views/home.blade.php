@@ -233,11 +233,9 @@
                         <b>New Arrival</b>
                         <div class="d-flex gap-2 align-items-center">
                             <small class="text-muted">Products ({{ $newArrivalProducts->count() }})</small>
-                            <span class="arrow d-inline-flex" id="newArrivalPrev"
-                                style="width:24px;height:24px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;font-size:10px;"><i
+                            <span class="arrow d-inline-flex" id="newArrivalPrev"><i
                                     class="bi bi-chevron-left"></i></span>
-                            <span class="arrow d-inline-flex" id="newArrivalNext"
-                                style="width:24px;height:24px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;font-size:10px;"><i
+                            <span class="arrow d-inline-flex" id="newArrivalNext"><i
                                     class="bi bi-chevron-right"></i></span>
                         </div>
                     </div>
