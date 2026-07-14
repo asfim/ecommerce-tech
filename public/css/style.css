@@ -34,6 +34,7 @@ a {
     background: linear-gradient(90deg, var(--blue), #5aa0ff);
 }
 
+<<<<<<< HEAD
 .main-header {
     position: sticky;
     top: 0;
@@ -42,6 +43,8 @@ a {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
 
+=======
+>>>>>>> 9b97e9fa967a9595433c27b8f14af5653ac5830d
 
 /* ==========================================================================
    HEADER ROW & NAVIGATION
@@ -704,7 +707,11 @@ a {
 
 .mini-img-wrap img {
     width: 100% !important;
+<<<<<<< HEAD
     height: 280px !important;
+=======
+    height: 100% !important;
+>>>>>>> 9b97e9fa967a9595433c27b8f14af5653ac5830d
     object-fit: contain !important;
     object-position: center !important;
     border-radius: 8px !important;

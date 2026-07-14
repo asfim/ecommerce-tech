@@ -126,7 +126,11 @@
 
         @if ($perPage !== 'all' && $products instanceof \Illuminate\Pagination\LengthAwarePaginator && $products->hasPages())
             <div class="d-flex justify-content-center mt-3">
+<<<<<<< HEAD
                 {{-- {{ $products->withQueryString()->links() }} --}}
+=======
+                {{ $products->withQueryString()->links() }}
+>>>>>>> 9b97e9fa967a9595433c27b8f14af5653ac5830d
             </div>
         @endif
     </div>
@@ -199,7 +203,11 @@
         function updateBulkDeleteButton() {
             const checkedBoxes = document.querySelectorAll('.product-checkbox:checked');
             const count = checkedBoxes.length;
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> 9b97e9fa967a9595433c27b8f14af5653ac5830d
             if (count > 0) {
                 bulkDeleteBtn.style.display = 'inline-block';
                 selectedCountSpan.textContent = count;

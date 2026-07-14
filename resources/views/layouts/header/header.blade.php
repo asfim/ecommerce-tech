@@ -4,7 +4,10 @@
     $companyLogo = $companySettings['logo'] ?? null;
 @endphp
 
+<<<<<<< HEAD
 <header class="main-header">
+=======
+>>>>>>> 9b97e9fa967a9595433c27b8f14af5653ac5830d
 <div class="topline"></div>
 
 <!-- ============ DESKTOP HEADER (992px and up) ============ -->
@@ -209,7 +212,10 @@
         </div>
     </div>
 </div>
+<<<<<<< HEAD
 </header>
+=======
+>>>>>>> 9b97e9fa967a9595433c27b8f14af5653ac5830d
 
 <!-- Mobile Drawer Backdrop -->
 <div class="drawer-backdrop" id="drawerBackdrop"></div>
