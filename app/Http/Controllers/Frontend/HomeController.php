@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\HomepageSetting;
 use App\Models\Product;
+use App\Models\SubCategory;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -127,15 +129,24 @@ class HomeController extends Controller
     public function categoryProducts(int $id): View
     {
         $category = Category::findOrFail($id);
-        $products = Product::where('category_id', $category->id)
-            ->where('is_active', true)
-            ->latest()
+
+        $query = Product::where('category_id', $category->id)
+            ->where('is_active', true);
+
+        $selectedSubCategory = null;
+        if (request()->has('subcategory')) {
+            $subCatId = request()->query('subcategory');
+            $query->where('sub_category_id', $subCatId);
+            $selectedSubCategory = SubCategory::find($subCatId);
+        }
+
+        $products = $query->latest()
             ->paginate(12);
 
-        return view('category-products', compact('category', 'products'));
+        return view('category-products', compact('category', 'products', 'selectedSubCategory'));
     }
 
-    public function checkout(): View|\Illuminate\Http\RedirectResponse
+    public function checkout(): View|RedirectResponse
     {
         if (! auth()->check()) {
             return redirect()->route('user.login');

@@ -99,10 +99,12 @@
                     <div class="row g-3">
                         @foreach($categories as $category)
                             <div class="col-4">
-                                <div class="mega-col-title">{{ $category->name }}</div>
+                                <div class="mega-col-title">
+                                    <a href="{{ route('category.products', $category->id) }}" class="text-decoration-none text-dark hover-blue">{{ $category->name }}</a>
+                                </div>
                                 <div class="mega-list">
                                     @foreach($category->subCategories as $subCategory)
-                                        <a href="#"><i class="bi bi-dot"></i> {{ $subCategory->name }}</a>
+                                        <a href="{{ route('category.products', [$category->id, 'subcategory' => $subCategory->id]) }}"><i class="bi bi-dot"></i> {{ $subCategory->name }}</a>
                                     @endforeach
                                 </div>
                             </div>
@@ -240,10 +242,12 @@
         <div class="mobile-categories-list">
             @foreach($categories as $category)
                 <div class="mb-3">
-                    <div class="fw-bold border-bottom pb-1 mb-2 text-dark" style="font-size:14px;">{{ $category->name }}</div>
+                    <div class="fw-bold border-bottom pb-1 mb-2 text-dark" style="font-size:14px;">
+                        <a href="{{ route('category.products', $category->id) }}" class="text-decoration-none text-dark hover-blue">{{ $category->name }}</a>
+                    </div>
                     <div class="ps-2">
                         @foreach($category->subCategories as $subCategory)
-                            <a href="#" class="d-block py-1 text-muted small" style="text-decoration:none;"><i class="bi bi-dot"></i> {{ $subCategory->name }}</a>
+                            <a href="{{ route('category.products', [$category->id, 'subcategory' => $subCategory->id]) }}" class="d-block py-1 text-muted small" style="text-decoration:none;"><i class="bi bi-dot"></i> {{ $subCategory->name }}</a>
                         @endforeach
                     </div>
                 </div>

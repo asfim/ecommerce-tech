@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $category->name)
+@section('title', $selectedSubCategory ? $selectedSubCategory->name : $category->name)
 
 @section('content')
 <div class="category-page py-5" style="background: #f8f9fa; min-height: 70vh;">
@@ -9,14 +9,21 @@
         <nav aria-label="breadcrumb" class="mb-4">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none text-muted">Home</a></li>
-                <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ $category->name }}</li>
+                @if($selectedSubCategory)
+                    <li class="breadcrumb-item"><a href="{{ route('category.products', $category->id) }}" class="text-decoration-none text-muted">{{ $category->name }}</a></li>
+                    <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ $selectedSubCategory->name }}</li>
+                @else
+                    <li class="breadcrumb-item active text-dark fw-semibold" aria-current="page">{{ $category->name }}</li>
+                @endif
             </ol>
         </nav>
 
         <div class="row align-items-center mb-5">
             <div class="col-md-8">
-                <h1 class="fw-bold mb-1 text-dark" style="font-size: 2.2rem; letter-spacing: -0.5px;">{{ $category->name }}</h1>
-                <p class="text-muted mb-0">Browse our collection of premium quality products in {{ $category->name }}</p>
+                <h1 class="fw-bold mb-1 text-dark" style="font-size: 2.2rem; letter-spacing: -0.5px;">
+                    {{ $selectedSubCategory ? $selectedSubCategory->name : $category->name }}
+                </h1>
+                <p class="text-muted mb-0">Browse our collection of premium quality products in {{ $selectedSubCategory ? $selectedSubCategory->name : $category->name }}</p>
             </div>
             <div class="col-md-4 text-md-end mt-3 mt-md-0">
                 <span class="badge bg-dark px-3 py-2 fs-6 rounded-pill">{{ $products->total() }} Products</span>
@@ -40,7 +47,7 @@
 
             <!-- Pagination -->
             <div class="d-flex justify-content-center mt-5">
-                {{-- {{ $products->links() }} --}}
+                {{ $products->withQueryString()->links() }}
             </div>
         @endif
     </div>
