@@ -1,0 +1,105 @@
+<?php
+
+// config for SabitAhmad/SteadFast
+return [
+    /*
+    |--------------------------------------------------------------------------
+    | API Credentials
+    |--------------------------------------------------------------------------
+    |
+    | Your Steadfast API credentials. You can get these from your Steadfast
+    | merchant panel.
+    |
+    */
+    'api_key' => env('STEADFAST_API_KEY'),
+    'secret_key' => env('STEADFAST_SECRET_KEY'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | API Configuration
+    |--------------------------------------------------------------------------
+    */
+    'base_url' => env('STEADFAST_BASE_URL', 'https://portal.packzy.com/api/v1'),
+    'timeout' => env('STEADFAST_TIMEOUT', 30),
+    'connect_timeout' => env('STEADFAST_CONNECT_TIMEOUT', 10),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bulk Order Configuration
+    |--------------------------------------------------------------------------
+    */
+    'bulk' => [
+        'queue' => env('STEADFAST_BULK_QUEUE', false),
+        'chunk_size' => env('STEADFAST_BULK_CHUNK_SIZE', 500),
+        'queue_name' => env('STEADFAST_QUEUE_NAME', 'default'),
+        'queue_connection' => env('STEADFAST_QUEUE_CONNECTION', null),
+        'max_attempts' => env('STEADFAST_BULK_MAX_ATTEMPTS', 3),
+        'backoff_seconds' => env('STEADFAST_BULK_BACKOFF', 60),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Retry Configuration
+    |--------------------------------------------------------------------------
+    */
+    'retry' => [
+        'times' => env('STEADFAST_RETRY_TIMES', 3),
+        'sleep' => env('STEADFAST_RETRY_SLEEP', 1000), // milliseconds
+        'when' => [
+            // Retry on these HTTP status codes
+            500, 502, 503, 504, 429,
+        ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logging Configuration
+    |--------------------------------------------------------------------------
+    */
+    'logging' => [
+        'enabled' => env('STEADFAST_LOGGING', true),
+        'log_requests' => env('STEADFAST_LOG_REQUESTS', false),
+        'log_responses' => env('STEADFAST_LOG_RESPONSES', true),
+        'cleanup_logs' => env('STEADFAST_CLEANUP_LOGS', true),
+        'keep_logs_days' => env('STEADFAST_KEEP_LOGS_DAYS', 30),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cache Configuration
+    |--------------------------------------------------------------------------
+    */
+    'cache' => [
+        'enabled' => env('STEADFAST_CACHE_ENABLED', false),
+        'ttl' => env('STEADFAST_CACHE_TTL', 300), // 5 minutes
+        'prefix' => env('STEADFAST_CACHE_PREFIX', 'steadfast'),
+        'store' => env('STEADFAST_CACHE_STORE'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Fraud Checker Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure fraud checking via web scraping. This requires valid Steadfast
+    | merchant panel credentials. The fraud checker will login, fetch customer
+    | order history, and logout automatically.
+    |
+    */
+    'fraud_checker' => [
+        'enabled' => env('STEADFAST_FRAUD_CHECKER_ENABLED', false),
+        'email' => env('STEADFAST_FRAUD_CHECKER_EMAIL'),
+        'password' => env('STEADFAST_FRAUD_CHECKER_PASSWORD'),
+
+        // Risk thresholds (percentage)
+        'risk_thresholds' => [
+            'very_high' => env('STEADFAST_FRAUD_VERY_HIGH_THRESHOLD', 75),
+            'high' => env('STEADFAST_FRAUD_HIGH_THRESHOLD', 50),
+            'medium' => env('STEADFAST_FRAUD_MEDIUM_THRESHOLD', 25),
+        ],
+
+        // Cache fraud check results to reduce load
+        'cache_enabled' => env('STEADFAST_FRAUD_CACHE_ENABLED', true),
+        'cache_ttl' => env('STEADFAST_FRAUD_CACHE_TTL', 3600), // 1 hour
+    ],
+];
