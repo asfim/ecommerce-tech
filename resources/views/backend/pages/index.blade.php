@@ -15,7 +15,7 @@
 @endif
 
 <div class="stat-card">
-  <table class="table table-bordered align-middle mb-0">
+  <table class="table table-bordered align-middle mb-0" style="border-color: #a1a1a1 !important;">
     <thead class="table-dark">
       <tr>
         <th>#</th>

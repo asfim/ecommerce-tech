@@ -35,7 +35,7 @@
     <div class="alert alert-success">{{ session('success') }}</div>
   @endif
 
-  <table class="table table-bordered">
+  <table class="table table-bordered" style="border-color: #a1a1a1 !important;">
     <thead>
       <tr>
         <th>#</th>

@@ -29,7 +29,7 @@
 <div class="stat-card">
   <h5 class="mb-3 fw-bold"><i class="bi bi-list-columns-reverse me-2 text-primary"></i>Audit Log Entries</h5>
 
-  <table class="table table-striped align-middle">
+  <table class="table table-striped align-middle" style="border-color: #a1a1a1 !important;">
     <thead class="table-light">
       <tr>
         <th style="width:180px;">Timestamp</th>

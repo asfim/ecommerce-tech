@@ -25,24 +25,24 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
-        <input type="text" name="name" class="form-control" value="{{ old('name', $account->name) }}" required>
+        <input type="text" name="name" class="form-control" value="{{ old('name', $account->name) }}" required style="border-color: #a1a1a1 !important;">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
-        <input type="email" name="email" class="form-control" value="{{ old('email', $account->email) }}" required>
+        <input type="email" name="email" class="form-control" value="{{ old('email', $account->email) }}" required style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">New Password <span class="text-muted small fw-normal">(leave blank to keep current)</span></label>
-        <input type="password" name="password" class="form-control" placeholder="New password">
+        <input type="password" name="password" class="form-control" placeholder="New password" style="border-color: #a1a1a1 !important;">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Confirm New Password</label>
-        <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm new password">
+        <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm new password" style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 

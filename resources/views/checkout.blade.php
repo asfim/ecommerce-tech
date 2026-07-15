@@ -176,11 +176,11 @@
         <div class="g-row g-2">
           <div>
             <label class="field-label">Full Name</label>
-            <input type="text" id="checkoutName" class="checkout-input w-100" placeholder="Your full name" required>
+            <input type="text" id="checkoutName" class="checkout-input w-100" placeholder="Your full name" required style="border-color: #a1a1a1 !important;">
           </div>
           <div>
             <label class="field-label">Phone number</label>
-            <input type="tel" id="checkoutPhone" class="checkout-input w-100" placeholder="+8801xxxxxxxxx" required>
+            <input type="tel" id="checkoutPhone" class="checkout-input w-100" placeholder="+8801xxxxxxxxx" required style="border-color: #a1a1a1 !important;">
           </div>
         </div>
         <div class="g-row" style="grid-template-columns:1fr; margin-bottom:0;">
@@ -196,14 +196,14 @@
         <div class="hint">Select your delivery zone.</div>
         <label class="ship-option selected">
           <div class="left">
-            <input type="radio" name="ship" value="60" checked>
+            <input type="radio" name="ship" value="60" checked style="border-color: #a1a1a1 !important;">
             <div><div class="t">Inside Dhaka</div><div class="s">Delivery within 1–2 business days</div></div>
           </div>
           <div class="price mono">৳60.00</div>
         </label>
         <label class="ship-option">
           <div class="left">
-            <input type="radio" name="ship" value="120">
+            <input type="radio" name="ship" value="120" style="border-color: #a1a1a1 !important;">
             <div><div class="t">Outside Dhaka</div><div class="s">Delivery within 3–5 business days</div></div>
           </div>
           <div class="price mono">৳120.00</div>
@@ -250,7 +250,7 @@
     </div>
     <div>
       <div class="promo-row">
-        <input type="text" id="couponCode" class="checkout-input" placeholder="Discount code">
+        <input type="text" id="couponCode" class="checkout-input" placeholder="Discount code" style="border-color: #a1a1a1 !important;">
         <button type="button" id="applyCouponBtn">Apply</button>
       </div>
       <div id="couponMessage" class="px-4 pb-2 small" style="display:none; font-weight:600;"></div>

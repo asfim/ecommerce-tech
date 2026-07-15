@@ -30,7 +30,7 @@
       @if(request('per_page'))
         <input type="hidden" name="per_page" value="{{ request('per_page') }}">
       @endif
-      <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Search by product name and invoice ..." style="width: 240px;">
+      <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Search by product name and invoice ..." style="width: 240px; border-color: #a1a1a1 !important;">
       <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search"></i></button>
       @if(request('search') || request('per_page'))
         <a href="{{ route('user.orders.index') }}" class="btn btn-outline-secondary btn-sm" title="Clear Filters"><i class="bi bi-x-lg"></i></a>
@@ -39,7 +39,7 @@
   </div>
 
   @if($orders->count() > 0)
-    <table class="table table-bordered align-middle">
+    <table class="table table-bordered align-middle" style="border-color: #a1a1a1 !important;">
       <thead>
         <tr>
           <th style="width:60px;">#</th>

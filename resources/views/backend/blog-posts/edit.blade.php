@@ -33,7 +33,7 @@
 
     <div class="mb-3">
       <label class="form-label fw-bold">Title</label>
-      <input type="text" name="title" class="form-control" value="{{ old('title', $blogPost->title) }}" placeholder="e.g. Top 10 E-commerce Trends" required>
+      <input type="text" name="title" class="form-control" value="{{ old('title', $blogPost->title) }}" placeholder="e.g. Top 10 E-commerce Trends" required style="border-color: #a1a1a1 !important;">
       @error('title') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
     </div>
 
@@ -44,7 +44,7 @@
           <img src="{{ asset('storage/' . $blogPost->image) }}" class="rounded border img-thumbnail" style="max-height: 150px;">
         </div>
       @endif
-      <input type="file" name="image" class="form-control" accept="image/*">
+      <input type="file" name="image" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
       <div class="text-muted small mt-1">Leave blank to keep current image. Recommended size: 1200x600 pixels. Max size: 2MB.</div>
       @error('image') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
     </div>

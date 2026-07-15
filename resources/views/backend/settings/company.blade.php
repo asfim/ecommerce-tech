@@ -36,13 +36,13 @@
     
     <div class="mb-3">
       <label class="form-label fw-bold">Company Name</label>
-      <input type="text" name="name" class="form-control" value="{{ old('name', $settings['name'] ?? '') }}" required>
+      <input type="text" name="name" class="form-control" value="{{ old('name', $settings['name'] ?? '') }}" required style="border-color: #a1a1a1 !important;">
       @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Site Name</label>
-      <input type="text" name="site_name" class="form-control" value="{{ old('site_name', $settings['site_name'] ?? '') }}" required>
+      <input type="text" name="site_name" class="form-control" value="{{ old('site_name', $settings['site_name'] ?? '') }}" required style="border-color: #a1a1a1 !important;">
       @error('site_name') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
@@ -53,7 +53,7 @@
           <img src="{{ asset('storage/' . $settings['logo']) }}" alt="Company Logo" class="img-thumbnail" style="max-height: 80px;">
         </div>
       @endif
-      <input type="file" name="logo" class="form-control">
+      <input type="file" name="logo" class="form-control" style="border-color: #a1a1a1 !important;">
       <div class="form-text text-muted">Recommended: Landscape orientation with a transparent background. Max size: 2MB.</div>
       @error('logo') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
@@ -65,7 +65,7 @@
           <img src="{{ asset('storage/' . $settings['favicon']) }}" alt="Company Favicon" class="img-thumbnail" style="max-height: 48px; width: 48px; object-fit: contain;">
         </div>
       @endif
-      <input type="file" name="favicon" class="form-control">
+      <input type="file" name="favicon" class="form-control" style="border-color: #a1a1a1 !important;">
       <div class="form-text text-muted">Recommended: Square format (e.g. 32x32 or 48x48 pixels). Max size: 1MB.</div>
       @error('favicon') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
@@ -78,19 +78,19 @@
 
     <div class="mb-3">
       <label class="form-label fw-bold">Company Phone Number</label>
-      <input type="text" name="phone" class="form-control" value="{{ old('phone', $settings['phone'] ?? '') }}" placeholder="e.g. +8801700000000">
+      <input type="text" name="phone" class="form-control" value="{{ old('phone', $settings['phone'] ?? '') }}" placeholder="e.g. +8801700000000" style="border-color: #a1a1a1 !important;">
       @error('phone') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Company Email Address</label>
-      <input type="email" name="email" class="form-control" value="{{ old('email', $settings['email'] ?? '') }}" placeholder="e.g. info@ecommerce.com">
+      <input type="email" name="email" class="form-control" value="{{ old('email', $settings['email'] ?? '') }}" placeholder="e.g. info@ecommerce.com" style="border-color: #a1a1a1 !important;">
       @error('email') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">WhatsApp Number</label>
-      <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp', $settings['whatsapp'] ?? '') }}" placeholder="e.g. +8801700000000">
+      <input type="text" name="whatsapp" class="form-control" value="{{ old('whatsapp', $settings['whatsapp'] ?? '') }}" placeholder="e.g. +8801700000000" style="border-color: #a1a1a1 !important;">
       @error('whatsapp') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
@@ -107,12 +107,12 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label small fw-semibold">Facebook URL</label>
-        <input type="url" name="facebook" class="form-control form-control-sm" value="{{ old('facebook', $settings['facebook'] ?? '') }}" placeholder="https://facebook.com/yourpage">
+        <input type="url" name="facebook" class="form-control form-control-sm" value="{{ old('facebook', $settings['facebook'] ?? '') }}" placeholder="https://facebook.com/yourpage" style="border-color: #a1a1a1 !important;">
         @error('facebook') <div class="text-danger small">{{ $message }}</div> @enderror
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label small fw-semibold">Twitter / X URL</label>
-        <input type="url" name="twitter" class="form-control form-control-sm" value="{{ old('twitter', $settings['twitter'] ?? '') }}" placeholder="https://twitter.com/yourhandle">
+        <input type="url" name="twitter" class="form-control form-control-sm" value="{{ old('twitter', $settings['twitter'] ?? '') }}" placeholder="https://twitter.com/yourhandle" style="border-color: #a1a1a1 !important;">
         @error('twitter') <div class="text-danger small">{{ $message }}</div> @enderror
       </div>
     </div>
@@ -120,12 +120,12 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label small fw-semibold">YouTube URL</label>
-        <input type="url" name="youtube" class="form-control form-control-sm" value="{{ old('youtube', $settings['youtube'] ?? '') }}" placeholder="https://youtube.com/c/yourchannel">
+        <input type="url" name="youtube" class="form-control form-control-sm" value="{{ old('youtube', $settings['youtube'] ?? '') }}" placeholder="https://youtube.com/c/yourchannel" style="border-color: #a1a1a1 !important;">
         @error('youtube') <div class="text-danger small">{{ $message }}</div> @enderror
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label small fw-semibold">Instagram URL</label>
-        <input type="url" name="instagram" class="form-control form-control-sm" value="{{ old('instagram', $settings['instagram'] ?? '') }}" placeholder="https://instagram.com/yourprofile">
+        <input type="url" name="instagram" class="form-control form-control-sm" value="{{ old('instagram', $settings['instagram'] ?? '') }}" placeholder="https://instagram.com/yourprofile" style="border-color: #a1a1a1 !important;">
         @error('instagram') <div class="text-danger small">{{ $message }}</div> @enderror
       </div>
     </div>
@@ -133,12 +133,12 @@
     <div class="row mb-4">
       <div class="col-md-6 mb-3">
         <label class="form-label small fw-semibold">Pinterest URL</label>
-        <input type="url" name="pinterest" class="form-control form-control-sm" value="{{ old('pinterest', $settings['pinterest'] ?? '') }}" placeholder="https://pinterest.com/yourprofile">
+        <input type="url" name="pinterest" class="form-control form-control-sm" value="{{ old('pinterest', $settings['pinterest'] ?? '') }}" placeholder="https://pinterest.com/yourprofile" style="border-color: #a1a1a1 !important;">
         @error('pinterest') <div class="text-danger small">{{ $message }}</div> @enderror
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label small fw-semibold">LinkedIn URL</label>
-        <input type="url" name="linkedin" class="form-control form-control-sm" value="{{ old('linkedin', $settings['linkedin'] ?? '') }}" placeholder="https://linkedin.com/company/yourcompany">
+        <input type="url" name="linkedin" class="form-control form-control-sm" value="{{ old('linkedin', $settings['linkedin'] ?? '') }}" placeholder="https://linkedin.com/company/yourcompany" style="border-color: #a1a1a1 !important;">
         @error('linkedin') <div class="text-danger small">{{ $message }}</div> @enderror
       </div>
     </div>

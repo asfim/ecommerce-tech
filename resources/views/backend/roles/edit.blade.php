@@ -26,12 +26,12 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Role Name</label>
                     <input type="text" name="name" class="form-control" value="{{ old('name', $role->name) }}"
-                        required>
+                        required style="border-color: #a1a1a1 !important;">
                 </div>
 
                 {{-- <div class="col-md-6 mb-3">
                     <label class="form-label">Guard Name</label>
-                    <input type="text" class="form-control bg-light" value="{{ $role->guard_name }}" disabled>
+                    <input type="text" class="form-control bg-light" value="{{ $role->guard_name }}" disabled style="border-color: #a1a1a1 !important;">
                 </div> --}}
             </div>
 

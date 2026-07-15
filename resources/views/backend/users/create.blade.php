@@ -25,24 +25,24 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
-        <input type="text" name="name" class="form-control" placeholder="e.g. John Doe" value="{{ old('name') }}" required>
+        <input type="text" name="name" class="form-control" placeholder="e.g. John Doe" value="{{ old('name') }}" required style="border-color: #a1a1a1 !important;">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
-        <input type="email" name="email" class="form-control" placeholder="e.g. customer@example.com" value="{{ old('email') }}" required>
+        <input type="email" name="email" class="form-control" placeholder="e.g. customer@example.com" value="{{ old('email') }}" required style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
-        <input type="password" name="password" class="form-control" placeholder="Minimum 6 characters" required>
+        <input type="password" name="password" class="form-control" placeholder="Minimum 6 characters" required style="border-color: #a1a1a1 !important;">
       </div>
 
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Confirm Password <span class="text-danger">*</span></label>
-        <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm password" required>
+        <input type="password" name="password_confirmation" class="form-control" placeholder="Confirm password" required style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 

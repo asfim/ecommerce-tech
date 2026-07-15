@@ -32,19 +32,19 @@
             @csrf
             <div class="mb-3">
                 <label class="form-label">Full Name</label>
-                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required autofocus>
+                <input type="text" name="name" class="form-control" value="{{ old('name') }}" required autofocus style="border-color: #a1a1a1 !important;">
             </div>
             <div class="mb-3">
                 <label class="form-label">Email address</label>
-                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+                <input type="email" name="email" class="form-control" value="{{ old('email') }}" required style="border-color: #a1a1a1 !important;">
             </div>
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" required>
+                <input type="password" name="password" class="form-control" required style="border-color: #a1a1a1 !important;">
             </div>
             <div class="mb-3">
                 <label class="form-label">Confirm Password</label>
-                <input type="password" name="password_confirmation" class="form-control" required>
+                <input type="password" name="password_confirmation" class="form-control" required style="border-color: #a1a1a1 !important;">
             </div>
             <button type="submit" class="btn btn-auth">Register</button>
         </form>

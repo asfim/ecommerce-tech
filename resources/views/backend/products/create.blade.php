@@ -42,7 +42,7 @@
     <div class="row">
       <div class="col-md-12 mb-3">
         <label class="form-label">Product Name</label>
-        <input type="text" name="name" id="productName" class="form-control" value="{{ old('name') }}" required>
+        <input type="text" name="name" id="productName" class="form-control" value="{{ old('name') }}" required style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 
@@ -73,7 +73,7 @@
       </div>
       <div class="col-md-3 mb-3">
         <label class="form-label">Main Image</label>
-        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*">
+        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
         <div id="mainImagePreview" class="mt-2" style="display:none;"></div>
       </div>
     </div>
@@ -81,24 +81,24 @@
     <div class="row">
       <div class="col-md-2 mb-3">
         <label class="form-label">Buy Price</label>
-        <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price') }}">
+        <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price') }}" style="border-color: #a1a1a1 !important;">
       </div>
       <div class="col-md-2 mb-3">
         <label class="form-label">Price</label>
-        <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price') }}" required>
+        <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price') }}" required style="border-color: #a1a1a1 !important;">
         <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
       <div class="col-md-2 mb-3">
         <label class="form-label">Stock</label>
-        <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required>
+        <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required style="border-color: #a1a1a1 !important;">
       </div>
       {{-- <div class="col-md-2 mb-3">
         <label class="form-label">Sales Count</label>
-        <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', 0) }}" required>
+        <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', 0) }}" required style="border-color: #a1a1a1 !important;">
       </div> --}}
       <div class="col-md-4 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
-        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*">
+        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*" style="border-color: #a1a1a1 !important;">
         <div id="galleryImagesPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
       </div>
     </div>
@@ -114,7 +114,7 @@
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Value</label>
-        <input type="number" name="discount_value" id="discountValueInput" step="0.01" class="form-control" value="{{ old('discount_value', 0) }}">
+        <input type="number" name="discount_value" id="discountValueInput" step="0.01" class="form-control" value="{{ old('discount_value', 0) }}" style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 

@@ -107,21 +107,21 @@
                             <label for="name" class="form-label fw-semibold small text-secondary">Full Name</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-person"></i></span>
-                                <input type="text" id="name" class="form-control bg-light border-start-0 py-2" placeholder="e.g. John Doe" required>
+                                <input type="text" id="name" class="form-control bg-light border-start-0 py-2" placeholder="e.g. John Doe" required style="border-color: #a1a1a1 !important;">
                             </div>
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="email" class="form-label fw-semibold small text-secondary">Email Address</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-envelope"></i></span>
-                                <input type="email" id="email" class="form-control bg-light border-start-0 py-2" placeholder="e.g. john@example.com" required>
+                                <input type="email" id="email" class="form-control bg-light border-start-0 py-2" placeholder="e.g. john@example.com" required style="border-color: #a1a1a1 !important;">
                             </div>
                         </div>
                         <div class="col-12">
                             <label for="subject" class="form-label fw-semibold small text-secondary">Subject</label>
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-chat-left-text"></i></span>
-                                <input type="text" id="subject" class="form-control bg-light border-start-0 py-2" placeholder="How can we help you?" required>
+                                <input type="text" id="subject" class="form-control bg-light border-start-0 py-2" placeholder="How can we help you?" required style="border-color: #a1a1a1 !important;">
                             </div>
                         </div>
                         <div class="col-12">

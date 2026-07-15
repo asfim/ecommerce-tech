@@ -27,7 +27,7 @@
 
     <div class="mb-3">
       <label class="form-label fw-semibold">Page Title</label>
-      <input type="text" name="title" class="form-control" value="{{ old('title', $page->title) }}" required>
+      <input type="text" name="title" class="form-control" value="{{ old('title', $page->title) }}" required style="border-color: #a1a1a1 !important;">
     </div>
 
     <div class="mb-3">

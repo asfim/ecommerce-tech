@@ -22,7 +22,7 @@
     <div class="alert alert-danger">{{ session('error') }}</div>
   @endif
 
-  <table class="table table-bordered align-middle">
+  <table class="table table-bordered align-middle" style="border-color: #a1a1a1 !important;">
     <thead class="table-light">
       <tr>
         <th>Email</th>

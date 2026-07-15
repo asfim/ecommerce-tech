@@ -149,7 +149,7 @@
   </div>
   <div class="card-body p-0">
     <div class="table-responsive">
-      <table class="table table-hover align-middle mb-0" style="font-size: 13.5px;">
+      <table class="table table-hover align-middle mb-0" style="font-size: 13.5px; border-color: #a1a1a1 !important;">
         <thead class="table-light">
           <tr>
             <th class="ps-3" style="width: 80px;">ID</th>

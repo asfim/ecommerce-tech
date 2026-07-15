@@ -31,7 +31,7 @@
     @csrf @method('PUT')
     <div class="mb-3">
       <label class="form-label">Name</label>
-      <input type="text" name="name" class="form-control" value="{{ old('name', $brand->name) }}" required>
+      <input type="text" name="name" class="form-control" value="{{ old('name', $brand->name) }}" required style="border-color: #a1a1a1 !important;">
       @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
     <div class="mb-3">
@@ -40,7 +40,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Logo</label>
-      <input type="file" name="logo" class="form-control">
+      <input type="file" name="logo" class="form-control" style="border-color: #a1a1a1 !important;">
       @if($brand->logo)
         <img src="{{ asset('storage/' . $brand->logo) }}" class="mt-2" style="height:60px;">
       @endif

@@ -36,7 +36,7 @@
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Sub Category Name <span class="text-danger">*</span></label>
         <input type="text" name="name" class="form-control" value="{{ old('name') }}"
-               placeholder="e.g. Men's T-Shirts" required>
+               placeholder="e.g. Men's T-Shirts" required style="border-color: #a1a1a1 !important;">
         <div class="form-text text-muted">Slug will be auto-generated from the name.</div>
         @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
       </div>

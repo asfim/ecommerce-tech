@@ -25,7 +25,7 @@
                 <div class="col-md-12 mb-3">
                     <label class="form-label">Role Name</label>
                     <input type="text" name="name" class="form-control" placeholder="e.g. Manager"
-                        value="{{ old('name') }}" required>
+                        value="{{ old('name') }}" required style="border-color: #a1a1a1 !important;">
                 </div>
                 <input type="hidden" name="guard_name" id="guardSelect" value="admin">
             </div>

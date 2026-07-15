@@ -18,9 +18,9 @@ class OrderController extends Controller
 {
     public function store(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse
     {
-        if (! auth()->check()) {
-            return redirect()->route('user.login');
-        }
+        // if (! auth()->check()) {
+        //     return redirect()->route('user.login');
+        // }
 
         $sms = new BulkSmsService;
 

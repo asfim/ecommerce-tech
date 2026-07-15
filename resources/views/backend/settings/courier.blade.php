@@ -45,19 +45,19 @@
     
     <div class="mb-3">
       <label class="form-label fw-bold">Steadfast API Key</label>
-      <input type="text" name="api_key" class="form-control" value="{{ old('api_key', $settings['api_key'] ?? '') }}" placeholder="Enter your Steadfast API Key" required>
+      <input type="text" name="api_key" class="form-control" value="{{ old('api_key', $settings['api_key'] ?? '') }}" placeholder="Enter your Steadfast API Key" required style="border-color: #a1a1a1 !important;">
       @error('api_key') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Steadfast Secret Key</label>
-      <input type="password" name="secret_key" class="form-control" value="{{ old('secret_key', $settings['secret_key'] ?? '') }}" placeholder="Enter your Steadfast Secret Key" required>
+      <input type="password" name="secret_key" class="form-control" value="{{ old('secret_key', $settings['secret_key'] ?? '') }}" placeholder="Enter your Steadfast Secret Key" required style="border-color: #a1a1a1 !important;">
       @error('secret_key') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Steadfast API Base URL</label>
-      <input type="text" name="base_url" class="form-control" value="{{ old('base_url', $settings['base_url'] ?? 'https://portal.packnplay.com/api/v1') }}" placeholder="https://portal.packnplay.com/api/v1" required>
+      <input type="text" name="base_url" class="form-control" value="{{ old('base_url', $settings['base_url'] ?? 'https://portal.packnplay.com/api/v1') }}" placeholder="https://portal.packnplay.com/api/v1" required style="border-color: #a1a1a1 !important;">
       <div class="form-text text-muted">Use <code>https://portal.packnplay.com/api/v1</code> for live production (Steadfast default).</div>
       @error('base_url') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>

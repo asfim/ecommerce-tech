@@ -44,11 +44,11 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Product Name</label>
-        <input type="text" name="name" id="productName" class="form-control" value="{{ old('name', $product->name) }}" required>
+        <input type="text" name="name" id="productName" class="form-control" value="{{ old('name', $product->name) }}" required style="border-color: #a1a1a1 !important;">
       </div>
        <div class="col-md-6 mb-3">
         <label class="form-label">Slug</label>
-        <input type="text" name="slug" id="productSlug" class="form-control" value="{{ old('slug', $product->slug) }}" required>
+        <input type="text" name="slug" id="productSlug" class="form-control" value="{{ old('slug', $product->slug) }}" required style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 
@@ -79,7 +79,7 @@
       </div>
       <div class="col-md-3 mb-3">
         <label class="form-label">Main Image</label>
-        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*">
+        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
         <div id="mainImagePreview" class="mt-2">
           @if($product->image)
             <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;">
@@ -91,24 +91,24 @@
     <div class="row">
       <div class="col-md-2 mb-3">
         <label class="form-label">purchase Price</label>
-        <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price', $product->buy_price) }}">
+        <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price', $product->buy_price) }}" style="border-color: #a1a1a1 !important;">
       </div>
       <div class="col-md-2 mb-3">
         <label class="form-label">Sell Price</label>
-        <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required>
+        <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required style="border-color: #a1a1a1 !important;">
         <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
       <div class="col-md-2 mb-3">
         <label class="form-label">Stock</label>
-        <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required>
+        <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required style="border-color: #a1a1a1 !important;">
       </div>
       {{-- <div class="col-md-2 mb-3">
         <label class="form-label">Sales Count</label>
-        <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', $product->sales_count) }}" required>
+        <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', $product->sales_count) }}" required style="border-color: #a1a1a1 !important;">
       </div> --}}
       <div class="col-md-4 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
-        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*">
+        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*" style="border-color: #a1a1a1 !important;">
         <div id="galleryImagesPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
       </div>
     </div>
@@ -124,7 +124,7 @@
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Value</label>
-        <input type="number" name="discount_value" id="discountValueInput" step="0.01" class="form-control" value="{{ old('discount_value', $product->discount_value) }}">
+        <input type="number" name="discount_value" id="discountValueInput" step="0.01" class="form-control" value="{{ old('discount_value', $product->discount_value) }}" style="border-color: #a1a1a1 !important;">
       </div>
     </div>
 
@@ -136,7 +136,7 @@
             <div class="position-relative border rounded p-1 bg-white gallery-img-box" style="width: 80px; height: 80px;">
               <img src="{{ asset('storage/' . $img) }}" class="rounded" style="width: 100%; height: 100%; object-fit: cover;">
               <label class="position-absolute top-0 end-0 bg-danger text-white rounded-circle d-flex align-items-center justify-content-center cursor-pointer shadow-sm" style="width: 22px; height: 22px; font-size: 11px; transform: translate(40%, -40%); transition: background-color 0.15s;" title="Delete image">
-                <input type="checkbox" name="delete_images[]" value="{{ $img }}" class="d-none">
+                <input type="checkbox" name="delete_images[]" value="{{ $img }}" class="d-none" style="border-color: #a1a1a1 !important;">
                 <i class="bi bi-x-lg"></i>
               </label>
             </div>

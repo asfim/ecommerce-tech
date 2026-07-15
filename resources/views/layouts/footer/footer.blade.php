@@ -40,7 +40,7 @@
         <p class="small">Complete system for your eCommerce business</p>
         <p class="small">Subscribe to our newsletter for regular updates about Offers, Coupons &amp; more</p>
         <div class="d-flex flex-column flex-sm-row gap-2">
-          <input type="email" class="form-control form-control-sm" placeholder="Your email address">
+          <input type="email" class="form-control form-control-sm" placeholder="Your email address" style="border-color: #a1a1a1 !important;">
           <button class="btn btn-danger btn-sm">Subscribe</button>
         </div>
       </div>

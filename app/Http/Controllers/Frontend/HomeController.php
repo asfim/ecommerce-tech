@@ -165,9 +165,9 @@ class HomeController extends Controller
 
     public function checkout(): View|RedirectResponse
     {
-        if (! auth()->check()) {
-            return redirect()->route('user.login');
-        }
+        // if (! auth()->check()) {
+        //     return redirect()->route('user.login');
+        // }
 
         return view('checkout');
     }

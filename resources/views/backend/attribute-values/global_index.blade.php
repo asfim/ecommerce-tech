@@ -72,7 +72,7 @@
           @csrf
           <div class="mb-3">
             <label class="form-label small fw-bold">Value Name</label>
-            <input type="text" name="value" class="form-control" placeholder="e.g., Red" value="{{ old('value') }}" required autocomplete="off">
+            <input type="text" name="value" class="form-control" placeholder="e.g., Red" value="{{ old('value') }}" required autocomplete="off" style="border-color: #a1a1a1 !important;">
             @error('value')
               <div class="text-danger small mt-1">{{ $message }}</div>
             @enderror
@@ -99,7 +99,7 @@
           </div>
         @else
           <div class="table-responsive">
-            <table class="table table-hover align-middle">
+            <table class="table table-hover align-middle" style="border-color: #a1a1a1 !important;">
               <thead class="table-light">
                 <tr>
                   <th style="width: 80px;">#</th>

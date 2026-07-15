@@ -31,7 +31,7 @@
     @csrf
     <div class="mb-3">
       <label class="form-label">Value</label>
-      <input type="text" name="value" class="form-control" value="{{ old('value') }}" required>
+      <input type="text" name="value" class="form-control" value="{{ old('value') }}" required style="border-color: #a1a1a1 !important;">
       @error('value') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
     <button type="submit" class="btn btn-primary">Save</button>

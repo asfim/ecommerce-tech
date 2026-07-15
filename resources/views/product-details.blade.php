@@ -406,7 +406,7 @@
                     <label class="fw-bold text-dark small mb-2">Quantity</label>
                     <div class="d-flex align-items-center">
                         <button id="minus" class="btn btn-sm btn-outline-dark" style="width:36px; height:36px;">-</button>
-                        <input id="qty" type="text" value="1" class="form-control text-center mx-2 form-control-sm" style="width:60px; height:36px;" readonly>
+                        <input id="qty" type="text" value="1" class="form-control text-center mx-2 form-control-sm" style="width:60px; height:36px; border-color: #a1a1a1 !important;" readonly>
                         <button id="plus" class="btn btn-sm btn-outline-dark" style="width:36px; height:36px;">+</button>
                     </div>
                 </div>
@@ -462,7 +462,7 @@
     <!-- Tab 1: Specifications -->
     <div class="tab-content-panel">
         <h5 class="fw-bold mb-3">Specifications</h5>
-        <table class="table table-striped table-sm text-muted">
+        <table class="table table-striped table-sm text-muted" style="border-color: #a1a1a1 !important;">
             <tbody>
                 <tr><td><strong>Category</strong></td><td>{{ $product->category->name ?? '-' }}</td></tr>
                 <tr><td><strong>Sub Category</strong></td><td>{{ $product->subCategory->name ?? '-' }}</td></tr>
@@ -525,7 +525,7 @@
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold">Your Name</label>
-                    <input type="text" class="form-control form-control-sm" id="reviewName" name="name" value="{{ auth()->user()->name }}" readonly required>
+                    <input type="text" class="form-control form-control-sm" id="reviewName" name="name" value="{{ auth()->user()->name }}" readonly required style="border-color: #a1a1a1 !important;">
                 </div>
                 <div class="mb-3">
                     <label class="form-label small fw-semibold d-block">Rating</label>

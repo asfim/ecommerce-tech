@@ -31,7 +31,7 @@
     @csrf
     <div class="mb-3">
       <label class="form-label">Name</label>
-      <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+      <input type="text" name="name" class="form-control" value="{{ old('name') }}" required style="border-color: #a1a1a1 !important;">
       @error('name') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
     <div class="mb-3">
@@ -40,7 +40,7 @@
     </div>
     <div class="mb-3">
       <label class="form-label">Logo</label>
-      <input type="file" name="logo" class="form-control">
+      <input type="file" name="logo" class="form-control" style="border-color: #a1a1a1 !important;">
     </div>
     <div class="mb-3 form-check">
       <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', true) ? 'checked' : '' }}>

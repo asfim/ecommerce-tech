@@ -32,13 +32,13 @@
 
     <div class="mb-3">
       <label class="form-label fw-bold">Title</label>
-      <input type="text" name="title" class="form-control" value="{{ old('title') }}" placeholder="e.g. Top 10 E-commerce Trends" required>
+      <input type="text" name="title" class="form-control" value="{{ old('title') }}" placeholder="e.g. Top 10 E-commerce Trends" required style="border-color: #a1a1a1 !important;">
       @error('title') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Featured Image</label>
-      <input type="file" name="image" class="form-control" accept="image/*">
+      <input type="file" name="image" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
       <div class="text-muted small mt-1">Recommended size: 1200x600 pixels. Max size: 2MB.</div>
       @error('image') <div class="text-danger small mt-1">{{ $message }}</div> @enderror
     </div>

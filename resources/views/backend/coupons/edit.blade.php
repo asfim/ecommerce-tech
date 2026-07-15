@@ -33,7 +33,7 @@
     
     <div class="mb-3">
       <label class="form-label">Coupon Code</label>
-      <input type="text" name="code" class="form-control font-monospace" value="{{ old('code', $coupon->code) }}" placeholder="e.g. SAVE10" required>
+      <input type="text" name="code" class="form-control font-monospace" value="{{ old('code', $coupon->code) }}" placeholder="e.g. SAVE10" required style="border-color: #a1a1a1 !important;">
       @error('code') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
@@ -48,19 +48,19 @@
 
     <div class="mb-3">
       <label class="form-label">Discount Value</label>
-      <input type="number" name="value" step="0.01" class="form-control" value="{{ old('value', $coupon->value) }}" placeholder="e.g. 10" required>
+      <input type="number" name="value" step="0.01" class="form-control" value="{{ old('value', $coupon->value) }}" placeholder="e.g. 10" required style="border-color: #a1a1a1 !important;">
       @error('value') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label">Minimum Order Amount (৳)</label>
-      <input type="number" name="min_order_amount" step="0.01" class="form-control" value="{{ old('min_order_amount', $coupon->min_order_amount) }}" placeholder="e.g. 200" required>
+      <input type="number" name="min_order_amount" step="0.01" class="form-control" value="{{ old('min_order_amount', $coupon->min_order_amount) }}" placeholder="e.g. 200" required style="border-color: #a1a1a1 !important;">
       @error('min_order_amount') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label">Expires At</label>
-      <input type="datetime-local" name="expires_at" class="form-control" value="{{ old('expires_at', $coupon->expires_at ? $coupon->expires_at->format('Y-m-d\TH:i') : '') }}">
+      <input type="datetime-local" name="expires_at" class="form-control" value="{{ old('expires_at', $coupon->expires_at ? $coupon->expires_at->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
       @error('expires_at') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 

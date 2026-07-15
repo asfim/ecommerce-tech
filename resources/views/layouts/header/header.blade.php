@@ -22,7 +22,7 @@
             </a>
 
             <form action="{{ route('home') }}" method="GET" class="search-input flex-grow-1 d-flex mb-0 position-relative">
-                <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off">
+                <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="border-color: #a1a1a1 !important;">
                 <button type="submit" class="btn"><i class="bi bi-search"></i></button>
                 <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
             </form>
@@ -210,7 +210,7 @@
             <!-- Second Row: Full Width Search -->
             <div class="mt-2 pt-2 border-top">
                 <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative w-100">
-                    <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="font-size: 13px; height: 38px;">
+                    <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="font-size: 13px; height: 38px; border-color: #a1a1a1 !important;">
                     <button type="submit" class="btn" style="height: 38px;"><i class="bi bi-search"></i></button>
                     <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
                 </form>

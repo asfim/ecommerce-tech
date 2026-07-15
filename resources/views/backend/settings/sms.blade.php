@@ -62,14 +62,14 @@
 
     <div class="mb-3">
       <label class="form-label fw-bold">API Key / Token</label>
-      <input type="text" name="api_key" class="form-control" value="{{ old('api_key', $settings['api_key'] ?? '') }}" placeholder="Enter your SMS API key or token" required>
+      <input type="text" name="api_key" class="form-control" value="{{ old('api_key', $settings['api_key'] ?? '') }}" placeholder="Enter your SMS API key or token" required style="border-color: #a1a1a1 !important;">
       <div class="form-text text-muted">Use the API Token/Key provided by your selected SMS gateway.</div>
       @error('api_key') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Sender ID / Mask / Number</label>
-      <input type="text" name="sender_id" class="form-control" value="{{ old('sender_id', $settings['sender_id'] ?? '') }}" placeholder="Enter Sender ID (e.g. 88017XXXXXXXX or Approved Mask)">
+      <input type="text" name="sender_id" class="form-control" value="{{ old('sender_id', $settings['sender_id'] ?? '') }}" placeholder="Enter Sender ID (e.g. 88017XXXXXXXX or Approved Mask)" style="border-color: #a1a1a1 !important;">
       <div class="form-text text-muted">Leave empty if your gateway does not require a Sender ID/Mask (e.g., Greenweb non-masking).</div>
       @error('sender_id') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>

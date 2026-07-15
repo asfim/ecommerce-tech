@@ -48,7 +48,7 @@
       <h5 class="mb-4 fw-bold"><i class="bi bi-shield-check me-2 text-primary"></i>All Permissions <span class="badge bg-primary ms-1">{{ $permissions->where('guard_name', 'admin')->count() }}</span></h5>
 
       <div class="table-responsive">
-        <table class="table table-bordered align-middle mb-0">
+        <table class="table table-bordered align-middle mb-0" style="border-color: #a1a1a1 !important;">
           <thead class="table-dark">
             <tr>
               <th style="width:180px;">Module</th>
@@ -133,7 +133,7 @@
           <label class="form-label small fw-semibold">Permission Name</label>
           <input type="text" name="name" id="permNameInput" class="form-control form-control-sm font-monospace"
                  placeholder="e.g. create-products" required
-                 value="{{ old('name') }}">
+                 value="{{ old('name') }}" style="border-color: #a1a1a1 !important;">
           <div class="form-text">Format: <code>action-module</code></div>
         </div>
 

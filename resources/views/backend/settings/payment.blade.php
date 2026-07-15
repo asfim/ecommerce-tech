@@ -54,19 +54,19 @@
 
     <div class="mb-3">
       <label class="form-label fw-bold">SSLCommerz Store ID</label>
-      <input type="text" name="store_id" class="form-control" value="{{ old('store_id', $settings['store_id'] ?? '') }}" placeholder="Enter your SSLCommerz Store ID" required>
+      <input type="text" name="store_id" class="form-control" value="{{ old('store_id', $settings['store_id'] ?? '') }}" placeholder="Enter your SSLCommerz Store ID" required style="border-color: #a1a1a1 !important;">
       @error('store_id') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">SSLCommerz Store Password</label>
-      <input type="text" name="store_password" class="form-control" value="{{ old('store_password', $settings['store_password'] ?? '') }}" placeholder="Enter your SSLCommerz Store Password" required>
+      <input type="text" name="store_password" class="form-control" value="{{ old('store_password', $settings['store_password'] ?? '') }}" placeholder="Enter your SSLCommerz Store Password" required style="border-color: #a1a1a1 !important;">
       @error('store_password') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>
 
     <div class="mb-3">
       <label class="form-label fw-bold">Default Currency</label>
-      <input type="text" name="currency" class="form-control" value="{{ old('currency', $settings['currency'] ?? 'BDT') }}" placeholder="BDT" required>
+      <input type="text" name="currency" class="form-control" value="{{ old('currency', $settings['currency'] ?? 'BDT') }}" placeholder="BDT" required style="border-color: #a1a1a1 !important;">
       <div class="form-text text-muted">Usually <code>BDT</code>.</div>
       @error('currency') <div class="text-danger small">{{ $message }}</div> @enderror
     </div>

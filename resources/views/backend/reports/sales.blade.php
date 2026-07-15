@@ -32,11 +32,11 @@
     <form method="GET" action="{{ route('admin.reports.sales') }}" class="row g-3 align-items-end">
       <div class="col-md-3">
         <label for="start_date" class="form-label small fw-semibold text-muted">Start Date</label>
-        <input type="date" name="start_date" id="start_date" class="form-control form-control-sm" value="{{ $startDate->format('Y-m-d') }}">
+        <input type="date" name="start_date" id="start_date" class="form-control form-control-sm" value="{{ $startDate->format('Y-m-d') }}" style="border-color: #a1a1a1 !important;">
       </div>
       <div class="col-md-3">
         <label for="end_date" class="form-label small fw-semibold text-muted">End Date</label>
-        <input type="date" name="end_date" id="end_date" class="form-control form-control-sm" value="{{ $endDate->format('Y-m-d') }}">
+        <input type="date" name="end_date" id="end_date" class="form-control form-control-sm" value="{{ $endDate->format('Y-m-d') }}" style="border-color: #a1a1a1 !important;">
       </div>
       <div class="col-md-3">
         <label for="order_status" class="form-label small fw-semibold text-muted">Order Status</label>
@@ -144,7 +144,7 @@
           </div>
         @else
           <div class="table-responsive">
-            <table class="table table-hover align-middle mb-0" style="font-size: 13px;">
+            <table class="table table-hover align-middle mb-0" style="font-size: 13px; border-color: #a1a1a1 !important;">
               <thead>
                 <tr class="table-light">
                   <th class="ps-3">Product Name</th>

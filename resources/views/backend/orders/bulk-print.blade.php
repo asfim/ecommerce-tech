@@ -235,7 +235,7 @@
             </div>
           </div>
 
-          <table class="invoice-table">
+          <table class="invoice-table" style="border-color: #a1a1a1 !important;">
             <thead>
               <tr>
                 <th>Product Description</th>

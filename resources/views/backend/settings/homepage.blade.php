@@ -104,7 +104,7 @@
                 <input type="file" name="images[]" class="form-control"
                        accept="image/*"
                        {{ $info['max'] - count($current) > 1 ? 'multiple' : '' }}
-                       required>
+                       required style="border-color: #a1a1a1 !important;">
                 <div class="form-text d-flex align-items-center gap-1 mt-2 text-secondary">
                   <i class="bi bi-info-circle-fill text-primary"></i>
                   <span>Accepted: JPG, PNG, WebP. <strong>{{ $info['recommendation'] }}</strong></span>

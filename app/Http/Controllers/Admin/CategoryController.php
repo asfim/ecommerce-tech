@@ -38,7 +38,7 @@ class CategoryController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:3048',
             'is_active' => 'boolean',
         ]);
 

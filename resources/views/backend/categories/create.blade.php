@@ -21,7 +21,7 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Name <span class="text-danger">*</span></label>
-        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required style="border-color: #a1a1a1 !important;">
         @error('name')<div class="text-danger small">{{ $message }}</div>@enderror
       </div>
       <div class="col-md-6 mb-3 d-flex align-items-end">
@@ -35,7 +35,7 @@
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label fw-semibold">Image</label>
-        <input type="file" name="image" class="form-control" accept="image/*" id="categoryImage">
+        <input type="file" name="image" class="form-control" accept="image/*" id="categoryImage" style="border-color: #a1a1a1 !important;">
         @error('image')<div class="text-danger small">{{ $message }}</div>@enderror
         <div class="mt-2" id="imagePreviewWrapper" style="display:none;">
           <img id="imagePreview" src="" alt="Preview" class="rounded" style="max-height:120px;">
