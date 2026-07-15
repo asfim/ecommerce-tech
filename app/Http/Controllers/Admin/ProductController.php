@@ -22,7 +22,7 @@ class ProductController extends Controller implements HasMiddleware
         return [
             new Middleware('permission:view-products,admin', only: ['index', 'show']),
             new Middleware('permission:create-products,admin', only: ['create', 'store']),
-            new Middleware('permission:edit-products,admin', only: ['edit', 'update', 'toggleFeatured', 'toggleActive']),
+            new Middleware('permission:edit-products,admin', only: ['edit', 'update', 'toggleFeatured', 'toggleActive', 'toggleNewArrival']),
             new Middleware('permission:delete-products,admin', only: ['destroy', 'bulkDestroy']),
         ];
     }
@@ -73,6 +73,7 @@ class ProductController extends Controller implements HasMiddleware
             'images' => 'nullable|array',
             'images.*' => 'image|max:10240',
             'is_active' => 'boolean',
+            'is_new_arrival' => 'boolean',
             'variant_labels' => 'array',
             'variant_values' => 'array',
         ]);
@@ -95,6 +96,8 @@ class ProductController extends Controller implements HasMiddleware
         $validated['variants'] = $variants ?: null;
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
         $validated['discount_value'] = $validated['discount_value'] ?? 0;
+        $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_new_arrival'] = $request->boolean('is_new_arrival');
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -143,6 +146,7 @@ class ProductController extends Controller implements HasMiddleware
             'images' => 'nullable|array',
             'images.*' => 'image|max:10240',
             'is_active' => 'boolean',
+            'is_new_arrival' => 'boolean',
             'variant_labels' => 'array',
             'variant_values' => 'array',
         ]);
@@ -165,6 +169,8 @@ class ProductController extends Controller implements HasMiddleware
         $validated['variants'] = $variants ?: null;
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
         $validated['discount_value'] = $validated['discount_value'] ?? 0;
+        $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_new_arrival'] = $request->boolean('is_new_arrival');
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -250,7 +256,18 @@ class ProductController extends Controller implements HasMiddleware
 
         return response()->json([
             'is_active' => $product->is_active,
-            'message' => $product->is_active ? 'Product marked as active (New Arrival).' : 'Product marked as inactive.',
+            'message' => $product->is_active ? 'Product marked as active.' : 'Product marked as inactive.',
+        ]);
+    }
+
+    public function toggleNewArrival(Product $product): JsonResponse
+    {
+        $product->is_new_arrival = ! $product->is_new_arrival;
+        $product->save();
+
+        return response()->json([
+            'is_new_arrival' => $product->is_new_arrival,
+            'message' => $product->is_new_arrival ? 'Product marked as new arrival.' : 'Product removed from new arrivals.',
         ]);
     }
 }

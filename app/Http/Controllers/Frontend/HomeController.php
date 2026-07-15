@@ -72,6 +72,7 @@ class HomeController extends Controller
             ->take(5)
             ->get();
         $newArrivalProducts = Product::where('is_active', true)
+            ->where('is_new_arrival', true)
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->latest()

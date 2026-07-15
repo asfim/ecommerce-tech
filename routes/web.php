@@ -116,6 +116,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('products', AdminProductController::class);
             Route::patch('products/{product}/toggle-featured', [AdminProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
             Route::patch('products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggle-active');
+            Route::patch('products/{product}/toggle-new-arrival', [AdminProductController::class, 'toggleNewArrival'])->name('products.toggle-new-arrival');
         });
 
         Route::middleware('permission:view-orders|edit-orders|delete-orders,admin')->group(function () {

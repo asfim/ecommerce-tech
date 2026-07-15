@@ -123,6 +123,11 @@
       <label class="form-check-label">Active</label>
     </div>
 
+    <div class="mb-3 form-check">
+      <input type="checkbox" name="is_new_arrival" value="1" class="form-check-input" {{ old('is_new_arrival', true) ? 'checked' : '' }}>
+      <label class="form-check-label">New Arrival</label>
+    </div>
+
     <hr>
     <h5 class="fw-bold mb-3"><i class="bi bi-palette me-2 text-primary"></i>Attributes</h5>
 
