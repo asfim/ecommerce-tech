@@ -126,11 +126,11 @@
             }
 
             function requireLogin() {
-                const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
-                if (!isAuthenticated) {
-                    window.location.href = "{{ route('user.login') }}";
-                    return false;
-                }
+                // const isAuthenticated = {{ auth()->check() ? 'true' : 'false' }};
+                // if (!isAuthenticated) {
+                //     window.location.href = "{{ route('user.login') }}";
+                //     return false;
+                // }
 
                 return true;
             }

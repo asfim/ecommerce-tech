@@ -1,12 +1,15 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
 
 test('checkout page renders successfully for authenticated users', function () {
     $user =
-        \App\Models\User::factory()->create();
+        User::factory()->create();
 
     $response = $this->actingAs($user)->get(route('checkout'));
 
@@ -15,13 +18,27 @@ test('checkout page renders successfully for authenticated users', function () {
     $response->assertSee('SSL Commerz');
 });
 
-test('guest users cannot access checkout page', function () {
+test('guest users can access checkout page', function () {
     $response = $this->get(route('checkout'));
 
-    $response->assertRedirect(route('user.login'));
+    $response->assertStatus(200);
+    $response->assertSee('Shipping address');
 });
 
-test('guest users cannot place orders', function () {
+test('guest users can place orders', function () {
+    $this->seed();
+
+    $category = \App\Models\Category::create(['name' => 'Electronics']);
+    $brand = \App\Models\Brand::create(['name' => 'Samsung']);
+    $product = \App\Models\Product::create([
+        'name' => 'Sample Product',
+        'slug' => 'sample-product',
+        'category_id' => $category->id,
+        'brand_id' => $brand->id,
+        'price' => 100.00,
+        'stock' => 10,
+    ]);
+
     $response = $this->postJson(route('order.store'), [
         'customer_name' => 'Guest Customer',
         'customer_phone' => '01700000000',
@@ -29,20 +46,29 @@ test('guest users cannot place orders', function () {
         'shipping_method' => 'inside_dhaka',
         'shipping_cost' => 0,
         'payment_method' => 'cod',
-        'subtotal' => 100,
+        'subtotal' => $product->price,
         'tax' => 0,
-        'total' => 100,
+        'total' => $product->price,
         'items' => [
             [
-                'product_id' => 1,
-                'product_name' => 'Sample Product',
-                'product_image' => null,
-                'price' => 100,
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'product_image' => $product->image,
+                'price' => $product->price,
                 'quantity' => 1,
                 'variants' => [],
             ],
         ],
     ]);
 
-    $response->assertRedirect(route('user.login'));
+    $response->assertStatus(200)
+        ->assertJson([
+            'success' => true,
+        ]);
+
+    $this->assertDatabaseHas('orders', [
+        'customer_name' => 'Guest Customer',
+        'customer_phone' => '01700000000',
+        'user_id' => null,
+    ]);
 });

@@ -38,11 +38,15 @@ class CategoryController extends Controller implements HasMiddleware
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:categories',
-            'image' => 'nullable|image|max:3048',
+            'image' => 'nullable|image|max:10240',
             'is_active' => 'boolean',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+
+        if ($validated['is_active'] && Category::where('is_active', true)->count() >= 6) {
+            return back()->withInput()->withErrors(['is_active' => 'You cannot select more than 6 hot categories.']);
+        }
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('categories', 'public');
@@ -68,6 +72,10 @@ class CategoryController extends Controller implements HasMiddleware
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+
+        if ($validated['is_active'] && ! $category->is_active && Category::where('is_active', true)->count() >= 6) {
+            return back()->withInput()->withErrors(['is_active' => 'You cannot select more than 6 hot categories.']);
+        }
 
         if ($request->hasFile('image')) {
             if ($category->image) {
@@ -98,9 +106,18 @@ class CategoryController extends Controller implements HasMiddleware
 
     public function toggleStatus(Category $category): JsonResponse
     {
+        if (! $category->is_active && Category::where('is_active', true)->count() >= 6) {
+            return response()->json([
+                'success' => false,
+                'is_active' => false,
+                'message' => 'You cannot select more than 6 hot categories.',
+            ], 422);
+        }
+
         $category->update(['is_active' => ! $category->is_active]);
 
         return response()->json([
+            'success' => true,
             'is_active' => $category->is_active,
             'message' => $category->is_active ? 'Category activated.' : 'Category deactivated.',
         ]);

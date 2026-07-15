@@ -31,9 +31,20 @@
     <a href="{{ route('admin.categories.create') }}" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg"></i> Add Category</a>
   </div>
 
-  @if(session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
-  @endif
+  <div id="flash-messages">
+    @if(session('success'))
+      <div class="alert alert-success alert-dismissible fade show">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    @endif
+    @if(session('error'))
+      <div class="alert alert-danger alert-dismissible fade show">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    @endif
+  </div>
 
   <table class="table table-bordered" style="border-color: #a1a1a1 !important;">
     <thead>
@@ -89,6 +100,19 @@
 </div>
 
 <script>
+  function showFlashMessage(message, type = 'success') {
+    const container = document.getElementById('flash-messages');
+    if (!container) return;
+
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    container.innerHTML = `
+      <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    `;
+  }
+
   document.querySelectorAll('.toggle-status').forEach(function(toggle) {
     toggle.addEventListener('change', function() {
       const url = this.dataset.url;
@@ -102,11 +126,18 @@
           'Content-Type': 'application/json',
         },
       })
-      .then(response => response.json())
-      .then(data => {
-        checkbox.checked = data.is_active;
+      .then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+          showFlashMessage(data.message || 'An error occurred.', 'danger');
+          checkbox.checked = !checkbox.checked;
+        } else {
+          checkbox.checked = data.is_active;
+          showFlashMessage(data.message, 'success');
+        }
       })
       .catch(() => {
+        showFlashMessage('An error occurred.', 'danger');
         checkbox.checked = !checkbox.checked;
       });
     });
@@ -125,11 +156,18 @@
           'Content-Type': 'application/json',
         },
       })
-      .then(response => response.json())
-      .then(data => {
-        checkbox.checked = data.is_trending;
+      .then(async response => {
+        const data = await response.json();
+        if (!response.ok) {
+          showFlashMessage(data.message || 'An error occurred.', 'danger');
+          checkbox.checked = !checkbox.checked;
+        } else {
+          checkbox.checked = data.is_trending;
+          showFlashMessage(data.message || 'Trending status updated successfully.', 'success');
+        }
       })
       .catch(() => {
+        showFlashMessage('An error occurred.', 'danger');
         checkbox.checked = !checkbox.checked;
       });
     });
