@@ -57,13 +57,13 @@
   <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
     <form method="GET" action="{{ route('admin.orders.index') }}" class="d-flex align-items-center gap-2">
       @if(request('status'))
-        <input type="hidden" name="status" value="{{ request('status') }}">
+        <input style="border-color: #a1a1a1 !important;" type="hidden" name="status" value="{{ request('status') }}">
       @endif
       @if(request('search'))
-        <input type="hidden" name="search" value="{{ request('search') }}">
+        <input style="border-color: #a1a1a1 !important;" type="hidden" name="search" value="{{ request('search') }}">
       @endif
-      <label class="small text-muted mb-0">Show</label>
-      <select name="per_page" class="form-select form-select-sm" style="width: 85px;" onchange="this.form.submit()">
+      <label style="border-color: #a1a1a1 !important;" class="small text-muted mb-0" >Show</label>
+      <select style="border-color: #a1a1a1 !important;" name="per_page" class="form-select form-select-sm" style="width: 85px; " onchange="this.form.submit()">
         <option value="10" {{ request('per_page') == '10' ? 'selected' : '' }}>10</option>
         <option value="15" {{ request('per_page') == '15' || !request('per_page') ? 'selected' : '' }}>15</option>
         <option value="20" {{ request('per_page') == '20' ? 'selected' : '' }}>20</option>
@@ -76,12 +76,12 @@
 
     <form method="GET" action="{{ route('admin.orders.index') }}" class="d-flex gap-2">
       @if(request('status'))
-        <input type="hidden" name="status" value="{{ request('status') }}">
+        <input  type="hidden" name="status" value="{{ request('status') }}">
       @endif
       @if(request('per_page'))
-        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+        <input  type="hidden" name="per_page" value="{{ request('per_page') }}">
       @endif
-      <input type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Search by invoice, name, phone..." style="width:280px;">
+      <input style="border-color: #a1a1a1 !important; width: 230px !important; " type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Search by invoice, name, phone..." style="width:280px;">
       <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search"></i></button>
       @if(request('search') || request('per_page'))
         <a href="{{ route('admin.orders.index', request('status') ? ['status' => request('status')] : []) }}" class="btn btn-outline-secondary btn-sm" title="Clear Filters"><i class="bi bi-x-lg"></i></a>
@@ -96,10 +96,10 @@
     <div class="alert alert-danger" style="white-space: pre-line;">{{ session('error') }}</div>
   @endif
 
-  <table class="table table-bordered align-middle">
+  <table class="table table-bordered align-middle" style="border-color: #a1a1a1 !important;">
     <thead>
       <tr>
-        <th style="width:40px; text-align:center;"><input type="checkbox" id="selectAllOrders" class="form-check-input"></th>
+        <th style="width:40px; text-align:center;"><input type="checkbox" id="selectAllOrders" class="form-check-input" style="border-color: #a1a1a1 !important;"></th>
         <th style="width:60px;">#</th>
         <th>Product Name</th>
         <th>Customer</th>
@@ -114,7 +114,7 @@
     <tbody>
       @forelse($orders as $order)
         <tr>
-          <td class="text-center"><input type="checkbox" class="order-checkbox form-check-input" value="{{ $order->id }}"></td>
+          <td class="text-center"><input type="checkbox" class="order-checkbox form-check-input" value="{{ $order->id }}" style="border-color: #a1a1a1 !important;"></td>
           <td>{{ $loop->iteration}}</td>
           <td>
             @foreach($order->items as $item)
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateBulkPrintButton() {
         const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
         const count = checkedBoxes.length;
-        
+
         if (count > 0) {
             bulkPrintBtn.style.display = 'inline-block';
             bulkSendSteadfastBtn.style.display = 'inline-block';
