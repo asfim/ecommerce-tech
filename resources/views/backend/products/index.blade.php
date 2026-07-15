@@ -94,7 +94,7 @@
                         <td>{{ $product->buy_price ? '$' . number_format($product->buy_price, 2) : '-' }}</td>
                         <td>${{ number_format($product->price, 2) }}</td>
                         <td>{{ $product->stock }}</td>
-                        <td>{{ $product->sales_count }}</td>
+                        <td>{{ $product->delivered_sales_count ?? 0 }}</td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input active-toggle" type="checkbox" data-id="{{ $product->id }}"

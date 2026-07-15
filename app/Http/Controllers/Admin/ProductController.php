@@ -30,7 +30,13 @@ class ProductController extends Controller implements HasMiddleware
     public function index(Request $request)
     {
         $perPage = $request->query('per_page', 10);
-        $query = Product::with(['category', 'brand'])->latest();
+        $query = Product::with(['category', 'brand'])
+            ->withSum(['orderItems as delivered_sales_count' => function ($query) {
+                $query->whereHas('order', function ($q) {
+                    $q->where('order_status', 'delivered');
+                });
+            }], 'quantity')
+            ->latest();
 
         if ($perPage === 'all') {
             $products = $query->get();

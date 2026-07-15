@@ -3,6 +3,8 @@
 use App\Models\Admin;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -244,4 +246,77 @@ test('frontend homepage shows only active products with is_new_arrival = true in
     expect($newArrivals->pluck('id'))->toContain($product1->id);
     expect($newArrivals->pluck('id'))->not->toContain($product2->id);
     expect($newArrivals->pluck('id'))->not->toContain($product3->id);
+});
+
+test('admin can see dynamic sales count of delivered products on index page', function () {
+    $this->seed();
+    $admin = Admin::where('email', 'admin@example.com')->first();
+
+    $category = Category::create(['name' => 'Electronics']);
+    $brand = Brand::create(['name' => 'Samsung']);
+
+    $product = Product::create([
+        'name' => 'Galaxy S25',
+        'slug' => 'galaxy-s25',
+        'category_id' => $category->id,
+        'brand_id' => $brand->id,
+        'price' => 1000.00,
+        'stock' => 50,
+    ]);
+
+    // Create a delivered order with 3 units
+    $orderDelivered = Order::create([
+        'invoice_no' => 'INV-TEST-0001',
+        'customer_name' => 'Customer A',
+        'customer_phone' => '01700000000',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'order_status' => 'delivered',
+        'subtotal' => 3000,
+        'total' => 3060,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $orderDelivered->id,
+        'product_id' => $product->id,
+        'product_name' => $product->name,
+        'price' => 1000,
+        'quantity' => 3,
+        'line_total' => 3000,
+    ]);
+
+    // Create a pending order with 2 units (should not count)
+    $orderPending = Order::create([
+        'invoice_no' => 'INV-TEST-0002',
+        'customer_name' => 'Customer B',
+        'customer_phone' => '01700000000',
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'order_status' => 'pending',
+        'subtotal' => 2000,
+        'total' => 2060,
+    ]);
+
+    OrderItem::create([
+        'order_id' => $orderPending->id,
+        'product_id' => $product->id,
+        'product_name' => $product->name,
+        'price' => 1000,
+        'quantity' => 2,
+        'line_total' => 2000,
+    ]);
+
+    $response = $this->actingAs($admin, 'admin')->get(route('admin.products.index'));
+    $response->assertSuccessful();
+
+    // Verify it lists the product with 3 units of sales
+    $response->assertSee('Galaxy S25');
+    // Ensure the response contains the 3 sales count
+    $products = $response->viewData('products');
+    $testedProduct = $products->where('id', $product->id)->first();
+    expect($testedProduct->delivered_sales_count)->toEqual(3);
 });
