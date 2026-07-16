@@ -427,28 +427,7 @@
 
 
 
-            /* Mini product cards (Best Selling & Discounted sections) styled like the main product cards */
-            .mini-prod {
-                background: #FAF5E6;
-                /* warm cream background */
-                border: 1px solid transparent;
-                border-radius: 14px;
-                padding: 10px;
-                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                height: 100%;
-                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
-                text-align: left;
-                /* left align text */
-            }
 
-            .mini-prod:hover {
-                /* transform: translateY(-4px); */
-                border-color: #0066b9 !important;
-                box-shadow: 0 8px 20px rgba(0, 102, 185, 0.12) !important;
-            }
 
             /* Trending Categories hover */
             .tcat-item {
@@ -630,70 +609,7 @@
                 }
             }
 
-            /* Checkout Modal */
-            .checkout-modal-backdrop {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 100vh;
-                background: rgba(0, 0, 0, 0.5);
-                z-index: 10000;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                opacity: 0;
-                pointer-events: none;
-                transition: opacity 0.3s ease;
-            }
 
-            .checkout-modal-backdrop.show {
-                opacity: 1;
-                pointer-events: auto;
-            }
-
-            .checkout-modal {
-                background: #fff;
-                border-radius: 12px;
-                width: 90%;
-                max-width: 450px;
-                box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
-                transform: translateY(-20px);
-                transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                overflow: hidden;
-            }
-
-            .checkout-modal-backdrop.show .checkout-modal {
-                transform: translateY(0);
-            }
-
-            .checkout-header {
-                background: #f8f9fa;
-                padding: 16px 20px;
-                border-bottom: 1px solid #eee;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .checkout-header h5 {
-                margin: 0;
-                font-weight: 700;
-                color: #1c1c1c;
-            }
-
-            .checkout-body {
-                padding: 20px;
-            }
-
-            .checkout-footer {
-                padding: 14px 20px;
-                border-top: 1px solid #eee;
-                display: flex;
-                justify-content: flex-end;
-                gap: 10px;
-                background: #f8f9fa;
-            }
         </style>
     @endpush
 
