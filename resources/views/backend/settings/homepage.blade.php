@@ -14,7 +14,7 @@
       'label' => 'Hero Section Banner',
       'max' => 2,
       'icon' => 'bi-image',
-      'recommendation' => 'Recommended size: 394 x 260 px (Aspect ratio ~ 3:2)'
+      'recommendation' => 'Recommended size: 1200 x 480 px (Aspect ratio ~ 2.5:1)'
     ],
     'best_selling_banners'   => [
       'label' => 'Best Selling Banner',

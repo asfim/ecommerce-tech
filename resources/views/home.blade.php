@@ -4,52 +4,71 @@
     <!-- Hero section -->
     <div class="hero-sec">
         <div class="wrap">
-            <div class="row g-3">
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="brand-banner">
-                        @if (!empty($heroBanners[0]))
-                            <img src="{{ asset('storage/' . $heroBanners[0]) }}" alt="fashion model">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80"
-                                alt="fashion model">
-                        @endif
-                    </div>
+            <div id="heroCarousel" class="carousel slide hero-carousel shadow-sm" data-bs-ride="carousel" data-bs-interval="5000">
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    @forelse ($heroBanners as $index => $banner)
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}" aria-current="{{ $index === 0 ? 'true' : '' }}" aria-label="Slide {{ $index + 1 }}"></button>
+                    @empty
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+                    @endforelse
                 </div>
-                <div class="col-12 col-md-6 col-lg-4">
-                    <div class="season-banner">
-                        @if (!empty($heroBanners[1]))
-                            <img src="{{ asset('storage/' . $heroBanners[1]) }}" alt="end of season model">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=500&q=80"
-                                alt="end of season model">
-                        @endif
 
-                    </div>
-                </div>
-                <div class="col-12 col-lg-4">
-                    <div class="hotcat-panel">
-                        <h6><i class="bi bi-fire text-danger"></i> Hot Categories</h6>
-                        <div class="row g-2 mt-1">
-                            @foreach ($hotCategories as $cat)
-                                <div class="col-4">
-                                    <a href="{{ route('category.products', $cat->id) }}" class="hotcat-item">
-                                        @if ($cat->image)
-                                            <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}" class="hotcat-image">
-                                        @else
-                                            <img src="https://placehold.co/160x120/eee/aaa?text={{ urlencode(Str::limit($cat->name, 8, '')) }}"
-                                                alt="{{ $cat->name }}"
-                                                class="hotcat-image">
-                                        @endif
-                                        <div class="name">{{ $cat->name }}</div>
-                                    </a>
-                                </div>
-                            @endforeach
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    @forelse ($heroBanners as $index => $banner)
+                        <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                            <img src="{{ asset('storage/' . $banner) }}" class="d-block w-100 hero-slider-img" alt="Slide {{ $index + 1 }}">
                         </div>
-                    </div>
+                    @empty
+                        <div class="carousel-item active">
+                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80" class="d-block w-100 hero-slider-img" alt="Fashion Slide">
+                            <div class="carousel-caption d-none d-md-block text-start">
+                                <div class="caption-content">
+                                    <span class="badge bg-primary mb-2 px-3 py-2 text-uppercase fw-bold">New Season</span>
+                                    <h1 class="display-6 fw-bold text-white mb-2">Modern Fashion Collection</h1>
+                                    <p class="text-white-50 mb-3">Explore the latest style statements and trends for this season.</p>
+                                    <a href="#products-grid" class="btn btn-primary px-4 py-2 fw-semibold">Shop Now</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80" class="d-block w-100 hero-slider-img" alt="Season Sale Slide">
+                            <div class="carousel-caption d-none d-md-block text-start">
+                                <div class="caption-content">
+                                    <span class="badge bg-warning text-dark mb-2 px-3 py-2 text-uppercase fw-bold">Big Discount</span>
+                                    <h1 class="display-6 fw-bold text-white mb-2">End of Season Sale</h1>
+                                    <p class="text-white-50 mb-3">Get up to 50% discount on all premium brand apparel and accessories.</p>
+                                    <a href="#products-grid" class="btn btn-warning px-4 py-2 fw-semibold text-dark">Discover Deals</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80" class="d-block w-100 hero-slider-img" alt="Smart Tech & Shopping">
+                            <div class="carousel-caption d-none d-md-block text-start">
+                                <div class="caption-content">
+                                    <span class="badge bg-success mb-2 px-3 py-2 text-uppercase fw-bold">Smart Living</span>
+                                    <h1 class="display-6 fw-bold text-white mb-2">Premium Electronics</h1>
+                                    <p class="text-white-50 mb-3">Experience innovation with our top-tier devices.</p>
+                                    <a href="#products-grid" class="btn btn-success px-4 py-2 fw-semibold text-white">Explore Tech</a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforelse
                 </div>
+
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                    <i class="bi bi-chevron-left"></i>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                    <i class="bi bi-chevron-right"></i>
+                    <span class="visually-hidden">Next</span>
+                </button>
             </div>
-
-
         </div>
     </div>
 
@@ -417,6 +436,109 @@
 
     @push('styles')
         <style>
+            /* Hero Slider Styling */
+            .hero-carousel {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+                border-radius: 8px;
+                background-color: #e9ecef;
+            }
+            .hero-slider-img {
+                width: 100%;
+                height: auto;
+                display: block;
+            }
+            .hero-carousel .carousel-caption {
+                left: 8%;
+                bottom: 12%;
+                z-index: 10;
+                text-align: left;
+                padding: 0;
+            }
+            .hero-carousel .caption-content {
+                background: rgba(0, 0, 0, 0.45);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                padding: 24px;
+                border-radius: 12px;
+                max-width: 480px;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            }
+            .hero-carousel .carousel-indicators [data-bs-target] {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                margin: 0 5px;
+                background-color: #fff;
+                opacity: 0.5;
+                transition: all 0.2s;
+                border: none;
+            }
+            .hero-carousel .carousel-indicators .active {
+                opacity: 1;
+                width: 20px;
+                border-radius: 4px;
+                background-color: #1a73e8;
+            }
+            .hero-carousel .carousel-control-prev,
+            .hero-carousel .carousel-control-next {
+                position: absolute;
+                top: 50%;
+                bottom: auto;
+                transform: translateY(-50%);
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: rgba(255, 255, 255, 0.25);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                color: #fff;
+                font-size: 20px;
+                opacity: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+                z-index: 15;
+            }
+            .hero-carousel .carousel-control-prev {
+                left: 20px;
+            }
+            .hero-carousel .carousel-control-next {
+                right: 20px;
+            }
+            .hero-carousel:hover .carousel-control-prev,
+            .hero-carousel:hover .carousel-control-next {
+                opacity: 1;
+            }
+            .hero-carousel .carousel-control-prev:hover,
+            .hero-carousel .carousel-control-next:hover {
+                background: rgba(255, 255, 255, 0.9);
+                color: #111;
+                transform: translateY(-50%) scale(1.05);
+            }
+            @media (max-width: 991px) {
+                .hero-carousel .caption-content {
+                    padding: 16px;
+                    max-width: 380px;
+                }
+                .hero-carousel .caption-content h1 {
+                    font-size: 1.5rem !important;
+                }
+                .hero-carousel .caption-content p {
+                    font-size: 0.85rem !important;
+                    margin-bottom: 10px !important;
+                }
+            }
+            @media (max-width: 575px) {
+                .hero-carousel .carousel-caption {
+                    display: none !important;
+                }
+            }
+
             .hover-blue {
                 transition: color 0.2s ease;
             }
