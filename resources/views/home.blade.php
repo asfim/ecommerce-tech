@@ -4,7 +4,7 @@
     <!-- Hero section -->
     <div class="hero-sec">
         <div class="wrap">
-            <div id="heroCarousel" class="carousel slide hero-carousel shadow-sm" data-bs-ride="carousel" data-bs-interval="5000">
+            <div id="heroCarousel" class="carousel slide hero-carousel shadow-sm" data-bs-ride="carousel" data-bs-interval="3000">
                 <!-- Indicators -->
                 <div class="carousel-indicators">
                     @forelse ($heroBanners as $index => $banner)
@@ -440,13 +440,15 @@
             .hero-carousel {
                 position: relative;
                 width: 100%;
+                height: 450px;
                 overflow: hidden;
                 border-radius: 8px;
                 background-color: #e9ecef;
             }
             .hero-slider-img {
                 width: 100%;
-                height: auto;
+                height: 450px;
+                object-fit: cover;
                 display: block;
             }
             .hero-carousel .carousel-caption {
@@ -521,6 +523,9 @@
                 transform: translateY(-50%) scale(1.05);
             }
             @media (max-width: 991px) {
+                .hero-carousel, .hero-slider-img {
+                    height: 320px;
+                }
                 .hero-carousel .caption-content {
                     padding: 16px;
                     max-width: 380px;
@@ -534,6 +539,9 @@
                 }
             }
             @media (max-width: 575px) {
+                .hero-carousel, .hero-slider-img {
+                    height: 200px;
+                }
                 .hero-carousel .carousel-caption {
                     display: none !important;
                 }
