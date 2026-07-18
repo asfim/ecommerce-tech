@@ -31,16 +31,29 @@
     </div>
 
     <div class="stat-card">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="d-flex align-items-center gap-2">
-                <label class="form-label mb-0 fw-semibold small">Show</label>
-                <select id="perPageSelect" class="form-select form-select-sm" style="width: auto;">
-                    @foreach (['all' => 'All', 10 => '10', 20 => '20', 50 => '50', 100 => '100'] as $value => $label)
-                        <option value="{{ $value }}" {{ (string) $perPage === (string) $value ? 'selected' : '' }}>
-                            {{ $label }}</option>
-                    @endforeach
-                </select>
-                <label class="form-label mb-0 fw-semibold small">entries</label>
+        <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3 flex-wrap">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="form-label mb-0 fw-semibold small">Show</label>
+                    <select id="perPageSelect" class="form-select form-select-sm" style="width: auto;">
+                        @foreach (['all' => 'All', 10 => '10', 20 => '20', 50 => '50', 100 => '100'] as $value => $label)
+                            <option value="{{ $value }}" {{ (string) $perPage === (string) $value ? 'selected' : '' }}>
+                                {{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <label class="form-label mb-0 fw-semibold small">entries</label>
+                </div>
+
+                <form method="GET" action="{{ route('admin.products.index') }}" class="d-flex gap-2">
+                    @if(request('per_page'))
+                        <input type="hidden" name="per_page" value="{{ request('per_page') }}">
+                    @endif
+                    <input style="border-color: #a1a1a1 !important; width: 230px !important;" type="text" name="search" value="{{ request('search') }}" class="form-control form-control-sm" placeholder="Search products..." style="width:230px;">
+                    <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-search"></i></button>
+                    @if(request('search'))
+                        <a href="{{ route('admin.products.index', request('per_page') ? ['per_page' => request('per_page')] : []) }}" class="btn btn-outline-secondary btn-sm" title="Clear Search"><i class="bi bi-x-lg"></i></a>
+                    @endif
+                </form>
             </div>
             <div class="d-flex align-items-center gap-2">
                 <button type="button" id="bulkDeleteBtn" class="btn btn-danger btn-sm" style="display: none;">

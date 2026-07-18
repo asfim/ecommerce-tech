@@ -38,6 +38,21 @@ class ProductController extends Controller implements HasMiddleware
             }], 'quantity')
             ->latest();
 
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('slug', 'like', "%{$search}%")
+                    ->orWhere('price', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($catQuery) use ($search) {
+                        $catQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('brand', function ($brandQuery) use ($search) {
+                        $brandQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
         if ($perPage === 'all') {
             $products = $query->get();
         } else {
