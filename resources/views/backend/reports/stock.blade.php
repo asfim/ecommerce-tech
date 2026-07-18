@@ -27,36 +27,29 @@
 </div>
 
 <!-- Stock Metrics Cards -->
-<div class="d-flex flex-wrap gap-3 mb-4">
-  <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
+<div class="row g-3 mb-4">
+  <div class="col-md-6">
     <div class="stat-card h-100" style="border-top: 4px solid #0d6efd;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Total Products</p>
       <h2 class="mt-2">{{ number_format($totalProducts) }}</h2>
       <div class="small text-muted mt-1">Unique items</div>
     </div>
   </div>
-  <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
+  <div class="col-md-6">
     <div class="stat-card h-100" style="border-top: 4px solid #17a2b8;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Total Stock Qty</p>
       <h2 class="mt-2">{{ number_format($totalStockQty) }}</h2>
       <div class="small text-muted mt-1">Total physical units</div>
     </div>
   </div>
-  <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
-    <div class="stat-card h-100" style="border-top: 4px solid #f0ad4e;">
-      <p class="text-uppercase tracking-wider small fw-bold text-muted">Stock Value (Cost)</p>
-      <h2 class="mt-2">৳{{ number_format($stockValueCost, 2) }}</h2>
-      <div class="small text-muted mt-1">At purchasing price</div>
-    </div>
-  </div>
-  <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
+  <div class="col-md-6">
     <div class="stat-card h-100" style="border-top: 4px solid #198754;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Stock Value (Retail)</p>
       <h2 class="mt-2">৳{{ number_format($stockValueRetail, 2) }}</h2>
       <div class="small text-muted mt-1">At selling price</div>
     </div>
   </div>
-  <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
+  <div class="col-md-6">
     <div class="stat-card h-100" style="border-top: 4px solid #20c997;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Potential Profit</p>
       <h2 class="mt-2">৳{{ number_format($potentialProfit, 2) }}</h2>
