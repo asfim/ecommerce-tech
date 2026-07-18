@@ -47,7 +47,7 @@
                     <th>Image</th>
                     <th>Name</th>
 
-                    <th>Hot Category</th>
+                    <th>Status</th>
                     <th>Trending</th>
                     <th>Actions</th>
                 </tr>
