@@ -29,6 +29,8 @@
             <span class="badge bg-success fs-6"><i class="bi bi-check2-all"></i> Delivered</span>
           @elseif($order->order_status === 'cancelled')
             <span class="badge bg-danger fs-6"><i class="bi bi-x-circle"></i> Cancelled</span>
+          @elseif($order->order_status === 'returned')
+            <span class="badge bg-secondary fs-6"><i class="bi bi-arrow-counterclockwise"></i> Returned</span>
           @endif
         </div>
       </div>

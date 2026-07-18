@@ -45,8 +45,10 @@
           <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>Pending</option>
           <option value="processing" {{ $status === 'processing' ? 'selected' : '' }}>Processing</option>
           <option value="shipped" {{ $status === 'shipped' ? 'selected' : '' }}>Shipped</option>
+          <option value="confirmed" {{ $status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
           <option value="delivered" {{ $status === 'delivered' ? 'selected' : '' }}>Delivered</option>
           <option value="cancelled" {{ $status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+          <option value="returned" {{ $status === 'returned' ? 'selected' : '' }}>Returned</option>
         </select>
       </div>
       <div class="col-md-3 d-flex gap-2">

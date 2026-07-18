@@ -41,6 +41,12 @@
     <a href="{{ route('admin.orders.index', ['status' => 'delivered']) }}" class="btn btn-sm {{ request('status') === 'delivered' ? 'btn-success' : 'btn-outline-success' }}">
       Delivered <span class="badge bg-success ms-1">{{ $statusCounts['delivered'] }}</span>
     </a>
+    <a href="{{ route('admin.orders.index', ['status' => 'cancelled']) }}" class="btn btn-sm {{ request('status') === 'cancelled' ? 'btn-danger' : 'btn-outline-danger' }}">
+      Cancelled <span class="badge bg-danger ms-1">{{ $statusCounts['cancelled'] }}</span>
+    </a>
+    <a href="{{ route('admin.orders.index', ['status' => 'returned']) }}" class="btn btn-sm {{ request('status') === 'returned' ? 'btn-secondary' : 'btn-outline-secondary' }}">
+      Returned <span class="badge bg-secondary ms-1">{{ $statusCounts['returned'] }}</span>
+    </a>
   </div>
   <div class="d-flex gap-2">
     <button type="button" id="bulkPrintBtn" class="btn btn-sm btn-info text-white" style="display: none; background-color: #0dcaf0 !important; border-color: #0dcaf0 !important;">
@@ -132,23 +138,20 @@
             @endif
           </td>
           <td>
-            @if($order->order_status === 'delivered')
-              <span class="badge bg-success">Delivered</span>
-            @else
-              <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
-                @csrf
-                @method('PATCH')
-                <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
-                  <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
-                  <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                  <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
-                  <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                </select>
-                <button type="submit" class="btn btn-sm btn-primary" title="Update Status">
-                  <i class="bi bi-check-lg"></i>
-                </button>
-              </form>
-            @endif
+            <form method="POST" action="{{ route('admin.orders.update-status', $order) }}" class="d-flex gap-1 align-items-center">
+              @csrf
+              @method('PATCH')
+              <select name="order_status" class="form-select form-select-sm" style="width: 120px;">
+                <option value="pending" {{ $order->order_status === 'pending' ? 'selected' : '' }}>Pending</option>
+                <option value="confirmed" {{ $order->order_status === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                <option value="delivered" {{ $order->order_status === 'delivered' ? 'selected' : '' }}>Delivered</option>
+                <option value="cancelled" {{ $order->order_status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
+                <option value="returned" {{ $order->order_status === 'returned' ? 'selected' : '' }}>Returned</option>
+              </select>
+              <button type="submit" class="btn btn-sm btn-primary" title="Update Status">
+                <i class="bi bi-check-lg"></i>
+              </button>
+            </form>
           </td>
           <td class="text-muted small">{{ $order->created_at->format('d M Y') }}</td>
           <td>

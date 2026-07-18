@@ -55,6 +55,8 @@ class OrderController extends Controller implements HasMiddleware
             'pending' => Order::where('order_status', '=', 'pending', 'and')->count('*'),
             'confirmed' => Order::where('order_status', '=', 'confirmed', 'and')->count('*'),
             'delivered' => Order::where('order_status', '=', 'delivered', 'and')->count('*'),
+            'cancelled' => Order::where('order_status', '=', 'cancelled', 'and')->count('*'),
+            'returned' => Order::where('order_status', '=', 'returned', 'and')->count('*'),
         ];
 
         return view('backend.orders.index', compact('orders', 'statusCounts'));
@@ -83,12 +85,8 @@ class OrderController extends Controller implements HasMiddleware
 
     public function updateStatus(Request $request, Order $order): RedirectResponse
     {
-        if ($order->order_status === 'delivered') {
-            return back()->with('error', 'Cannot update status of a delivered order.');
-        }
-
         $validated = $request->validate([
-            'order_status' => 'nullable|in:pending,confirmed,delivered,cancelled',
+            'order_status' => 'nullable|in:pending,confirmed,delivered,cancelled,returned',
             'payment_status' => 'nullable|in:pending,paid',
         ]);
 

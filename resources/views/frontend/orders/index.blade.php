@@ -71,6 +71,8 @@
                 <span class="badge bg-success"><i class="bi bi-check2-all"></i> Delivered</span>
               @elseif($order->order_status === 'cancelled')
                 <span class="badge bg-danger"><i class="bi bi-x-circle"></i> Cancelled</span>
+              @elseif($order->order_status === 'returned')
+                <span class="badge bg-secondary"><i class="bi bi-arrow-counterclockwise"></i> Returned</span>
               @endif
             </td>
             <td class="text-muted small">{{ $order->created_at->format('d M Y') }}</td>

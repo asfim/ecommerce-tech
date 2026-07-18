@@ -12,7 +12,42 @@ class Order extends Model
 {
     protected static function booted(): void
     {
+        static::created(function (Order $order) {
+            $decreasing = ['confirmed', 'delivered'];
+            if (in_array($order->order_status, $decreasing)) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->decrement('stock', $item->quantity);
+                    }
+                }
+            }
+        });
+
         static::updated(function (Order $order) {
+            if ($order->isDirty('order_status')) {
+                $oldStatus = $order->getOriginal('order_status');
+                $newStatus = $order->order_status;
+
+                $decreasing = ['confirmed', 'delivered'];
+
+                $wasDecreased = in_array($oldStatus, $decreasing);
+                $shouldBeDecreased = in_array($newStatus, $decreasing);
+
+                if (! $wasDecreased && $shouldBeDecreased) {
+                    foreach ($order->items as $item) {
+                        if ($item->product) {
+                            $item->product->decrement('stock', $item->quantity);
+                        }
+                    }
+                } elseif ($wasDecreased && ! $shouldBeDecreased) {
+                    foreach ($order->items as $item) {
+                        if ($item->product) {
+                            $item->product->increment('stock', $item->quantity);
+                        }
+                    }
+                }
+            }
+
             if ($order->isDirty('order_status') && $order->order_status === 'delivered') {
                 try {
                     $settings = HomepageSetting::get('sms_settings', []);
@@ -29,6 +64,17 @@ class Order extends Model
                     }
                 } catch (\Exception $e) {
                     Log::error('Failed to process order delivered SMS: '.$e->getMessage());
+                }
+            }
+        });
+
+        static::deleting(function (Order $order) {
+            $decreasing = ['confirmed', 'delivered'];
+            if (in_array($order->order_status, $decreasing)) {
+                foreach ($order->items as $item) {
+                    if ($item->product) {
+                        $item->product->increment('stock', $item->quantity);
+                    }
                 }
             }
         });
