@@ -104,8 +104,8 @@
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->category->name ?? '-' }}</td>
                         <td>{{ $product->brand->name ?? '-' }}</td>
-                        <td>{{ $product->buy_price ? '$' . number_format($product->buy_price, 2) : '-' }}</td>
-                        <td>${{ number_format($product->price, 2) }}</td>
+                        <td>{{ $product->buy_price ? '৳' . number_format($product->buy_price, 2) : '-' }}</td>
+                        <td>৳{{ number_format($product->price, 2) }}</td>
                         <td>{{ $product->stock }}</td>
                         <td>{{ $product->delivered_sales_count ?? 0 }}</td>
                         <td>

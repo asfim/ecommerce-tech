@@ -369,7 +369,7 @@
                                         <img src="${product.image}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;" alt="">
                                         <div class="flex-grow-1 min-w-0">
                                             <div class="fw-semibold text-truncate small">${product.name}</div>
-                                            <div class="text-danger small">$${product.price}</div>
+                                            <div class="text-danger small">৳${product.price}</div>
                                         </div>
                                     </a>
                                 `;

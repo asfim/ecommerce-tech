@@ -207,7 +207,7 @@
                                             <a href="{{ route('product.details', $fp->slug) }}" class="text-dark hover-blue">
                                                 <div class="t">{{ Str::limit($fp->name, 35) }}</div>
                                             </a>
-                                            <div class="p">${{ number_format($fp->price, 2) }}</div>
+                                            <div class="p">৳{{ number_format($fp->price, 2) }}</div>
                                         </div>
                                         <button type="button"
                                             class="btn btn-sm btn-outline-primary rounded-circle p-0 d-inline-flex align-items-center justify-content-center add-to-cart-btn"
@@ -279,7 +279,7 @@
                                                         <a href="{{ route('product.details', $np->slug) }}" class="text-dark hover-blue">
                                                             <div class="t">{{ Str::limit($np->name, 45) }}</div>
                                                         </a>
-                                                        <div class="bid"><b>${{ number_format($np->price, 2) }}</b></div>
+                                                        <div class="bid"><b>৳{{ number_format($np->price, 2) }}</b></div>
                                                         <div class="d-flex gap-1 mt-1 justify-content-center align-items-center new-arrival-actions">
                                                             <button type="button" class="btn btn-sm btn-outline-primary btn-custom-cart add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
                                                                 style="height: 24px; font-size:11px; border-radius:10px;"

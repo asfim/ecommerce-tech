@@ -45,21 +45,21 @@
   <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
     <div class="stat-card h-100" style="border-top: 4px solid #f0ad4e;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Stock Value (Cost)</p>
-      <h2 class="mt-2">${{ number_format($stockValueCost, 2) }}</h2>
+      <h2 class="mt-2">৳{{ number_format($stockValueCost, 2) }}</h2>
       <div class="small text-muted mt-1">At purchasing price</div>
     </div>
   </div>
   <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
     <div class="stat-card h-100" style="border-top: 4px solid #198754;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Stock Value (Retail)</p>
-      <h2 class="mt-2">${{ number_format($stockValueRetail, 2) }}</h2>
+      <h2 class="mt-2">৳{{ number_format($stockValueRetail, 2) }}</h2>
       <div class="small text-muted mt-1">At selling price</div>
     </div>
   </div>
   <div class="flex-grow-1" style="min-width: 180px; flex-basis: 0;">
     <div class="stat-card h-100" style="border-top: 4px solid #20c997;">
       <p class="text-uppercase tracking-wider small fw-bold text-muted">Potential Profit</p>
-      <h2 class="mt-2">${{ number_format($potentialProfit, 2) }}</h2>
+      <h2 class="mt-2">৳{{ number_format($potentialProfit, 2) }}</h2>
       <div class="small text-muted mt-1">Retail Value - Cost Value</div>
     </div>
   </div>
@@ -175,11 +175,11 @@
               <td class="ps-3 text-muted">{{ $product->id }}</td>
               <td class="fw-medium">{{ $product->name }}</td>
               <td>{{ $product->category->name ?? '-' }}</td>
-              <td class="text-end text-muted">${{ number_format($prodBuyPrice, 2) }}</td>
-              <td class="text-end">${{ number_format($prodRetailPrice, 2) }}</td>
+              <td class="text-end text-muted">৳{{ number_format($prodBuyPrice, 2) }}</td>
+              <td class="text-end">৳{{ number_format($prodRetailPrice, 2) }}</td>
               <td class="text-center fw-bold">{{ $product->stock }}</td>
-              <td class="text-end text-muted">${{ number_format($itemCostVal, 2) }}</td>
-              <td class="text-end fw-semibold">${{ number_format($itemRetailVal, 2) }}</td>
+              <td class="text-end text-muted">৳{{ number_format($itemCostVal, 2) }}</td>
+              <td class="text-end fw-semibold">৳{{ number_format($itemRetailVal, 2) }}</td>
               <td class="text-center pe-3">
                 @if($product->stock === 0)
                   <span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle px-2 py-1 rounded">Out of Stock</span>

@@ -77,7 +77,7 @@
                                 <div class="flex-grow-1" style="min-width: 0;">
                                     <div class="fw-semibold small text-truncate" title="${item.name}">${item.name}</div>
                                     ${variantsHtml}
-                                    <div class="text-muted small">${item.quantity} x $${item.price.toFixed(2)}</div>
+                                    <div class="text-muted small">${item.quantity} x ৳${item.price.toFixed(2)}</div>
                                 </div>
                                 <button type="button" class="btn btn-sm text-danger p-0 remove-dropdown-item" data-id="${item.id}" data-variants='${JSON.stringify(item.variants || {})}' style="border: none; background: transparent;">
                                     <i class="bi bi-trash" style="font-size: 14px;"></i>
@@ -97,7 +97,7 @@
                             </div>
                             <div class="d-flex justify-content-between align-items-center my-3 pt-2 border-top">
                                 <span class="fw-bold text-dark small">Total:</span>
-                                <span class="fw-bold text-primary">$${total.toFixed(2)}</span>
+                                <span class="fw-bold text-primary">৳${total.toFixed(2)}</span>
                             </div>
                             <button type="button" class="btn btn-primary btn-sm w-100 py-2 fw-semibold checkout-dropdown-btn" style="border-radius: 6px;">Buy Now</button>
                         </div>

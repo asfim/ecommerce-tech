@@ -415,7 +415,7 @@
       discountedPrice = 0;
     }
 
-    discountedPriceText.textContent = `After Discount: $${discountedPrice.toFixed(2)}`;
+    discountedPriceText.textContent = `After Discount: ৳${discountedPrice.toFixed(2)}`;
     discountedPriceText.style.display = 'block';
   }
 
