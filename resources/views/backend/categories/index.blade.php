@@ -43,13 +43,13 @@
         <table class="table table-bordered" style="border-color: #a1a1a1 !important;">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>Serial</th>
                     <th>Image</th>
                     <th>Name</th>
-
                     <th>Status</th>
                     <th>Trending</th>
                     <th>Actions</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -144,4 +144,3 @@
         });
     </script>
 @endsection
-  
