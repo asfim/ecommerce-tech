@@ -1,23 +1,8 @@
 <!-- About text -->
-<div class="about-sec">
-  <div class="wrap">
-    <p> eCommerce CMS is an online shopping platform bringing great deals, with platforms existing across Asia including Singapore, Thailand, Indonesia, Vietnam, Philippines, and Taiwan. Our online shopping experience is powered by dependable service and a wide selection of products at affordable prices, so you can enjoy a hassle-free shopping journey whenever and wherever you shop.</p>
-    <h6>Quality Products, Low Prices</h6>
-    <p> eCommerce strives to provide affordable prices while maintaining great products and services, so shoppers can enjoy their daily shopping without worrying about their wallet.</p>
-    <h6>Shop the Variety with  eCommerce</h6>
-    <p>Everyday deals while shopping for convenience, plus year-round promos including Super Brand Day flash sales, big discount events, and exclusive festive campaigns to keep every shopper satisfied.</p>
-  </div>
-</div>
+
 
 <!-- Foot links row -->
-<div class="footlinks">
-  <div class="wrap row g-3 justify-content-center">
-    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'terms-conditions') }}" class="text-decoration-none text-reset"><i class="bi bi-file-text"></i> Terms &amp; Conditions</a></div>
-    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'return-policy') }}" class="text-decoration-none text-reset"><i class="bi bi-arrow-counterclockwise"></i> Return Policy</a></div>
-    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'support-policy') }}" class="text-decoration-none text-reset"><i class="bi bi-headset"></i> Support Policy</a></div>
-    <div class="col-6 col-md-3 item"><a href="{{ route('page.show', 'privacy-policy') }}" class="text-decoration-none text-reset"><i class="bi bi-shield-check"></i> Privacy Policy</a></div>
-  </div>
-</div>
+
 
 <!-- Main footer -->
 <footer class="main-footer">
@@ -73,7 +58,7 @@
     </div>
     <hr class="border-secondary mt-4">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center small flex-wrap gap-3">
-      <span> eCommerce </span>
+      <span> H Tech Provision IT Solutions All Rights Reserved &copy; 2026</span>
       <span class="d-flex align-items-center gap-2 flex-wrap">
         @if(!empty($companySettings['facebook']))
           <a href="{{ $companySettings['facebook'] }}" class="social-ic" target="_blank"><i class="bi bi-facebook"></i></a>

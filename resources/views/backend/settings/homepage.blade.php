@@ -16,12 +16,12 @@
       'icon' => 'bi-image',
       'recommendation' => 'Recommended size: 1200 x 480 px (Aspect ratio ~ 2.5:1)'
     ],
-    'best_selling_banners'   => [
-      'label' => 'Best Selling Banner',
-      'max' => 3,
-      'icon' => 'bi-stars',
-      'recommendation' => 'Recommended size: 394 x 220 px (Aspect ratio ~ 16:9)'
-    ],
+    // 'best_selling_banners'   => [
+    //   'label' => 'Best Selling Banner',
+    //   'max' => 3,
+    //   'icon' => 'bi-stars',
+    //   'recommendation' => 'Recommended size: 394 x 220 px (Aspect ratio ~ 16:9)'
+    // ],
     'new_arrivals_banner'    => [
       'label' => 'New Arrivals Banner',
       'max' => 1,
