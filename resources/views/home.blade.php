@@ -153,7 +153,7 @@
 
 
         <!-- Promo 3 banners -->
-        <div class="row g-3 mb-4">
+        {{-- <div class="row g-3 mb-4">
 
             <div class="col-12 col-md-4">
                 <div class="promo3">
@@ -182,7 +182,7 @@
                     @endif
                 </div>
             </div>
-        </div>
+        </div> --}}
         <!-- Featured products strip -->
             <div class="featured-strip">
                 <div class="row align-items-center g-2" style="background-color: #d8d8d8;">

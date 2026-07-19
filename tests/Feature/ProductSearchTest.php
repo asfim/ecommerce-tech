@@ -4,6 +4,7 @@ use App\Models\Category;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
+use App\Models\Admin;
 use Spatie\Permission\Models\Role;
 
 beforeEach(function () {
@@ -34,8 +35,7 @@ beforeEach(function () {
 
 test('admin can search products by name, category, or brand', function () {
     // Create admin user and authenticate
-    $admin = User::create([
-        'name' => 'Admin User',
+    $admin = Admin::create([
         'email' => 'admin@example.com',
         'password' => bcrypt('password'),
     ]);
@@ -43,6 +43,8 @@ test('admin can search products by name, category, or brand', function () {
     // Assign view-products permission or authenticate as admin guard
     // In web.php, the route has permission:view-products|create-products|...
     // Let's bypass or actAs admin
+    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
+    $admin->assignRole('Super Admin');
     $this->actingAs($admin, 'admin');
 
     // Search by product name "Galaxy"

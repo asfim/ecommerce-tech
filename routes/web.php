@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
+Route::get('/landing/{slug}', [\App\Http\Controllers\Frontend\LandingPageController::class, 'show'])->name('landing.show');
 Route::get('/category/{id}', [HomeController::class, 'categoryProducts'])->name('category.products');
 Route::get('/products/search-api', [HomeController::class, 'searchApi'])->name('products.search-api');
 Route::get('/blog', [BlogController::class, 'index'])->name('blogs.index');
@@ -117,6 +118,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('products/{product}/toggle-featured', [AdminProductController::class, 'toggleFeatured'])->name('products.toggle-featured');
             Route::patch('products/{product}/toggle-active', [AdminProductController::class, 'toggleActive'])->name('products.toggle-active');
             Route::patch('products/{product}/toggle-new-arrival', [AdminProductController::class, 'toggleNewArrival'])->name('products.toggle-new-arrival');
+
+            // Landing Page routes
+            Route::get('products/{product}/landing-page/create', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'create'])->name('products.landing-page.create');
+            Route::post('products/{product}/landing-page', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'store'])->name('products.landing-page.store');
+            Route::get('products/{product}/landing-page/edit', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'edit'])->name('products.landing-page.edit');
+            Route::put('products/{product}/landing-page', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'update'])->name('products.landing-page.update');
         });
 
         Route::middleware('permission:view-orders|edit-orders|delete-orders,admin')->group(function () {

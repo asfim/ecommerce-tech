@@ -84,7 +84,7 @@
                     <th>Status</th>
                     <th>New Arrival</th>
                     <th>Featured</th>
-                    <th style="width: 100px;">Actions</th>
+                    <th style="width: 180px;">Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -130,12 +130,31 @@
                             <div class="d-flex align-items-center gap-2">
                                 <a href="{{ route('product.details', $product->slug) }}" target="_blank" class="btn btn-sm btn-info text-white" title="View Product"><i
                                         class="bi bi-eye"></i></a>
-                                <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning"><i
+                                <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning" title="Edit Product"><i
                                         class="bi bi-pencil"></i></a>
+
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Landing Page">
+                                        <i class="bi bi-layout-text-window-reverse"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('admin.products.landing-page.create', $product) }}">
+                                                <i class="bi bi-plus-circle me-2"></i>Create
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item" href="{{ route('landing.show', $product->slug) }}" target="_blank">
+                                                <i class="bi bi-eye me-2"></i>View
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </div>
+
                                 <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline-block m-0"
                                     onsubmit="return confirm('Are you sure?')">
                                     @csrf @method('DELETE')
-                                    <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                                    <button class="btn btn-sm btn-danger" title="Delete Product"><i class="bi bi-trash"></i></button>
                                 </form>
                             </div>
                         </td>

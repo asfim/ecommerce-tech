@@ -25,6 +25,11 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function landingPage(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(ProductLandingPage::class);
+    }
+
     public function category()
     {
         return $this->belongsTo(Category::class);
