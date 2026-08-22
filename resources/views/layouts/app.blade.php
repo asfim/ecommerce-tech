@@ -15,7 +15,10 @@
     @endif
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?v={{ time() }}">
+    <link rel="stylesheet" href="{{ asset('css/responsive.css') }}?v={{ time() }}">
     @stack('styles')
 </head>
 <body>
@@ -36,13 +39,24 @@
 
             function updateCartBadge() {
                 const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+                // Old icon-btn badges
                 const badges = document.querySelectorAll('a.icon-btn .badge-num');
                 badges.forEach(badge => {
                     badge.textContent = totalItems;
                     badge.classList.remove('badge-bounce');
-                    void badge.offsetWidth; // Trigger reflow
+                    void badge.offsetWidth;
                     badge.classList.add('badge-bounce');
                 });
+
+                // New cart-header-pill badge
+                const pillBadges = document.querySelectorAll('.cart-count-badge');
+                pillBadges.forEach(b => { b.textContent = totalItems; });
+
+                // Cart total amount in pill
+                const totalEls = document.querySelectorAll('.cart-total-amount');
+                totalEls.forEach(el => { el.textContent = total.toFixed(2); });
             }
 
             function updateCartDropdown() {

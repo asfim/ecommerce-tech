@@ -5,6 +5,7 @@
 @endphp
 
 <header class="main-header">
+
 <div class="topline"></div>
 
 <!-- ============ DESKTOP HEADER (992px and up) ============ -->
@@ -12,26 +13,47 @@
     <!-- Header Row -->
     <div class="header-row">
         <div class="wrap d-flex align-items-center gap-4">
-            <a class="d-flex align-items-center gap-2" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
+            <a class="d-flex align-items-center gap-2 header-logo-link" href="{{ route('home') }}">
                 @if($companyLogo)
-                    <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 34px; border-radius: 4px;">
+                    <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 44px; border-radius: 6px;">
                 @else
-                    <span class="logo-box">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+                    <div class="header-logo-icon">
+                        <i class="bi bi-bag-fill"></i>
+                    </div>
                 @endif
-                
+                <div class="header-brand-text">
+                    <div class="header-brand-name">{{ strtoupper($companyName) }}</div>
+                    <div class="header-brand-sub">Shop Smart, Live Better</div>
+                </div>
             </a>
 
             <form action="{{ route('home') }}" method="GET" class="search-input flex-grow-1 d-flex mb-0 position-relative">
-                <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="border-color: #a1a1a1 !important;">
-                <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+                <div class="search-input-wrap w-100">
+                    <select class="search-cat-select" name="category" aria-label="Category">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
+                        @endforeach
+                    </select>
+                    <input type="text" name="search" class="form-control search-input-field" placeholder="Search for products..." value="{{ request()->query('search') }}" autocomplete="off">
+                    <button type="submit" class="btn"><i class="bi bi-search"></i></button>
+                </div>
                 <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
             </form>
 
             <div class="d-flex align-items-center gap-2">
 
                 <div class="dropdown">
-                    <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownDesktop" style="text-decoration:none;">
-                        <i class="bi bi-bag"></i><span class="badge-num">0</span>
+                    <a href="#" class="cart-header-pill dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownDesktop" style="text-decoration:none;">
+                        <div class="position-relative cart-icon-wrap">
+                            <i class="bi bi-cart3"></i>
+                            <span class="badge-num cart-count-badge">0</span>
+                        </div>
+                        <div class="cart-header-text">
+                            <span class="cart-header-label">My Cart</span>
+                            <span class="cart-header-total">৳ <span class="cart-total-amount">0.00</span></span>
+                        </div>
+                        <i class="bi bi-chevron-down cart-chevron"></i>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end p-3 cart-dropdown-menu" aria-labelledby="cartDropdownDesktop" style="width: 320px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
                         <!-- Dynamically rendered cart items -->
@@ -79,8 +101,8 @@
                         </ul>
                     </div>
                 @else
-                    <a href="{{ route('user.login') }}" class="btn btn-sm btn-outline-primary">Login</a>
-                    <a href="{{ route('user.register') }}" class="btn btn-sm btn-primary">Register</a>
+                    <a href="{{ route('user.login') }}" class="btn btn-sm header-login-btn">Login</a>
+                    <a href="{{ route('user.register') }}" class="btn btn-sm header-register-btn">Register</a>
                 @endif
             </div>
         </div>
@@ -120,6 +142,10 @@
                 <li><a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.*') ? 'active' : '' }}">Blog</a></li>
                 <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
             </ul>
+            <!-- Hot Deals button on right -->
+            <a href="#" class="hot-deals-btn ms-auto">
+                <i class="bi bi-fire"></i> Hot Deals
+            </a>
         </div>
     </div>
 </div>

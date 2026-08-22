@@ -4,9 +4,43 @@
     <!-- Hero section -->
     <div class="hero-sec">
         <div class="wrap">
-            <div id="heroCarousel" class="carousel slide hero-carousel shadow-sm" data-bs-ride="carousel" data-bs-interval="3000">
+
+            {{-- Desktop: Category Sidebar + Slider --}}
+            <div class="row g-4 d-none d-lg-flex">
+
+                <!-- LEFT: Category Sidebar -->
+                <div class="col-lg-3">
+                    <div class="hero-cat-sidebar">
+                    <ul class="hero-cat-list">
+                        @foreach($categories as $cat)
+                        <li>
+                            <a href="{{ route('category.products', $cat->id) }}">
+                                @if($cat->image)
+                                    <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}" class="hero-cat-icon">
+                                @else
+                                    <i class="bi bi-grid hero-cat-icon-bi"></i>
+                                @endif
+                                <span>{{ $cat->name }}</span>
+                                <i class="bi bi-chevron-right ms-auto cat-arrow"></i>
+                            </a>
+                        </li>
+                        @endforeach
+                        <li class="view-all-cats">
+                            <a href="{{ route('home') }}">
+                                <i class="bi bi-grid-3x3-gap hero-cat-icon-bi"></i>
+                                <span>View All Categories</span>
+                                <i class="bi bi-chevron-right ms-auto cat-arrow"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                </div>
+
+                <!-- RIGHT: Carousel -->
+                <div class="col-lg-9">
+                <div id="heroCarousel" class="carousel slide hero-carousel shadow-sm h-100" data-bs-ride="carousel" data-bs-interval="3000">
                 <!-- Indicators -->
-                <div class="carousel-indicators">
+                <div class="carousel-indicators hero-indicators">
                     @forelse ($heroBanners as $index => $banner)
                         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}" class="{{ $index === 0 ? 'active' : '' }}" aria-current="{{ $index === 0 ? 'true' : '' }}" aria-label="Slide {{ $index + 1 }}"></button>
                     @empty
@@ -23,36 +57,39 @@
                             <img src="{{ asset('storage/' . $banner) }}" class="d-block w-100 hero-slider-img" alt="Slide {{ $index + 1 }}">
                         </div>
                     @empty
+                        {{-- Fallback slide 1 --}}
                         <div class="carousel-item active">
-                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80" class="d-block w-100 hero-slider-img" alt="Fashion Slide">
-                            <div class="carousel-caption d-none d-md-block text-start">
-                                <div class="caption-content">
-                                    <span class="badge bg-primary mb-2 px-3 py-2 text-uppercase fw-bold">New Season</span>
-                                    <h1 class="display-6 fw-bold text-white mb-2">Modern Fashion Collection</h1>
-                                    <p class="text-white-50 mb-3">Explore the latest style statements and trends for this season.</p>
-                                    <a href="#products-grid" class="btn btn-primary px-4 py-2 fw-semibold">Shop Now</a>
+                            <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&q=80" alt="Fashion" class="d-block w-100 hero-slider-img">
+                            <div class="hero-overlay-caption">
+                                <div class="hero-slide-text">
+                                    <p class="hero-slide-label" style="color: #ffc107; font-weight: 700; letter-spacing: .12em;">NEW ARRIVAL</p>
+                                    <h2 class="hero-slide-heading" style="color: #fff; font-weight: 800; font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Modern Fashion<br>Collection 2026</h2>
+                                    <p class="hero-slide-desc" style="color: #f1f1f1; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Latest trends with premium quality.<br>Express your unique style today!</p>
+                                    <a href="#products-grid" class="btn hero-slide-btn">Shop Now &nbsp;<i class="bi bi-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>
+                        {{-- Fallback slide 2 --}}
                         <div class="carousel-item">
-                            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80" class="d-block w-100 hero-slider-img" alt="Season Sale Slide">
-                            <div class="carousel-caption d-none d-md-block text-start">
-                                <div class="caption-content">
-                                    <span class="badge bg-warning text-dark mb-2 px-3 py-2 text-uppercase fw-bold">Big Discount</span>
-                                    <h1 class="display-6 fw-bold text-white mb-2">End of Season Sale</h1>
-                                    <p class="text-white-50 mb-3">Get up to 50% discount on all premium brand apparel and accessories.</p>
-                                    <a href="#products-grid" class="btn btn-warning px-4 py-2 fw-semibold text-dark">Discover Deals</a>
+                            <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1200&q=80" alt="Sale" class="d-block w-100 hero-slider-img">
+                            <div class="hero-overlay-caption">
+                                <div class="hero-slide-text">
+                                    <p class="hero-slide-label" style="color: #ffc107; font-weight: 700; letter-spacing: .12em;">BIG DISCOUNT</p>
+                                    <h2 class="hero-slide-heading" style="color: #fff; font-weight: 800; font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">End of Season<br>Sale — Up to 50%</h2>
+                                    <p class="hero-slide-desc" style="color: #f1f1f1; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Unbeatable prices on premium brands.<br>Don't miss these exclusive deals!</p>
+                                    <a href="#products-grid" class="btn hero-slide-btn">Discover Deals &nbsp;<i class="bi bi-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>
+                        {{-- Fallback slide 3 --}}
                         <div class="carousel-item">
-                            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80" class="d-block w-100 hero-slider-img" alt="Smart Tech & Shopping">
-                            <div class="carousel-caption d-none d-md-block text-start">
-                                <div class="caption-content">
-                                    <span class="badge bg-success mb-2 px-3 py-2 text-uppercase fw-bold">Smart Living</span>
-                                    <h1 class="display-6 fw-bold text-white mb-2">Premium Electronics</h1>
-                                    <p class="text-white-50 mb-3">Experience innovation with our top-tier devices.</p>
-                                    <a href="#products-grid" class="btn btn-success px-4 py-2 fw-semibold text-white">Explore Tech</a>
+                            <img src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80" alt="Electronics" class="d-block w-100 hero-slider-img">
+                            <div class="hero-overlay-caption">
+                                <div class="hero-slide-text">
+                                    <p class="hero-slide-label" style="color: #ffc107; font-weight: 700; letter-spacing: .12em;">SMART LIVING</p>
+                                    <h2 class="hero-slide-heading" style="color: #fff; font-weight: 800; font-size: 2.5rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Premium<br>Electronics 2026</h2>
+                                    <p class="hero-slide-desc" style="color: #f1f1f1; text-shadow: 0 1px 2px rgba(0,0,0,0.5);">Experience innovation with our<br>top-tier devices and gadgets.</p>
+                                    <a href="#products-grid" class="btn hero-slide-btn">Explore Tech &nbsp;<i class="bi bi-arrow-right"></i></a>
                                 </div>
                             </div>
                         </div>
@@ -60,53 +97,52 @@
                 </div>
 
                 <!-- Controls -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                <button class="carousel-control-prev hero-ctrl" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                     <i class="bi bi-chevron-left"></i>
                     <span class="visually-hidden">Previous</span>
                 </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                <button class="carousel-control-next hero-ctrl" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
                     <i class="bi bi-chevron-right"></i>
                     <span class="visually-hidden">Next</span>
                 </button>
+                </div>
+                </div>
             </div>
+
+            {{-- Mobile: Slider only (no sidebar) --}}
+            <div class="d-block d-lg-none">
+                <div id="heroCarouselMobile" class="carousel slide hero-carousel" data-bs-ride="carousel" data-bs-interval="3000">
+                    <div class="carousel-inner">
+                        @forelse ($heroBanners as $index => $banner)
+                            <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
+                                <img src="{{ asset('storage/' . $banner) }}" class="d-block w-100 hero-slider-img" alt="Slide {{ $index + 1 }}">
+                            </div>
+                        @empty
+                            <div class="carousel-item active">
+                                <img src="https://images.unsplash.com/photo-1483985988355-763728e1935b?w=600&q=80" alt="Fashion" class="d-block w-100 hero-slider-img">
+                                <div class="hero-overlay-caption">
+                                    <div class="hero-slide-text p-4">
+                                        <p class="hero-slide-label" style="color: #ffc107; font-weight: 700; letter-spacing: .12em;">NEW ARRIVAL</p>
+                                        <h2 class="hero-slide-heading" style="color: #fff; font-weight: 800; font-size: 2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Modern Fashion<br>Collection 2026</h2>
+                                        <a href="#products-grid" class="btn hero-slide-btn">Shop Now &nbsp;<i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+                    <button class="carousel-control-prev hero-ctrl" type="button" data-bs-target="#heroCarouselMobile" data-bs-slide="prev">
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                    <button class="carousel-control-next hero-ctrl" type="button" data-bs-target="#heroCarouselMobile" data-bs-slide="next">
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
         </div>
     </div>
 
     <div class="wrap">
-        <!-- Trending categories -->
-        <div class="trending-box">
-            <div style="min-width:220px;">
-                <h6>Trending Categories</h6>
-                <p>Categories catching eyes &amp; winning hearts across our marketplace</p>
-            </div>
-            <div style="overflow: hidden; flex-grow: 1;">
-                <div id="trendingSlider" style="display: flex; gap: 15px; transition: transform .4s ease;">
-                    @forelse($trendingCategories as $tc)
-                        <a href="{{ route('category.products', $tc->id) }}" class="tcat-item">
-                            @if ($tc->image)
-                                <img src="{{ asset('storage/' . $tc->image) }}" alt="{{ $tc->name }}"
-                                    style="width:90px; height:90px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
-                            @else
-                                <img src="https://placehold.co/74x74/eee/aaa?text={{ urlencode(Str::limit($tc->name, 8, '')) }}"
-                                    alt="{{ $tc->name }}"
-                                    style="width:94px; height:94px; object-fit:cover; border-radius:50%; margin-bottom:4px;">
-                            @endif
-                            <div class="name" style="font-size:11.5px;">{{ $tc->name }}</div>
-                        </a>
-                    @empty
-                        <div class="text-muted small px-2">No trending categories yet.</div>
-                    @endforelse
-                </div>
-            </div>
-            <div class="d-flex gap-1 align-items-center">
-                <span class="arrow d-inline-flex" id="trendingPrev"
-                    style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                        class="bi bi-chevron-left"></i></span>
-                <span class="arrow d-inline-flex" id="trendingNext"
-                    style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                        class="bi bi-chevron-right"></i></span>
-            </div>
-        </div>
 
 
         <div class="row g-3 mb-4">
@@ -183,134 +219,6 @@
                 </div>
             </div>
         </div> --}}
-        <!-- Featured products strip -->
-            <div class="featured-strip">
-                <div class="row align-items-center g-2" style="background-color: #d8d8d8;">
-                    <div class="col-12 col-md-3"><b>Featured Products</b></div>
-                    <div class="col-10 col-md-8" style="overflow:hidden;">
-                        <div id="featuredSlider" style="display:flex;transition:transform .4s ease;gap:0;">
-                            @forelse($featuredProducts as $fp)
-                                <div class="fs-item" style="display:flex;align-items:center;gap:10px;">
-                                    @if ($fp->image)
-                                        <a href="{{ route('product.details', $fp->slug) }}">
-                                            <img src="{{ asset('storage/' . $fp->image) }}"
-                                                style="width:90px;height:100px;object-fit:cover;border-radius:6px;">
-                                        </a>
-                                    @else
-                                        <a href="{{ route('product.details', $fp->slug) }}">
-                                            <img src="https://placehold.co/50x50/eee/aaa?text=No+Img"
-                                                style="width:50px;height:50px;object-fit:cover;border-radius:6px;">
-                                        </a>
-                                    @endif
-                                    <div class="d-flex align-items-center justify-content-between w-100">
-                                        <div>
-                                            <a href="{{ route('product.details', $fp->slug) }}" class="text-dark hover-blue">
-                                                <div class="t">{{ Str::limit($fp->name, 35) }}</div>
-                                            </a>
-                                            <div class="p">৳{{ number_format($fp->price, 2) }}</div>
-                                        </div>
-                                        <button type="button"
-                                            class="btn btn-sm btn-outline-primary rounded-circle p-0 d-inline-flex align-items-center justify-content-center add-to-cart-btn"
-                                            style="width:24px;height:24px;min-width:24px;" data-id="{{ $fp->id }}"
-                                            data-name="{{ $fp->name }}" data-price="{{ $fp->price }}"
-                                            data-image="{{ $fp->image ? asset('storage/' . $fp->image) : 'https://placehold.co/50x50/eee/aaa?text=No+Img' }}"
-                                            title="Add to Cart">
-                                            <i class="bi bi-plus-lg" style="font-size:10px;"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-muted small px-2">No featured products yet.</div>
-                            @endforelse
-                        </div>
-                    </div>
-                    <div class="col-2 col-md-1 text-end d-flex justify-content-end gap-1">
-                        <span class="arrow d-inline-flex" id="featuredPrev"
-                            style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                                class="bi bi-chevron-left"></i></span>
-                        <span class="arrow d-inline-flex" id="featuredNext"
-                            style="width:26px;height:26px;border-radius:50%;background:#111;color:#fff;align-items:center;justify-content:center;cursor:pointer;"><i
-                                class="bi bi-chevron-right"></i></span>
-                    </div>
-                </div>
-            </div>
-
-        <!-- New Arrival -->
-        <div class="row g-3 mb-4">
-            <div class="col-12 col-md-4">
-                <div class="newarrival-banner">
-                    @if (!empty($newArrivalsBanner[0]))
-                        <img src="{{ asset('storage/' . $newArrivalsBanner[0]) }}">
-                    @else
-                        <img src="https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=300&q=80">
-                    @endif
-                </div>
-            </div>
-            <div class="col-12 col-md-8">
-                <div class="newarrival-list-panel p-3 h-100 d-flex flex-column justify-content-between" style="overflow: hidden;">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <b>New Arrival</b>
-                        <div class="d-flex gap-2 align-items-center">
-                            <small class="text-muted">Products ({{ $newArrivalProducts->count() }})</small>
-                            <span class="arrow d-inline-flex" id="newArrivalPrev"><i
-                                    class="bi bi-chevron-left"></i></span>
-                            <span class="arrow d-inline-flex" id="newArrivalNext"><i
-                                    class="bi bi-chevron-right"></i></span>
-                        </div>
-                    </div>
-                    <div style="overflow: hidden; width: 100%;">
-                        <div id="newArrivalSlider" style="display: flex; transition: transform .4s ease;">
-                            @forelse($newArrivalProducts->chunk(4) as $chunk)
-                                <div class="newarrival-slide" style="min-width: 100%; flex: 0 0 100%;">
-                                    <div class="row g-2">
-                                        @foreach($chunk as $np)
-                                            <div class="col-12 col-sm-6">
-                                                <div class="newarrival-item">
-                                                    @if ($np->image)
-                                                        <a href="{{ route('product.details', $np->slug) }}">
-                                                            <img src="{{ asset('storage/' . $np->image) }}">
-                                                        </a>
-                                                    @else
-                                                        <a href="{{ route('product.details', $np->slug) }}">
-                                                            <img src="https://placehold.co/100x100/eee/aaa?text=No+Img">
-                                                        </a>
-                                                    @endif
-                                                    <div class="flex-grow-1">
-                                                        <a href="{{ route('product.details', $np->slug) }}" class="text-dark hover-blue">
-                                                            <div class="t">{{ Str::limit($np->name, 45) }}</div>
-                                                        </a>
-                                                        <div class="bid"><b>৳{{ number_format($np->price, 2) }}</b></div>
-                                                        <div class="d-flex gap-1 mt-1 justify-content-center align-items-center new-arrival-actions">
-                                                            <button type="button" class="btn btn-sm btn-outline-primary btn-custom-cart add-to-cart-btn px-2 py-0 d-inline-flex align-items-center justify-content-center"
-                                                                style="height: 24px; font-size:11px; border-radius:10px;"
-                                                                data-id="{{ $np->id }}" data-name="{{ $np->name }}"
-                                                                data-price="{{ $np->price }}"
-                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}"
-                                                                title="Add to Cart">
-                                                                <i class="bi bi-cart-plus"></i><span> Add</span>
-                                                            </button>
-                                                            <button class="btn btn-sm btn-primary btn-custom-buy py-0 px-2 d-inline-flex align-items-center justify-content-center btn-bid"
-                                                                style="height: 24px; font-size:11px; border-radius:10px;"
-                                                                data-id="{{ $np->id }}"
-                                                                data-name="{{ $np->name }}"
-                                                                data-price="{{ $np->price }}"
-                                                                data-image="{{ $np->image ? asset('storage/' . $np->image) : 'https://placehold.co/100x100/eee/aaa?text=' . urlencode(Str::limit($np->name, 8, '')) }}"
-                                                                title="Buy Now"><i class="bi bi-lightning-fill"></i><span> Buy Now</span></button>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            @empty
-                                <div class="text-muted small px-3 w-100">No new arrival products yet.</div>
-                            @endforelse
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div class="wrap">

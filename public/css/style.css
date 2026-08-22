@@ -29,6 +29,39 @@ a {
     padding: 0 15px;
 }
 
+/* Top Announcement Bar */
+.top-announcement-bar {
+    background: #1c1c1c;
+    color: rgba(255, 255, 255, .75);
+    font-size: 12.5px;
+    padding: 7px 0;
+    align-items: center;
+}
+
+.top-bar-left {
+    font-size: 12.5px;
+}
+
+.top-bar-left strong {
+    color: #fff;
+}
+
+.top-bar-right a {
+    color: rgba(255, 255, 255, .75);
+    text-decoration: none;
+    font-size: 12.5px;
+    transition: color .15s;
+}
+
+.top-bar-right a:hover {
+    color: #fff;
+}
+
+.top-bar-right .divider {
+    color: rgba(255, 255, 255, .3);
+    font-size: 11px;
+}
+
 .topline {
     height: 3px;
     background: linear-gradient(90deg, var(--blue), #5aa0ff);
@@ -41,6 +74,427 @@ a {
     background: #fff;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
 }
+
+/* ==========================================================================
+   HERO LAYOUT (Sidebar + Slider)
+   ========================================================================== */
+.hero-layout {
+    align-items: stretch;
+}
+
+.hero-cat-sidebar {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    overflow-y: auto;
+    height: 380px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+}
+
+.hero-cat-sidebar::-webkit-scrollbar {
+    width: 4px;
+}
+
+.hero-cat-sidebar::-webkit-scrollbar-thumb {
+    background: #ddd;
+    border-radius: 4px;
+}
+
+.hero-cat-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+}
+
+.hero-cat-list li a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #333;
+    text-decoration: none;
+    border-bottom: 1px solid #f5f5f5;
+    transition: background .15s, color .15s;
+    white-space: nowrap;
+}
+
+.hero-cat-list li a:hover {
+    background: #fff5f2;
+    color: #ff5521;
+}
+
+.hero-cat-list li a:hover .cat-arrow {
+    color: #ff5521;
+}
+
+.hero-cat-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+
+.hero-cat-icon-bi {
+    font-size: 15px;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+    color: #666;
+}
+
+.cat-arrow {
+    font-size: 10px;
+    color: #ccc;
+    transition: color .15s;
+}
+
+.hero-cat-list li.view-all-cats a {
+    color: #ff5521;
+    font-weight: 600;
+    border-top: 2px solid #f0f0f0;
+    margin-top: auto;
+}
+
+.hero-cat-list li.view-all-cats a:hover {
+    background: #fff5f2;
+}
+
+.hero-carousel-col {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   HEADER LOGO & BRAND
+   ========================================================================== */
+.header-logo-link {
+    text-decoration: none;
+    color: inherit;
+    flex-shrink: 0;
+}
+
+.header-logo-icon {
+    width: 44px;
+    height: 44px;
+    background: #ff5521;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+
+.header-brand-text {
+    line-height: 1.2;
+}
+
+.header-brand-name {
+    font-size: 22px;
+    font-weight: 800;
+    color: #ff5521;
+    letter-spacing: .5px;
+}
+
+.header-brand-sub {
+    font-size: 11px;
+    color: #888;
+    font-weight: 400;
+}
+
+/* Cart Header Pill */
+.cart-header-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
+    border: 1.5px solid #eee;
+    border-radius: 8px;
+    color: #222;
+    text-decoration: none;
+    transition: border-color .15s;
+}
+
+.cart-header-pill:hover {
+    border-color: #ff5521;
+    color: #222;
+}
+
+.cart-icon-wrap {
+    font-size: 22px;
+    color: #333;
+}
+
+.cart-icon-wrap .badge-num {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: #ff5521;
+    color: #fff;
+    font-size: 9px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.cart-header-label {
+    display: block;
+    font-size: 11px;
+    color: #888;
+    line-height: 1;
+}
+
+.cart-header-total {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.3;
+}
+
+.cart-chevron {
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* Header Login/Register buttons */
+.header-login-btn {
+    border: 1.5px solid #ddd;
+    color: #333;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: border-color .15s;
+}
+
+.header-login-btn:hover {
+    border-color: #ff5521;
+    color: #ff5521;
+}
+
+.header-register-btn {
+    background: #ff5521;
+    border: 1.5px solid #ff5521;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    transition: background .15s;
+}
+
+.header-register-btn:hover {
+    background: #e0471b;
+    border-color: #e0471b;
+    color: #fff;
+}
+
+/* ==========================================================================
+   HERO SLIDE — Custom Split Layout (text left, image right)
+   ========================================================================== */
+.hero-carousel {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, .08);
+}
+
+.hero-slide-custom {
+    height: 380px;
+    overflow: hidden;
+}
+
+.hero-overlay-caption {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 6%;
+    z-index: 5;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0.4) 40%, rgba(0, 0, 0, 0) 100%);
+}
+
+.hero-slide-content {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 40px;
+    gap: 20px;
+}
+
+.hero-slide-text {
+    flex: 1;
+    min-width: 0;
+    animation: heroFadeIn .5s ease both;
+}
+
+.hero-slide-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: #ff5521;
+    margin-bottom: 10px;
+}
+
+.hero-slide-heading {
+    font-size: clamp(1.5rem, 3vw, 2.2rem);
+    font-weight: 800;
+    color: #1a1a2e;
+    line-height: 1.2;
+    margin-bottom: 12px;
+}
+
+.hero-slide-desc {
+    font-size: 14px;
+    color: #666;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.btn.hero-slide-btn {
+    background: #0d6efd;
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    padding: 10px 24px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background .2s, transform .15s;
+}
+
+.btn.hero-slide-btn:hover {
+    background: #0b5ed7;
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.hero-slide-img-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
+}
+
+.hero-slide-product-img {
+    max-height: 370px;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Carousel controls - white circle style like image */
+.hero-ctrl {
+    width: 32px !important;
+    height: 32px !important;
+    background: #ff5521 !important;
+    border-radius: 50% !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    opacity: 1 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, .15);
+    transition: background .15s, box-shadow .15s;
+}
+
+.hero-ctrl:hover {
+    background: #e0471b !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .2);
+}
+
+.carousel-control-prev.hero-ctrl {
+    left: 15px !important;
+}
+
+.carousel-control-next.hero-ctrl {
+    right: 15px !important;
+}
+
+.hero-ctrl i {
+    font-size: 14px;
+    color: #fff;
+}
+
+.hero-ctrl .carousel-control-prev-icon,
+.hero-ctrl .carousel-control-next-icon {
+    display: none;
+}
+
+/* Indicator dots */
+.hero-indicators {
+    bottom: 10px !important;
+    gap: 5px;
+}
+
+.hero-indicators button {
+    width: 8px !important;
+    height: 8px !important;
+    border-radius: 50% !important;
+    background: #0d6efd !important;
+    border: none !important;
+    opacity: 1 !important;
+    transition: background .2s, width .2s;
+}
+
+.hero-indicators button.active {
+    background: #0d6efd !important;
+    width: 22px !important;
+    border-radius: 4px !important;
+}
+
+/* Hot Deals Nav Button */
+.hot-deals-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #ff5521;
+    color: #fff !important;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 0 18px;
+    height: 46px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background .15s;
+}
+
+.hot-deals-btn:hover {
+    background: #e0471b;
+    color: #fff !important;
+}
+
+.hot-deals-btn i {
+    font-size: 14px;
+    animation: flamePulse 1.5s ease infinite;
+}
+
+@keyframes flamePulse {
+
+    0%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    50% {
+        transform: scaleY(1.2);
+    }
+}
+
 
 /* ==========================================================================
    HEADER ROW & NAVIGATION
@@ -77,23 +531,98 @@ a {
 }
 
 .search-input .form-control {
-    border-radius: 24px 0 0 24px;
-    border: 1.5px solid #304db9;
+    border-radius: 0;
+    border: 1.5px solid #e0e0e0;
     border-right: none;
-    padding: 10px 18px;
+    border-left: none;
+    padding: 10px 16px;
+    font-size: 13.5px;
 }
 
 .search-input .form-control:focus {
     box-shadow: none;
-    border-color: var(--blue);
+    border-color: #e0e0e0;
+}
+
+.search-cat-select {
+    border: 1.5px solid #e0e0e0;
+    border-right: 1px solid #ddd;
+    border-radius: 6px 0 0 6px;
+    background: #f8f8f8;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: #333;
+    padding: 0 10px;
+    height: 100%;
+    cursor: pointer;
+    outline: none;
+    white-space: nowrap;
+}
+
+.search-cat-select:focus {
+    outline: none;
+    box-shadow: none;
 }
 
 .search-input .btn {
-    border-radius: 0 24px 24px 0;
-    background: var(--blue);
+    border-radius: 0 6px 6px 0;
+    background: #ff5521;
     color: #fff;
-    padding: 0 22px;
-    border: 1.5px solid var(--blue);
+    padding: 0 20px;
+    border: 1.5px solid #ff5521;
+    font-size: 16px;
+}
+
+.search-input .btn:hover {
+    background: #e0471b;
+    border-color: #e0471b;
+}
+
+.search-input-wrap {
+    display: flex;
+    align-items: stretch;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+    flex-grow: 1;
+    max-width: 600px;
+}
+
+.search-input-wrap .form-control {
+    border: none !important;
+    border-radius: 0;
+    padding: 10px 14px;
+    font-size: 13.5px;
+    flex: 1;
+}
+
+.search-input-wrap .btn {
+    border-radius: 0 4px 4px 0;
+    background: #ff5521;
+    color: #fff;
+    padding: 0 20px;
+    border: none;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.search-input-wrap .btn:hover {
+    background: #e0471b;
+}
+
+.search-input-wrap .search-cat-select {
+    border: none;
+    border-right: 1px solid #e0e0e0;
+    border-radius: 0;
+    background: #f5f5f5;
+    font-size: 12px;
+    font-weight: 500;
+    color: #444;
+    padding: 0 8px 0 10px;
+    cursor: pointer;
+    outline: none;
+    min-width: 110px;
+    max-width: 140px;
 }
 
 .icon-btn {
@@ -162,11 +691,11 @@ a {
 }
 
 .navbar2 {
-    border-bottom: 1px solid var(--line);
-    background: #fff;
+    border-bottom: none;
+    background: #111826;
     position: relative;
     z-index: 50;
-    padding: 8px 0;
+    padding: 0;
 }
 
 .navbar2 .inner {
@@ -175,7 +704,7 @@ a {
 }
 
 .cat-trigger {
-    background: var(--ink);
+    background: #ff5521;
     color: #fff;
     border: none;
     font-size: 13.5px;
@@ -185,10 +714,11 @@ a {
     align-items: center;
     gap: 10px;
     white-space: nowrap;
+    height: 46px;
 }
 
 .cat-trigger:hover {
-    background: #000;
+    background: #e0471b;
 }
 
 .nav-links {
@@ -200,13 +730,17 @@ a {
     font-size: 13.5px;
     font-weight: 500;
     padding: 14px 18px;
-    color: #333;
+    color: rgba(255, 255, 255, .85);
     position: relative;
+    line-height: 46px;
+    display: block;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
 .nav-links a:hover,
 .nav-links a.active {
-    color: var(--blue);
+    color: #fff;
 }
 
 .nav-links a.active::after {
@@ -216,7 +750,7 @@ a {
     right: 18px;
     bottom: 0;
     height: 2px;
-    background: var(--blue);
+    background: #ff5521;
 }
 
 .nav-links .dropdown-toggle::after {
@@ -458,6 +992,149 @@ a {
     padding: 16px 0;
 }
 
+/* Hero Overlay Caption */
+.carousel-item {
+    position: relative;
+    height: 380px;
+    overflow: hidden;
+}
+
+.carousel-item img.hero-slider-img {
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+}
+
+.hero-overlay-caption {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.28) 55%, transparent 100%);
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+    z-index: 5;
+}
+
+.hero-overlay-inner {
+    max-width: 480px;
+    animation: heroFadeIn .6s ease both;
+}
+
+@keyframes heroFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.hero-motto {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: #ffd166;
+    margin-bottom: 6px;
+}
+
+.hero-tagline {
+    font-size: clamp(1.3rem, 3vw, 2rem);
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+}
+
+.hero-sub {
+    font-size: 14px;
+    color: rgba(255, 255, 255, .75);
+    margin-bottom: 0;
+    line-height: 1.5;
+}
+
+.hero-auth-btns {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.btn.hero-btn-login {
+    background: rgba(255, 255, 255, .15);
+    border: 1.5px solid rgba(255, 255, 255, .6);
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 7px 18px;
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+    transition: background .2s, border-color .2s;
+}
+
+.btn.hero-btn-login:hover {
+    background: rgba(255, 255, 255, .28);
+    border-color: #fff;
+    color: #fff;
+}
+
+.btn.hero-btn-register {
+    background: #ff5521;
+    border: 1.5px solid #ff5521;
+    color: #fff;
+    font-weight: 600;
+    font-size: 13px;
+    padding: 7px 18px;
+    border-radius: 8px;
+    transition: background .2s, transform .15s;
+}
+
+.btn.hero-btn-register:hover {
+    background: #e0471b;
+    transform: translateY(-1px);
+    color: #fff;
+}
+
+.btn.hero-btn-shop {
+    background: #fff;
+    border: none;
+    color: #111;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 7px 18px;
+    border-radius: 8px;
+    transition: background .2s, transform .15s;
+}
+
+.btn.hero-btn-shop:hover {
+    background: #ffd166;
+    transform: translateY(-1px);
+}
+
+@media (max-width: 575px) {
+    .hero-overlay-caption {
+        padding: 0 4%;
+        background: linear-gradient(180deg, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .35) 100%);
+        align-items: flex-end;
+        padding-bottom: 40px;
+    }
+
+    .hero-overlay-inner {
+        max-width: 100%;
+    }
+
+    .hero-tagline {
+        font-size: 1.1rem;
+    }
+
+    .hero-motto {
+        font-size: 11px;
+    }
+}
+
 .brand-banner {
     position: relative;
     height: 260px;
@@ -502,6 +1179,7 @@ a {
 }
 
 @media (max-width: 767px) {
+
     .brand-banner,
     .season-banner {
         height: 180px;
@@ -999,7 +1677,7 @@ a {
 }
 
 .preorder-hero .badge-limit {
-    background: #ff5722;
+    background: #ff5521;
     font-size: 11px;
     padding: 4px 10px;
     border-radius: 3px;
@@ -1564,23 +2242,23 @@ footer.main-footer h6 {
     margin-top: -2px;
 }
 
-/* Custom Global Button Styling Override (Make all buttons blue background, white text & slight zoom on hover) */
-button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn),
-.btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn),
+/* Custom Global Button Styling Override (Make all buttons orange background, white text & slight zoom on hover) */
+button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn):not(.btn-buy-now):not(.btn-bid),
+.btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn):not(.btn-buy-now):not(.btn-bid),
 input[type="button"],
 input[type="submit"] {
-    background-color: var(--blue, #1a73e8) !important;
-    border-color: var(--blue, #1a73e8) !important;
+    background-color: #ff5521 !important;
+    border-color: #ff5521 !important;
     color: #fff !important;
     transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out !important;
 }
 
-button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn):hover,
-.btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn):hover,
+button:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn):not(.btn-buy-now):not(.btn-bid):hover,
+.btn:not(.btn-close):not(.icon-btn):not(.navbar-toggler):not(.variant-btn):not(.btn-buy-now):not(.btn-bid):hover,
 input[type="button"]:hover,
 input[type="submit"]:hover {
-    background-color: var(--blue-hover, #1e6fd9) !important;
-    border-color: var(--blue-hover, #1e6fd9) !important;
+    background-color: #e0471b !important;
+    border-color: #e0471b !important;
     color: #fff !important;
     transform: scale(1.03) !important;
 }
@@ -1677,4 +2355,31 @@ input[type="submit"]:hover {
         height: 75px !important;
         flex: 0 0 75px !important;
     }
+}
+
+/* Product Card Action Buttons */
+.btn-add-to-cart,
+.btn-buy-now {
+    background-color: #111826 !important;
+    color: #fff !important;
+    border: none !important;
+    transition: all 0.2s ease;
+}
+
+.btn-add-to-cart:hover,
+.btn-buy-now:hover {
+    background-color: #1f2937 !important;
+    color: #fff !important;
+}
+
+.btn-bid {
+    background-color: #111826 !important;
+    color: #fff !important;
+    border: none !important;
+    transition: all 0.2s ease;
+}
+
+.btn-bid:hover {
+    background-color: #1f2937 !important;
+    color: #fff !important;
 }

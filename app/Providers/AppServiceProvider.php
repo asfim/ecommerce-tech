@@ -29,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
             return $user->hasRole('Super Admin') ? true : null;
         });
 
-        view()->composer('layouts.header.header', function ($view) {
+        view()->composer(['layouts.header.header', 'home'], function ($view) {
             $categories = Category::with('subCategories')->where('is_active', true)->get();
             $view->with('categories', $categories);
         });
