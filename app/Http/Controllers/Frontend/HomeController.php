@@ -79,19 +79,22 @@ class HomeController extends Controller
             ->take(12)
             ->get();
         $search = request()->query('search');
-        $productsQuery = Product::where('is_active', true)
-            ->withAvg('reviews', 'rating')
-            ->withCount('reviews')
-            ->latest();
-
-        if (! empty($search)) {
-            $productsQuery->where('name', 'like', '%'.$search.'%');
-        }
-
-        if (request()->ajax()) {
+        
+        if (request()->ajax() && request()->has('category_id')) {
+            $categoryId = request()->query('category_id');
             $page = (int) request()->query('page', 1);
-            $limit = 8;
-            $offset = 12 + ($page - 2) * 8;
+            $limit = 4;
+            $offset = 8 + ($page - 2) * 4;
+
+            $productsQuery = Product::where('category_id', $categoryId)
+                ->where('is_active', true)
+                ->withAvg('reviews', 'rating')
+                ->withCount('reviews')
+                ->latest();
+
+            if (!empty($search)) {
+                $productsQuery->where('name', 'like', '%' . $search . '%');
+            }
 
             $ajaxProducts = $productsQuery->skip($offset)->take($limit)->get();
             $hasMore = $productsQuery->skip($offset + $limit)->exists();
@@ -107,8 +110,33 @@ class HomeController extends Controller
             ]);
         }
 
-        $products = $productsQuery->take(12)->get();
-        $hasMore = $productsQuery->skip(12)->exists();
+        $categoriesQuery = Category::where('is_active', true)
+            ->whereHas('products', function ($q) use ($search) {
+                $q->where('is_active', true);
+                if (!empty($search)) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                }
+            })
+            ->withCount(['products' => function ($q) use ($search) {
+                $q->where('is_active', true);
+                if (!empty($search)) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                }
+            }])
+            ->with(['products' => function ($q) use ($search) {
+                $q->where('is_active', true)
+                  ->withAvg('reviews', 'rating')
+                  ->withCount('reviews')
+                  ->latest()
+                  ->take(8);
+                  
+                if (!empty($search)) {
+                    $q->where('name', 'like', '%' . $search . '%');
+                }
+            }]);
+
+        $homeCategories = $categoriesQuery->get();
+        $hasMore = false;
 
         return view('home', compact(
             'heroBanners',
@@ -121,7 +149,7 @@ class HomeController extends Controller
             'bestSellingProducts',
             'discountedProducts',
             'newArrivalProducts',
-            'products',
+            'homeCategories',
             'hasMore'
         ));
     }

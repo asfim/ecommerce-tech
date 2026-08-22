@@ -323,23 +323,30 @@
         @endif
 
         <!-- Product grid -->
-        <div id="products-grid" class="row g-3 mb-3">
-            <div><h5 class="fw-bold mb-0">All Products</h5></div>
-            @forelse($products as $product)
-                @include('frontend.partials.product_card', ['product' => $product])
+        <div id="products-grid" class="mb-3">
+            @forelse($homeCategories as $category)
+                @if($category->products->isNotEmpty())
+                    <div class="col-12 mt-4 mb-2">
+                        <h5 class="fw-bold mb-0">{{ $category->name }}</h5>
+                    </div>
+                    <div id="category-products-{{ $category->id }}" class="row g-3">
+                        @foreach($category->products as $product)
+                            @include('frontend.partials.product_card', ['product' => $product])
+                        @endforeach
+                    </div>
+                    @if($category->products_count > 8)
+                        <div class="text-center mb-4 mt-4">
+                            <button class="btn btn-outline-dark px-5 load-more-category-btn" data-category-id="{{ $category->id }}" data-page="2">
+                                <span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span>
+                                Load more
+                            </button>
+                        </div>
+                    @endif
+                @endif
             @empty
-                <div class="text-muted small px-3">No products available.</div>
+                <div class="text-muted small px-3 mt-4">No categories or products available.</div>
             @endforelse
         </div>
-
-        @if($hasMore)
-            <div class="text-center mb-4">
-                <button id="load-more-btn" class="btn btn-outline-dark px-5" data-page="2">
-                    <span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span>
-                    Load more
-                </button>
-            </div>
-        @endif
     </div>
 
     @push('styles')
@@ -836,47 +843,45 @@
                         scrollSlide();
                     }
                 });
-            });
-
-            document.addEventListener('DOMContentLoaded', function() {
-                const loadMoreBtn = document.getElementById('load-more-btn');
-                const productsGrid = document.getElementById('products-grid');
-
-                if (loadMoreBtn) {
-                    loadMoreBtn.addEventListener('click', function() {
-                        const page = loadMoreBtn.getAttribute('data-page');
-                        const spinner = loadMoreBtn.querySelector('.spinner-border');
+            });            document.addEventListener('DOMContentLoaded', function() {
+                const loadMoreBtns = document.querySelectorAll('.load-more-category-btn');
+                
+                loadMoreBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const page = btn.getAttribute('data-page');
+                        const categoryId = btn.getAttribute('data-category-id');
+                        const spinner = btn.querySelector('.spinner-border');
+                        const categoryGrid = document.getElementById('category-products-' + categoryId);
 
                         spinner.classList.remove('d-none');
-                        loadMoreBtn.disabled = true;
+                        btn.disabled = true;
 
                         const urlParams = new URLSearchParams(window.location.search);
                         const search = urlParams.get('search') || '';
 
-                        fetch(`/?page=${page}&search=${encodeURIComponent(search)}`, {
+                        fetch(`/?page=${page}&category_id=${categoryId}&search=${encodeURIComponent(search)}`, {
                             headers: {
                                 'X-Requested-With': 'XMLHttpRequest'
                             }
                         })
                         .then(res => res.json())
                         .then(data => {
-                            productsGrid.insertAdjacentHTML('beforeend', data.html);
-                            loadMoreBtn.setAttribute('data-page', parseInt(page) + 1);
-
-                            spinner.classList.add('d-none');
-                            loadMoreBtn.disabled = false;
-
-                            if (!data.has_more) {
-                                loadMoreBtn.parentElement.remove();
+                            categoryGrid.insertAdjacentHTML('beforeend', data.html);
+                            if(data.has_more) {
+                                btn.setAttribute('data-page', parseInt(page) + 1);
+                                spinner.classList.add('d-none');
+                                btn.disabled = false;
+                            } else {
+                                btn.parentElement.remove();
                             }
                         })
                         .catch(err => {
-                            console.error('Error loading products:', err);
+                            console.error(err);
                             spinner.classList.add('d-none');
-                            loadMoreBtn.disabled = false;
+                            btn.disabled = false;
                         });
                     });
-                }
+                });
             });
         </script>
     @endpush
