@@ -81,8 +81,6 @@
                     <th>Stock</th>
                     <th>Sales</th>
                     <th>Status</th>
-                    <th>New Arrival</th>
-                    <th>Featured</th>
                     <th style="width: 180px;">Actions</th>
                 </tr>
             </thead>
@@ -102,18 +100,6 @@
                             <div class="form-check form-switch">
                                 <input class="form-check-input active-toggle" type="checkbox" data-id="{{ $product->id }}"
                                     {{ $product->is_active ? 'checked' : '' }}>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input new-arrival-toggle" type="checkbox" data-id="{{ $product->id }}"
-                                    {{ $product->is_new_arrival ? 'checked' : '' }}>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-check form-switch">
-                                <input class="form-check-input featured-toggle" type="checkbox"
-                                    data-id="{{ $product->id }}" {{ $product->is_featured ? 'checked' : '' }}>
                             </div>
                         </td>
                         <td>

@@ -199,3 +199,167 @@
         padding: 4px 2px !important;
     }
 }
+
+/* --- MOVED FROM STYLE.CSS --- */
+@media (max-width: 575px) {
+    .hero-overlay-caption {
+        padding: 0 4%;
+        background: linear-gradient(180deg, rgba(0, 0, 0, .55) 0%, rgba(0, 0, 0, .35) 100%);
+        align-items: flex-end;
+        padding-bottom: 40px;
+    }
+
+    .hero-overlay-inner {
+        max-width: 100%;
+    }
+
+    .hero-tagline {
+        font-size: 1.1rem;
+    }
+
+    .hero-motto {
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 767px) {
+
+    .brand-banner,
+    .season-banner {
+        height: 180px;
+    }
+}
+
+@media (min-width: 576px) {
+    .discounted-product-card {
+        min-width: calc(33.333% - 10px);
+        flex: 0 0 calc(33.333% - 10px);
+    }
+}
+
+@media (min-width: 992px) {
+    .discounted-product-card {
+        min-width: calc(25% - 11.25px);
+        flex: 0 0 calc(25% - 11.25px);
+    }
+}
+
+@media (max-width: 767px) {
+    .preorder-hero {
+        margin-bottom: 12px;
+    }
+
+    .discounted-slider {
+        gap: 10px;
+    }
+}
+
+@media (max-width: 767px) {
+    .footlinks {
+        padding: 14px 0;
+    }
+
+    .footlinks .item {
+        min-height: 42px;
+        font-size: 12px;
+    }
+
+    .footer-col {
+        padding-top: 4px;
+    }
+}
+
+
+/* ==========================================================================
+   MOBILE RESPONSIVE CART & BUY BUTTONS TO CIRCULAR ICONS
+   ========================================================================== */
+@media (max-width: 767.98px) {
+
+    /* Stack actions vertically (one under the other) when they are together */
+    .product-card-actions,
+    .details-actions {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        width: 100% !important;
+        gap: 6px !important;
+    }
+
+    /* Style the action buttons on mobile (full width, proper height, visible text) */
+    .btn-add-to-cart,
+    .btn-buy-now,
+    .add-to-cart-btn,
+    .btn-bid,
+    .add-to-cart-detail,
+    .buy-now-detail {
+        width: 100% !important;
+        height: 34px !important;
+        min-width: 0 !important;
+        padding: 4px 8px !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 11px !important;
+        font-weight: 600 !important;
+        flex: 1 1 auto !important;
+        margin: 0 !important;
+        transform: none !important;
+    }
+
+    /* Centering actions wrapper on mobile */
+    .prod-info .mt-2.d-flex,
+    .mini-prod .mt-2 {
+        display: flex !important;
+        justify-content: center !important;
+        gap: 6px !important;
+    }
+
+    /* Hide icons inside all details and list action buttons on mobile */
+    .add-to-cart-btn i,
+    .btn-bid i,
+    .add-to-cart-detail i,
+    .buy-now-detail i {
+        display: none !important;
+    }
+
+    /* Ensure text spans inside all action buttons are shown on mobile */
+    .add-to-cart-btn span,
+    .btn-bid span,
+    .add-to-cart-detail span,
+    .buy-now-detail span {
+        display: inline !important;
+    }
+
+    /* Specific styles for New Arrival section on mobile */
+    .new-arrival-actions {
+        display: flex !important;
+        flex-direction: row !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+        gap: 6px !important;
+        width: auto !important;
+    }
+
+    .new-arrival-actions .add-to-cart-btn,
+    .new-arrival-actions .btn-bid {
+        width: auto !important;
+        height: 24px !important;
+        min-width: 0 !important;
+        padding: 2px 8px !important;
+        border-radius: 6px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 10px !important;
+        font-weight: 600 !important;
+        flex: 1 1 auto !important;
+        margin: 0 !important;
+    }
+
+    .newarrival-item img {
+        width: 75px !important;
+        height: 75px !important;
+        flex: 0 0 75px !important;
+    }
+}
