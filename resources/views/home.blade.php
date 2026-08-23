@@ -348,13 +348,11 @@
                                         </div>
                                     </a>
                                     <div class="px-3 pb-3 mt-auto">
-                                        <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-100 d-inline-flex align-items-center justify-content-center gap-2"
-                                            data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
-                                            data-price="{{ $bpDiscountedPrice }}"
-                                            data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}"
-                                            title="Add to Cart">
-                                            <i class="bi bi-cart3"></i><span> Add to Cart</span>
-                                        </button>
+                                        <a href="{{ route('product.details', $bp->slug) }}"
+                                            class="btn btn-buy-now w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                                            title="Buy Now">
+                                            <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
+                                        </a>
                                     </div>
                                 </div>
                             @empty
@@ -369,12 +367,49 @@
                             const prevBtn = document.getElementById('latestPrev');
                             const nextBtn = document.getElementById('latestNext');
                             if (!slider) return;
-                            const scrollAmount = 240;
-                            prevBtn.addEventListener('click', () => {
-                                slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+
+                            // Scroll by one card width
+                            function getCardWidth() {
+                                const card = slider.querySelector('.slider-card');
+                                if (!card) return 240;
+                                const style = getComputedStyle(slider);
+                                const gap = parseFloat(style.gap) || 20;
+                                return card.offsetWidth + gap;
+                            }
+
+                            function slideNext() {
+                                const cardWidth = getCardWidth();
+                                const maxScroll = slider.scrollWidth - slider.clientWidth;
+                                if (slider.scrollLeft + cardWidth >= maxScroll - 1) {
+                                    slider.scrollTo({ left: 0, behavior: 'smooth' });
+                                } else {
+                                    slider.scrollBy({ left: cardWidth, behavior: 'smooth' });
+                                }
+                            }
+
+                            function slidePrev() {
+                                const cardWidth = getCardWidth();
+                                slider.scrollBy({ left: -cardWidth, behavior: 'smooth' });
+                            }
+
+                            prevBtn.addEventListener('click', slidePrev);
+                            nextBtn.addEventListener('click', slideNext);
+
+                            // Auto-slide every 2.5 seconds
+                            let autoSlide = setInterval(slideNext, 2500);
+
+                            // Pause on hover
+                            slider.addEventListener('mouseenter', () => clearInterval(autoSlide));
+                            slider.addEventListener('mouseleave', () => {
+                                autoSlide = setInterval(slideNext, 2500);
                             });
-                            nextBtn.addEventListener('click', () => {
-                                slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+
+                            // Pause on manual button click, resume after 4s
+                            [prevBtn, nextBtn].forEach(btn => {
+                                btn.addEventListener('click', () => {
+                                    clearInterval(autoSlide);
+                                    autoSlide = setInterval(slideNext, 2500);
+                                });
                             });
                         })();
                     </script>
@@ -508,22 +543,12 @@
                                         </div>
                                     </div>
                                     <div class="px-2 pb-2 mt-1 d-flex gap-2 justify-content-center align-items-center product-card-actions">
-                                        <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                                        <a href="{{ route('product.details', $dp->slug) }}"
+                                            class="btn btn-buy-now w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                                             style="font-size: 11px; font-weight: 600; border-radius: 6px;"
-                                            data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
-                                            data-price="{{ $discountedPrice }}"
-                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}"
-                                            title="Add to Cart">
-                                            <i class="bi bi-cart3"></i><span> Add</span>
-                                        </button>
-                                        <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
-                                            style="font-size: 11px; font-weight: 600; border-radius: 6px;"
-                                            data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
-                                            data-price="{{ $discountedPrice }}"
-                                            data-image="{{ $dp->image ? asset('storage/' . $dp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($dp->name, 8, '')) }}"
                                             title="Buy Now">
                                             <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             @empty

@@ -80,22 +80,12 @@
             </div>
 
             <div class="mt-2 d-flex gap-2 justify-content-center align-items-center product-card-actions">
-                <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                <a href="{{ route('product.details', $product->slug) }}"
+                    class="btn btn-buy-now w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                     style="font-size: 11px; font-weight: 600; border-radius: 6px;"
-                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                    data-price="{{ $discountedPrice }}"
-                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}"
-                    title="Add to Cart">
-                    <i class="bi bi-cart3"></i><span> Add</span>
-                </button>
-                <button type="button" class="btn btn-buy-now btn-bid w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
-                    style="font-size: 11px; font-weight: 600; border-radius: 6px;"
-                    data-id="{{ $product->id }}" data-name="{{ $product->name }}"
-                    data-price="{{ $discountedPrice }}"
-                    data-image="{{ $product->image ? asset('storage/' . $product->image) : 'https://placehold.co/200x200/eee/aaa?text=' . urlencode(Str::limit($product->name, 8, '')) }}"
                     title="Buy Now">
                     <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
-                </button>
+                </a>
             </div>
         </div>
     </div>
