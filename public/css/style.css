@@ -10,12 +10,17 @@
     --ink: #1c1c1c;
 }
 
+html, body {
+    overflow-x: hidden !important;
+    width: 100% !important;
+    height: auto;
+}
+
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     color: #222;
     font-size: 14px;
     background: #fff;
-    overflow-x: hidden;
 }
 
 a {
@@ -2405,8 +2410,18 @@ input[type="submit"]:hover {
     text-transform: uppercase;
     margin-bottom: 18px;
     padding-bottom: 10px;
-    border-bottom: 2px solid #E0471B;
+    position: relative;
     display: inline-block;
+}
+
+.footer-heading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 35px;
+    height: 2px;
+    background: #E0471B;
 }
 
 .footer-links {
@@ -2439,11 +2454,17 @@ input[type="submit"]:hover {
     margin-bottom: 0;
 }
 
+.footer-newsletter {
+    max-width: 300px;
+    width: 100%;
+}
+
 .footer-input {
     background: #1f2937 !important;
     border: 1px solid #374151 !important;
     color: #e5e7eb !important;
     border-radius: 6px;
+    min-width: 0 !important;
 }
 
 .footer-input::placeholder {

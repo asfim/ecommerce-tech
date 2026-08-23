@@ -4,11 +4,16 @@
 
 /* ─── TABLET & MOBILE VIEWPORT (Under 992px) ─── */
 @media (max-width: 991.98px) {
+    html, body {
+        overflow-x: hidden !important;
+        width: 100%;
+    }
+
     /* Hero section */
     .hero-sec {
         padding: 10px 0;
     }
-    
+
     .carousel-item img.hero-slider-img {
         height: 280px !important;
     }
@@ -17,11 +22,11 @@
     .prod-img-wrap {
         height: 220px !important;
     }
-    
+
     .mini-img-wrap {
         height: 180px !important;
     }
-    
+
     /* Product detail page main image */
     .main-image {
         height: 350px !important;
@@ -30,11 +35,20 @@
 
 /* ─── MOBILE VIEWPORT (Under 768px) ─── */
 @media (max-width: 767.98px) {
+    .row {
+        margin-left: -10px !important;
+        margin-right: -10px !important;
+    }
+    .row > * {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+
     /* Carousel item heights and captions */
     .carousel-item img.hero-slider-img {
         height: 200px !important;
     }
-    
+
     .hero-overlay-caption {
         background: rgba(0, 0, 0, 0.45) !important;
         align-items: center !important;
@@ -42,31 +56,31 @@
         justify-content: center !important;
         padding: 15px !important;
     }
-    
+
     .hero-overlay-inner {
         max-width: 100% !important;
         text-align: center !important;
     }
-    
+
     .hero-tagline {
         font-size: 1.3rem !important;
         margin-bottom: 8px !important;
     }
-    
+
     .hero-slide-heading {
         font-size: 1.3rem !important;
         margin-bottom: 8px !important;
     }
-    
+
     .hero-slide-text {
         text-align: center !important;
         padding: 10px !important;
     }
-    
+
     .hero-slide-desc {
         display: none !important; /* Hide description on mobile to save vertical space */
     }
-    
+
     .btn.hero-slide-btn,
     .btn.hero-btn-shop,
     .btn.hero-btn-login,
@@ -80,55 +94,55 @@
         flex-direction: row !important;
         gap: 4px !important;
     }
-    
+
     .product-card-actions button {
         height: 32px !important;
         padding: 2px 4px !important;
         font-size: 10px !important;
     }
-    
+
     /* Product grid columns gaps */
     #products-grid .row {
         --bs-gutter-x: 0.5rem !important;
         --bs-gutter-y: 0.5rem !important;
     }
-    
+
     /* Responsive image wrapper sizes to keep cards compact */
     .prod-img-wrap {
         height: 160px !important;
     }
-    
+
     .mini-img-wrap {
         height: 150px !important;
     }
-    
+
     .prod-info {
         padding: 10px !important;
     }
-    
-    .prod-info .t, 
+
+    .prod-info .t,
     .latest-products-slider .product-title {
         font-size: 0.85rem !important;
         height: 2.2rem !important;
         margin-bottom: 4px !important;
     }
-    
+
     .prod-info .p,
     .latest-products-slider .product-price {
         font-size: 0.95rem !important;
         margin-bottom: 6px !important;
     }
-    
+
     /* Product detail page image & tabs */
     .main-image {
         height: 280px !important;
     }
-    
+
     .thumb {
         width: 60px !important;
         height: 60px !important;
     }
-    
+
     #productDetailTabs button.nav-link {
         padding: 10px 15px !important;
         font-size: 12.5px !important;
@@ -152,23 +166,36 @@
     .carousel-item img.hero-slider-img {
         height: 160px !important;
     }
-    
+
     .hero-tagline,
     .hero-slide-heading {
         font-size: 1.1rem !important;
     }
-    
+
     .prod-img-wrap {
         height: 140px !important;
     }
-    
+
     .mini-img-wrap {
         height: 130px !important;
     }
-    
+
     /* Ensure the search button doesn't stretch */
     .search-input-wrap .btn {
         padding: 0 12px !important;
         font-size: 13px !important;
+    }
+
+    /* Newsletter compact layout on small screens */
+    .footer-newsletter {
+        max-width: 260px !important;
+    }
+    .footer-input {
+        font-size: 11.5px !important;
+        padding: 4px 8px !important;
+    }
+    .footer-subscribe-btn {
+        font-size: 11.5px !important;
+        padding: 4px 2px !important;
     }
 }

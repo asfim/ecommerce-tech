@@ -160,11 +160,17 @@
                     </button>
 
                     <!-- Logo -->
-                    <a class="d-flex align-items-center ms-1" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
+                    <a class="d-flex align-items-center gap-2 ms-1" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
                         @if($companyLogo)
                             <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 28px; border-radius: 4px;">
                         @else
-                            <span class="logo-box" style="width:30px; height:30px; font-size:14px; border-radius:6px;">{{ strtoupper(substr($companyName, 0, 1)) }}</span>
+                            <div class="header-logo-icon" style="width: 30px; height: 30px; border-radius: 6px; font-size: 15px;">
+                                <i class="bi bi-bag-fill"></i>
+                            </div>
+                            <div class="header-brand-text">
+                                <div class="header-brand-name" style="font-size: 14px; font-weight: 800; color: #ff5521; letter-spacing: 0.5px;">{{ strtoupper($companyName) }}</div>
+                                <div class="header-brand-sub" style="font-size: 8px; color: #888;">Shop Smart, Live Better</div>
+                            </div>
                         @endif
                     </a>
                 </div>
@@ -224,11 +230,13 @@
                 </div>
             </div>
 
-            <!-- Second Row: Full Width Search -->
-            <div class="mt-2 pt-2 border-top">
-                <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative w-100">
-                    <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="font-size: 13px; height: 38px; border-color: #a1a1a1 !important;">
-                    <button type="submit" class="btn" style="height: 38px;"><i class="bi bi-search"></i></button>
+            <!-- Second Row: Centered Search Bar -->
+            <div class="mt-2 pt-2 border-top d-flex justify-content-center">
+                <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative w-100" style="max-width: 320px;">
+                    <div class="search-input-wrap w-100 d-flex" style="height: 38px;">
+                        <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="font-size: 13px; height: 100%; border: none !important;">
+                        <button type="submit" class="btn" style="height: 100%; padding: 0 15px;"><i class="bi bi-search"></i></button>
+                    </div>
                     <div class="search-results-dropdown d-none position-absolute w-100 bg-white border rounded shadow mt-1 p-2" style="z-index: 1050; top: 100%; left: 0; max-height: 350px; overflow-y: auto;"></div>
                 </form>
             </div>
