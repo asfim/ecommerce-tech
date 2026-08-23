@@ -112,6 +112,21 @@ class ProductController extends Controller implements HasMiddleware
                         $price = $request->variant_prices[$label][$val];
                     }
 
+                    $discount = null;
+                    if (isset($request->variant_discounts[$label][$val])) {
+                        $discount = $request->variant_discounts[$label][$val];
+                    }
+
+                    $discountStart = null;
+                    if (isset($request->variant_discount_starts[$label][$val])) {
+                        $discountStart = $request->variant_discount_starts[$label][$val];
+                    }
+
+                    $discountEnd = null;
+                    if (isset($request->variant_discount_ends[$label][$val])) {
+                        $discountEnd = $request->variant_discount_ends[$label][$val];
+                    }
+
                     $imagePath = null;
                     if ($request->hasFile("variant_images.$label.$val")) {
                         $imagePath = $request->file("variant_images.$label.$val")->store('products/variants', 'public');
@@ -121,6 +136,9 @@ class ProductController extends Controller implements HasMiddleware
                         'label' => $label,
                         'value' => $val,
                         'price' => $price ? floatval($price) : null,
+                        'discount' => $discount ? floatval($discount) : null,
+                        'discount_start' => $discountStart,
+                        'discount_end' => $discountEnd,
                         'image' => $imagePath,
                     ];
                     if (strtolower($label) === 'color' && ! empty($request->variant_colors[$index])) {
@@ -201,6 +219,21 @@ class ProductController extends Controller implements HasMiddleware
                         $price = $request->variant_prices[$label][$val];
                     }
 
+                    $discount = null;
+                    if (isset($request->variant_discounts[$label][$val])) {
+                        $discount = $request->variant_discounts[$label][$val];
+                    }
+
+                    $discountStart = null;
+                    if (isset($request->variant_discount_starts[$label][$val])) {
+                        $discountStart = $request->variant_discount_starts[$label][$val];
+                    }
+
+                    $discountEnd = null;
+                    if (isset($request->variant_discount_ends[$label][$val])) {
+                        $discountEnd = $request->variant_discount_ends[$label][$val];
+                    }
+
                     // Retrieve existing image path if any
                     $existingImage = null;
                     if (isset($product->variants)) {
@@ -225,6 +258,9 @@ class ProductController extends Controller implements HasMiddleware
                         'label' => $label,
                         'value' => $val,
                         'price' => $price ? floatval($price) : null,
+                        'discount' => $discount ? floatval($discount) : null,
+                        'discount_start' => $discountStart,
+                        'discount_end' => $discountEnd,
                         'image' => $imagePath,
                     ];
                     if (strtolower($label) === 'color' && ! empty($request->variant_colors[$index])) {

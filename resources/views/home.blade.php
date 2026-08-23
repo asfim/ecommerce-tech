@@ -575,7 +575,7 @@
             @forelse($homeCategories as $category)
                 @if($category->products->isNotEmpty())
                     <div class="col-12 mt-4 mb-3">
-                        <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;">
+                        <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;font-size: 30px; font-weight: 700;">
                             <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
                             {{ $category->name }}
                         </h4>
