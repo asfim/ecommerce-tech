@@ -1,5 +1,5 @@
 @php
-    $hasDiscount = $product->discount_type && $product->discount_value > 0;
+    $hasDiscount = $product->has_active_discount;
     $discountedPrice = $product->price;
     if ($hasDiscount) {
         if ($product->discount_type === 'percent') {
@@ -15,9 +15,9 @@
             <div class="prod-img-wrap">
                 @if ($hasDiscount)
                     @if ($product->discount_type === 'percent')
-                        <span class="badge-new-arrival">{{ round($product->discount_value) }} %</span>
+                        <span class="badge-new-arrival">{{ round($product->discount_value) }}% OFF</span>
                     @else
-                        <span class="badge-new-arrival">{{ round($product->discount_value) }} Tk</span>
+                        <span class="badge-new-arrival">৳{{ round($product->discount_value) }} OFF</span>
                     @endif
                 @endif
 

@@ -2,6 +2,12 @@
     $companySettings = \App\Models\HomepageSetting::get('company_settings', []);
     $companyName = $companySettings['name'] ?? 'eCommerce';
     $companyLogo = $companySettings['logo'] ?? null;
+
+    $maxDiscountPercent = \App\Models\Product::where('discount_type', 'percent')
+        ->where('discount_value', '>', 0)
+        ->frontendActive()
+        ->max('discount_value') ?? 0;
+    $maxDiscountPercent = round($maxDiscountPercent);
 @endphp
 
 <header class="main-header">
@@ -125,14 +131,12 @@
             <!-- Main nav links -->
             <ul class="nav-links list-unstyled d-flex mb-0">
                 <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}">Home</a></li>
-                <li><a href="#">About</a></li>
+                <li><a href="{{ route('shop') }}" class="{{ request()->routeIs('shop') ? 'active' : '' }}">Shop</a></li>
+                <li><a href="{{ route('flash-sale') }}" class="{{ request()->routeIs('flash-sale') ? 'active' : '' }}"><i class="bi bi-lightning-fill text-danger me-1"></i>Flash Sale <span class="badge bg-danger text-white ms-1" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle;">{{ $maxDiscountPercent }}% OFF</span></a></li>
                 <li><a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.*') ? 'active' : '' }}">Blog</a></li>
                 <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
             </ul>
-            <!-- Hot Deals button on right -->
-            <a href="#" class="hot-deals-btn ms-auto">
-                <i class="bi bi-fire"></i> Hot Deals
-            </a>
+            
         </div>
     </div>
 </div>
@@ -245,6 +249,8 @@
     <div class="drawer-body">
         <ul class="mobile-nav-links list-unstyled">
             <li><a href="{{ route('home') }}" class="{{ request()->routeIs('home') ? 'active' : '' }}"><i class="bi bi-house-door me-2"></i>Home</a></li>
+            <li><a href="{{ route('shop') }}" class="{{ request()->routeIs('shop') ? 'active' : '' }}"><i class="bi bi-bag me-2"></i>Shop</a></li>
+            <li><a href="{{ route('flash-sale') }}" class="{{ request()->routeIs('flash-sale') ? 'active' : '' }}"><i class="bi bi-lightning-fill text-danger me-2"></i>Flash Sale <span class="badge bg-danger text-white ms-1" style="font-size: 9px; padding: 2px 6px; border-radius: 4px; font-weight: 700; vertical-align: middle;">{{ $maxDiscountPercent }}% OFF</span></a></li>
             <li><a href="#"><i class="bi bi-info-circle me-2"></i>About</a></li>
             <li><a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.*') ? 'active' : '' }}"><i class="bi bi-journal-text me-2"></i>Blog</a></li>
             <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}"><i class="bi bi-envelope me-2"></i>Contact</a></li>

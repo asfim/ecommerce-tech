@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\PageController as AdminPageController;
 use App\Http\Controllers\Admin\PaymentSettingController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
+use App\Http\Controllers\Admin\ProductLandingPageController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\RoleController as AdminRoleController;
 use App\Http\Controllers\Admin\SmsSettingController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\Frontend\CouponController;
 use App\Http\Controllers\Frontend\CustomerOrderController;
 use App\Http\Controllers\Frontend\DashboardController as UserDashboardController;
 use App\Http\Controllers\Frontend\HomeController;
+use App\Http\Controllers\Frontend\LandingPageController;
 use App\Http\Controllers\Frontend\OrderController;
 use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Frontend\ReviewController;
@@ -37,9 +39,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [HomeController::class, 'productDetails'])->name('product.details');
-Route::get('/landing/{slug}', [\App\Http\Controllers\Frontend\LandingPageController::class, 'show'])->name('landing.show');
+Route::get('/landing/{slug}', [LandingPageController::class, 'show'])->name('landing.show');
 Route::get('/category/{id}', [HomeController::class, 'categoryProducts'])->name('category.products');
 Route::get('/products/search-api', [HomeController::class, 'searchApi'])->name('products.search-api');
+Route::get('/shop', [HomeController::class, 'shop'])->name('shop');
+Route::get('/flash-sale', [HomeController::class, 'flashSale'])->name('flash-sale');
 Route::get('/blog', [BlogController::class, 'index'])->name('blogs.index');
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blogs.show');
 Route::get('/page/{slug}', [FrontendPageController::class, 'show'])->name('page.show');
@@ -120,10 +124,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::patch('products/{product}/toggle-new-arrival', [AdminProductController::class, 'toggleNewArrival'])->name('products.toggle-new-arrival');
 
             // Landing Page routes
-            Route::get('products/{product}/landing-page/create', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'create'])->name('products.landing-page.create');
-            Route::post('products/{product}/landing-page', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'store'])->name('products.landing-page.store');
-            Route::get('products/{product}/landing-page/edit', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'edit'])->name('products.landing-page.edit');
-            Route::put('products/{product}/landing-page', [\App\Http\Controllers\Admin\ProductLandingPageController::class, 'update'])->name('products.landing-page.update');
+            Route::get('products/{product}/landing-page/create', [ProductLandingPageController::class, 'create'])->name('products.landing-page.create');
+            Route::post('products/{product}/landing-page', [ProductLandingPageController::class, 'store'])->name('products.landing-page.store');
+            Route::get('products/{product}/landing-page/edit', [ProductLandingPageController::class, 'edit'])->name('products.landing-page.edit');
+            Route::put('products/{product}/landing-page', [ProductLandingPageController::class, 'update'])->name('products.landing-page.update');
         });
 
         Route::middleware('permission:view-orders|edit-orders|delete-orders,admin')->group(function () {

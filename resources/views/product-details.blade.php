@@ -317,7 +317,7 @@
         $allImages[] = 'https://placehold.co/500x500/eee/aaa?text=' . urlencode($product->name);
     }
 
-    $hasDiscount = $product->discount_type && $product->discount_value > 0;
+    $hasDiscount = $product->has_active_discount;
     $finalPrice = $product->price;
     if ($hasDiscount) {
         if ($product->discount_type === 'percent') {
@@ -384,10 +384,15 @@
                     <span class="text-muted small">({{ $reviewCount }} Review{{ $reviewCount === 1 ? '' : 's' }})</span>
                 </div>
 
-                <h2 class="text-danger fw-bold">
+                <h2 class="text-danger fw-bold d-flex align-items-center gap-2 flex-wrap">
                     ৳{{ number_format($finalPrice, 2) }}
                     @if ($hasDiscount)
-                        <del class="text-muted fs-5 ms-2">৳{{ number_format($product->price, 2) }}</del>
+                        <del class="text-muted fs-5">৳{{ number_format($product->price, 2) }}</del>
+                        @if ($product->discount_type === 'percent')
+                            <span class="badge bg-danger fs-6" style="padding: 4px 10px; border-radius: 4px; font-weight: 700;">{{ round($product->discount_value) }}% OFF</span>
+                        @else
+                            <span class="badge bg-danger fs-6" style="padding: 4px 10px; border-radius: 4px; font-weight: 700;">৳{{ round($product->discount_value) }} OFF</span>
+                        @endif
                     @endif
                 </h2>
 

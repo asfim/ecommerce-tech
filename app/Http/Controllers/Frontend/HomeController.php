@@ -47,6 +47,12 @@ class HomeController extends Controller
         $heroBanners = HomepageSetting::get('hero_banners', []);
         $bestSellingBanners = HomepageSetting::get('best_selling_banners', []);
         $discountedProductsBanner = HomepageSetting::get('discounted_products_banner', []);
+        $maxDiscountPercent = Product::where('discount_type', 'percent')
+            ->where('discount_value', '>', 0)
+            ->frontendActive()
+            ->max('discount_value') ?? 0;
+        $maxDiscountPercent = round($maxDiscountPercent);
+
         $hotCategories = Category::where('is_active', true)->take(8)->get();
         $trendingCategories = Category::where('is_trending', true)->get();
         $featuredProducts = Product::where('is_featured', true)
@@ -148,7 +154,8 @@ class HomeController extends Controller
             'discountedProducts',
             'newArrivalProducts',
             'homeCategories',
-            'hasMore'
+            'hasMore',
+            'maxDiscountPercent'
         ));
     }
 
@@ -205,5 +212,29 @@ class HomeController extends Controller
         $companySettings = HomepageSetting::get('company_settings', []);
 
         return view('frontend.contact', compact('companySettings'));
+    }
+
+    public function shop(): View
+    {
+        $products = Product::frontendActive()
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->latest()
+            ->paginate(12);
+
+        return view('shop', compact('products'));
+    }
+
+    public function flashSale(): View
+    {
+        $products = Product::whereNotNull('discount_type')
+            ->where('discount_value', '>', 0)
+            ->frontendActive()
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->latest()
+            ->paginate(12);
+
+        return view('flash-sale', compact('products'));
     }
 }

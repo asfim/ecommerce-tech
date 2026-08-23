@@ -306,8 +306,26 @@
                         </button>
                         <div class="latest-products-slider" id="latestSlider">
                             @forelse($bestSellingProducts as $bp)
-                                <div class="slider-card">
+                                @php
+                                    $bpHasDiscount = $bp->has_active_discount;
+                                    $bpDiscountedPrice = $bp->price;
+                                    if ($bpHasDiscount) {
+                                        if ($bp->discount_type === 'percent') {
+                                            $bpDiscountedPrice = $bp->price - ($bp->price * $bp->discount_value) / 100;
+                                        } elseif ($bp->discount_type === 'fixed') {
+                                            $bpDiscountedPrice = $bp->price - $bp->discount_value;
+                                        }
+                                    }
+                                @endphp
+                                <div class="slider-card position-relative">
                                     <span class="new-badge">New</span>
+                                    @if ($bpHasDiscount)
+                                        @if ($bp->discount_type === 'percent')
+                                            <span class="badge bg-danger position-absolute" style="top:10px; right:10px; font-size:10px; font-weight:bold; z-index:2; padding:4px 8px; border-radius:4px;">{{ round($bp->discount_value) }}% OFF</span>
+                                        @else
+                                            <span class="badge bg-danger position-absolute" style="top:10px; right:10px; font-size:10px; font-weight:bold; z-index:2; padding:4px 8px; border-radius:4px;">৳{{ round($bp->discount_value) }} OFF</span>
+                                        @endif
+                                    @endif
                                     <a href="{{ route('product.details', $bp->slug) }}" class="text-decoration-none d-flex flex-column" style="flex-grow: 1;">
                                         <div class="slider-img-wrap">
                                             @if ($bp->image)
@@ -319,13 +337,20 @@
                                         <div class="slider-card-body">
                                             <div class="product-title hover-blue">{{ $bp->name }}</div>
                                             <div class="product-code">Code: {{ $bp->id < 100 ? 'P' . $bp->id : $bp->id }}</div>
-                                            <div class="product-price">Tk {{ number_format($bp->price, 0) }}</div>
+                                            <div class="product-price">
+                                                @if ($bpHasDiscount)
+                                                    Tk {{ number_format($bpDiscountedPrice, 0) }}
+                                                    <span class="old text-decoration-line-through text-muted small ms-1" style="font-size: 11px;">Tk {{ number_format($bp->price, 0) }}</span>
+                                                @else
+                                                    Tk {{ number_format($bp->price, 0) }}
+                                                @endif
+                                            </div>
                                         </div>
                                     </a>
                                     <div class="px-3 pb-3 mt-auto">
                                         <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-100 d-inline-flex align-items-center justify-content-center gap-2"
                                             data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
-                                            data-price="{{ $bp->price }}"
+                                            data-price="{{ $bpDiscountedPrice }}"
                                             data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}"
                                             title="Add to Cart">
                                             <i class="bi bi-cart3"></i><span> Add to Cart</span>
@@ -407,16 +432,31 @@
             </div>
             <div class="row g-3">
                 <div class="col-12 col-lg-3">
-                    <div class="preorder-hero">
-                        <span class="badge-limit">Don't Miss Out</span>
-                        <h5 class="fw-bold mt-3">Limited Discounted<br>Products Available</h5>
-                        @if (!empty($discountedProductsBanner[0]))
-                            <img src="{{ asset('storage/' . $discountedProductsBanner[0]) }}"
-                                class="img-fluid rounded mt-2">
-                        @else
-                            <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=300&q=80"
-                                class="img-fluid rounded mt-2">
-                        @endif
+                    <div class="preorder-hero d-flex flex-column justify-content-between text-center" style="background: linear-gradient(135deg, #1c1c1c 0%, #301007 100%); border: 2px solid #E0471B; min-height: 320px;">
+                        <!-- Glow Effects -->
+                        <div style="position: absolute; width: 120px; height: 120px; background: #E0471B; filter: blur(60px); top: -20px; right: -20px; border-radius: 50%; opacity: 0.6; pointer-events: none;"></div>
+                        <div style="position: absolute; width: 120px; height: 120px; background: #ff5521; filter: blur(60px); bottom: -20px; left: -20px; border-radius: 50%; opacity: 0.4; pointer-events: none;"></div>
+
+                        <div class="position-relative w-100" style="z-index: 1;">
+                            <span class="badge-limit fw-bold text-white text-uppercase" style="background: #E0471B; border-radius: 50px; padding: 4px 12px; font-size: 10px; letter-spacing: 1px;">Flash Sale</span>
+                            <h4 class="fw-bold text-white mt-3 mb-1" style="font-size: 19px; letter-spacing: 0.5px;">MEGA SAVINGS</h4>
+                            <p class="text-muted small" style="font-size: 11.5px; opacity: 0.85;">Limited time discount event</p>
+                        </div>
+
+                        <div class="position-relative my-2 w-100" style="z-index: 1;">
+                            <div class="small fw-bold text-uppercase" style="color: #ff5521; letter-spacing: 3px; font-size: 11px;">UP TO</div>
+                            <div class="text-white" style="font-size: 58px; font-weight: 900; line-height: 1; font-family: 'Outfit', sans-serif; text-shadow: 0 4px 15px rgba(224, 71, 27, 0.5);">
+                                {{ $maxDiscountPercent }}%
+                            </div>
+                            <div class="fw-bold text-white" style="font-size: 20px; letter-spacing: 2px; margin-top: 2px;">OFF</div>
+                        </div>
+
+                        <div class="position-relative mt-2 w-100" style="z-index: 1;">
+                            <div class="d-flex align-items-center justify-content-center gap-2 text-white small fw-semibold" style="font-size: 12px;">
+                                <span class="d-inline-block rounded-circle" style="width: 7px; height: 7px; background: #E0471B; animation: pulseGlow 1.5s infinite;"></span>
+                                LIVE NOW
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="col-12 col-lg-9">
@@ -424,7 +464,7 @@
                         <div id="discountedSlider" class="discounted-slider">
                             @forelse($discountedProducts as $dp)
                                 @php
-                                    $hasDiscount = $dp->discount_type && $dp->discount_value > 0;
+                                    $hasDiscount = $dp->has_active_discount;
                                     $discountedPrice = $dp->price;
                                     if ($hasDiscount) {
                                         if ($dp->discount_type === 'percent') {
@@ -436,7 +476,7 @@
                                 @endphp
                                  <div class="mini-prod discounted-product-card">
                                     <a href="{{ route('product.details', $dp->slug) }}" class="text-decoration-none">
-                                        <div class="mini-img-wrap">
+                                        <div class="mini-img-wrap position-relative">
                                             @if ($dp->image)
                                                 <img src="{{ asset('storage/' . $dp->image) }}" alt="{{ $dp->name }}" class="mini-product-img">
                                             @else
@@ -444,6 +484,13 @@
                                                     src="https://placehold.co/180x180/eee/aaa?text={{ urlencode(Str::limit($dp->name, 8, '')) }}"
                                                     alt="{{ $dp->name }}"
                                                     class="mini-product-img">
+                                            @endif
+                                            @if ($hasDiscount)
+                                                @if ($dp->discount_type === 'percent')
+                                                    <span class="badge bg-danger position-absolute" style="top: 8px; left: 8px; font-size: 10px; font-weight: bold; z-index: 5;">{{ round($dp->discount_value) }}% OFF</span>
+                                                @else
+                                                    <span class="badge bg-danger position-absolute" style="top: 8px; left: 8px; font-size: 10px; font-weight: bold; z-index: 5;">৳{{ round($dp->discount_value) }} OFF</span>
+                                                @endif
                                             @endif
                                         </div>
                                         <div class="t text-dark hover-blue px-2 pt-2">{{ Str::limit($dp->name, 35) }}</div>
