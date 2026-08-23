@@ -19,9 +19,8 @@ class HomepageSettingController extends Controller implements HasMiddleware
 
     // Section definitions: key => max images
     private array $sections = [
-        'hero_banners' => 2,
+        'hero_banners' => 3,
         'best_selling_banners' => 3,
-        'new_arrivals_banner' => 1,
         'discounted_products_banner' => 1,
     ];
 

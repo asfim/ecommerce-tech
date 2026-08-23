@@ -12,7 +12,7 @@
   $tabs = [
     'hero_banners'           => [
       'label' => 'Hero Section Banner',
-      'max' => 2,
+      'max' => 3,
       'icon' => 'bi-image',
       'recommendation' => 'Recommended size: 1200 x 480 px (Aspect ratio ~ 2.5:1)'
     ],
@@ -22,12 +22,6 @@
     //   'icon' => 'bi-stars',
     //   'recommendation' => 'Recommended size: 394 x 220 px (Aspect ratio ~ 16:9)'
     // ],
-    'new_arrivals_banner'    => [
-      'label' => 'New Arrivals Banner',
-      'max' => 1,
-      'icon' => 'bi-bag-plus',
-      'recommendation' => 'Recommended size: 394 x 250 px (Aspect ratio ~ 1.6:1 / 3:2)'
-    ],
     'discounted_products_banner' => [
       'label' => 'Discounted Products',
       'max' => 1,

@@ -46,7 +46,6 @@ class HomeController extends Controller
     {
         $heroBanners = HomepageSetting::get('hero_banners', []);
         $bestSellingBanners = HomepageSetting::get('best_selling_banners', []);
-        $newArrivalsBanner = HomepageSetting::get('new_arrivals_banner', []);
         $discountedProductsBanner = HomepageSetting::get('discounted_products_banner', []);
         $hotCategories = Category::where('is_active', true)->take(8)->get();
         $trendingCategories = Category::where('is_trending', true)->get();
@@ -144,7 +143,6 @@ class HomeController extends Controller
             'trendingCategories',
             'featuredProducts',
             'bestSellingBanners',
-            'newArrivalsBanner',
             'discountedProductsBanner',
             'bestSellingProducts',
             'discountedProducts',
