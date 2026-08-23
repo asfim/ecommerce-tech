@@ -303,6 +303,16 @@
             $allImages[] = asset('storage/' . $img);
         }
     }
+    if (is_array($product->variants)) {
+        foreach ($product->variants as $variant) {
+            if (!empty($variant['image'])) {
+                $variantImageUrl = asset('storage/' . $variant['image']);
+                if (!in_array($variantImageUrl, $allImages)) {
+                    $allImages[] = $variantImageUrl;
+                }
+            }
+        }
+    }
     if (empty($allImages)) {
         $allImages[] = 'https://placehold.co/500x500/eee/aaa?text=' . urlencode($product->name);
     }
@@ -394,7 +404,7 @@
                             <label class="fw-bold text-dark small mb-2">{{ ucfirst($label) }}</label>
                             <div class="d-flex gap-2 flex-wrap">
                                 @foreach($values as $vIdx => $val)
-                                    <button type="button" class="btn btn-sm btn-outline-dark variant-btn {{ $vIdx === 0 ? 'active' : '' }}" data-value="{{ $val }}">{{ $val }}</button>
+                                    <button type="button" class="btn btn-sm btn-outline-dark variant-btn" data-value="{{ $val }}">{{ $val }}</button>
                                 @endforeach
                             </div>
                         </div>
@@ -620,6 +630,7 @@
     const qtyInput = document.getElementById('qty');
     const tabBtns = document.querySelectorAll('.nav-tabs .nav-link');
     const tabContents = document.querySelectorAll('.tab-content-panel');
+    const productVariants = @json($product->variants ?? []);
 
     function getSelectedVariants() {
         const selections = {};
@@ -641,6 +652,29 @@
         thumb.addEventListener('click', () => {
             currentIndex = index;
             updateMainImage();
+
+            // Find if any variant has this image and auto-select its button
+            const thumbUrl = thumb.src;
+            const matchedVariant = productVariants.find(v => {
+                if (!v.image) return false;
+                return thumbUrl.endsWith(v.image);
+            });
+
+            if (matchedVariant) {
+                const group = document.querySelector(`.variant-group[data-label="${matchedVariant.label.toLowerCase().trim()}"]`);
+                if (group) {
+                    const btn = group.querySelector(`.variant-btn[data-value="${matchedVariant.value}"]`);
+                    if (btn) {
+                        group.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        updateVariantDisplay(true);
+                    }
+                }
+            } else {
+                // Clear all selected variant buttons
+                document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                updateVariantDisplay(true);
+            }
         });
     });
 
@@ -737,6 +771,73 @@
         qtyInput.value = value + 1;
     });
 
+    const baseProductPrice = {{ $finalPrice }};
+    const baseProductOriginalPrice = {{ $product->price }};
+    const baseProductImage = "{{ $allImages[0] }}";
+    const hasDiscount = {{ $hasDiscount ? 'true' : 'false' }};
+
+    function updateVariantDisplay(keepCurrentMainImage = false) {
+        const selections = getSelectedVariants();
+        
+        let activePrice = baseProductPrice;
+        let activeImage = baseProductImage;
+        let priceOverridden = false;
+        let imageOverridden = false;
+
+        for (const [label, val] of Object.entries(selections)) {
+            const match = productVariants.find(v => 
+                v.label.toLowerCase().trim() === label.toLowerCase().trim() && 
+                v.value.toLowerCase().trim() === val.toLowerCase().trim()
+            );
+
+            if (match) {
+                if (match.price !== null && match.price !== undefined && match.price !== '') {
+                    activePrice = parseFloat(match.price);
+                    priceOverridden = true;
+                }
+                if (match.image) {
+                    activeImage = '/storage/' + match.image;
+                    imageOverridden = true;
+                }
+            }
+        }
+
+        const priceContainer = document.querySelector('.text-danger.fw-bold');
+        if (priceContainer) {
+            if (priceOverridden) {
+                priceContainer.innerHTML = `৳${activePrice.toFixed(2)}`;
+            } else {
+                if (hasDiscount) {
+                    priceContainer.innerHTML = `৳${baseProductPrice.toFixed(2)} <del class="text-muted fs-5 ms-2">৳${baseProductOriginalPrice.toFixed(2)}</del>`;
+                } else {
+                    priceContainer.innerHTML = `৳${baseProductPrice.toFixed(2)}`;
+                }
+            }
+        }
+
+        if (imageOverridden && mainImage) {
+            mainImage.src = activeImage;
+            thumbs.forEach(t => t.classList.remove('active'));
+        } else if (!keepCurrentMainImage && mainImage) {
+            mainImage.src = baseProductImage;
+            if (thumbs[0]) {
+                thumbs.forEach(t => t.classList.remove('active'));
+                thumbs[0].classList.add('active');
+            }
+        }
+
+        const addToCartBtn = document.querySelector('.add-to-cart-detail');
+        const buyNowBtn = document.querySelector('.buy-now-detail');
+        if (addToCartBtn) {
+            addToCartBtn.dataset.price = activePrice;
+            addToCartBtn.dataset.image = imageOverridden ? activeImage : mainImage.src;
+        }
+        if (buyNowBtn) {
+            buyNowBtn.dataset.price = activePrice;
+            buyNowBtn.dataset.image = imageOverridden ? activeImage : mainImage.src;
+        }
+    }
+
     // Variant buttons selection toggling
     document.querySelectorAll('.variant-group').forEach(group => {
         const buttons = group.querySelectorAll('.variant-btn');
@@ -745,9 +846,13 @@
                 e.preventDefault();
                 buttons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
+                updateVariantDisplay();
             });
         });
     });
+
+    // Run once on load
+    updateVariantDisplay();
 
     tabBtns.forEach((btn, index) => {
         btn.addEventListener('click', () => {

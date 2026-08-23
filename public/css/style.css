@@ -2,8 +2,8 @@
    GLOBAL VARIABLES & BASICS
    ========================================================================== */
 :root {
-    --blue: #1a73e8;
-    --blue-hover: #1e6fd9;
+    --blue: #E0471B;
+    --blue-hover: #c83b14;
     --dark: #1c1c1c;
     --muted: #8a8a8a;
     --line: #eee;
@@ -507,7 +507,7 @@ a {
 .logo-box {
     width: 38px;
     height: 38px;
-    background: var(--blue);
+    background: #ff5521;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
@@ -639,15 +639,15 @@ a {
 }
 
 .icon-btn:hover {
-    background: #f2f6fd;
-    color: var(--blue);
+    background: #fef2ee;
+    color: #ff5521;
 }
 
 .icon-btn .badge-num {
     position: absolute;
     top: 1px;
     right: 1px;
-    background: var(--blue);
+    background: #ff5521;
     color: #fff;
     font-size: 9.5px;
     width: 16px;

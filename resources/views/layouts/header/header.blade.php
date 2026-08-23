@@ -181,10 +181,10 @@
                     <div class="dropdown">
                         <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="authDropdownBtn" style="text-decoration: none;">
                             @if (auth()->guard('admin')->check())
-                                <img src="https://placehold.co/26x26/1a73e8/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}"
+                                <img src="https://placehold.co/26x26/ff5521/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}"
                                     class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
                             @elseif(auth()->guard('web')->check())
-                                <img src="https://placehold.co/26x26/1a73e8/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"
+                                <img src="https://placehold.co/26x26/ff5521/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"
                                     class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
                             @else
                                 <i class="bi bi-person" style="font-size: 22px;"></i>

@@ -53,7 +53,7 @@
     </div>
 
     <div class="row">
-      <div class="col-md-3 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Category</label>
         <select name="category_id" id="categorySelect" class="form-select" required>
           <option value="">Select Category</option>
@@ -62,13 +62,13 @@
           @endforeach
         </select>
       </div>
-      <div class="col-md-3 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Subcategory</label>
         <select name="sub_category_id" id="subCategorySelect" class="form-select">
           <option value="">Select Subcategory</option>
         </select>
       </div>
-      <div class="col-md-3 mb-3">
+      <div class="col-md-4 mb-3">
         <label class="form-label">Brand</label>
         <select name="brand_id" class="form-select" required>
           <option value="">Select Brand</option>
@@ -77,39 +77,27 @@
           @endforeach
         </select>
       </div>
-      <div class="col-md-3 mb-3">
-        <label class="form-label">Main Image</label>
-        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
-        <div id="mainImagePreview" class="mt-2">
-          @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;">
-          @endif
-        </div>
-      </div>
     </div>
 
     <div class="row">
-      <div class="col-md-2 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">purchase Price</label>
         <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price', $product->buy_price) }}" style="border-color: #a1a1a1 !important;">
       </div>
-      <div class="col-md-2 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Sell Price</label>
         <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required style="border-color: #a1a1a1 !important;">
         <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
-      <div class="col-md-2 mb-3">
+      <div class="col-md-3 mb-3">
         <label class="form-label">Stock</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required style="border-color: #a1a1a1 !important;">
       </div>
-      {{-- <div class="col-md-2 mb-3">
-        <label class="form-label">Sales Count</label>
-        <input type="number" name="sales_count" class="form-control" value="{{ old('sales_count', $product->sales_count) }}" required style="border-color: #a1a1a1 !important;">
-      </div> --}}
-      <div class="col-md-4 mb-3">
-        <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
-        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*" style="border-color: #a1a1a1 !important;">
-        <div id="galleryImagesPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+      <div class="col-md-3 mb-3 d-flex align-items-end">
+        <div class="form-check form-switch mb-2">
+          <input type="checkbox" name="is_active" value="1" class="form-check-input" id="isActive" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
+          <label class="form-check-label fw-bold" for="isActive">Active</label>
+        </div>
       </div>
     </div>
 
@@ -128,9 +116,37 @@
       </div>
     </div>
 
+    <div class="row" id="discountDatesRow" style="display: none;">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Discount Start Date</label>
+        <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date', $product->discount_start_date ? $product->discount_start_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Discount Expiry Date</label>
+        <input type="datetime-local" name="discount_expiry_date" class="form-control" value="{{ old('discount_expiry_date', $product->discount_expiry_date ? $product->discount_expiry_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Main Image</label>
+        <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
+        <div id="mainImagePreview" class="mt-2">
+          @if($product->image)
+            <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;">
+          @endif
+        </div>
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
+        <input type="file" name="images[]" id="galleryImagesInput" class="form-control" multiple accept="image/*" style="border-color: #a1a1a1 !important;">
+        <div id="galleryImagesPreview" class="d-flex flex-wrap gap-2 mt-2"></div>
+      </div>
+    </div>
+
     @if(!empty($product->images))
-      <div class="mb-3">
-        <label class="form-label fw-semibold d-block">Current Gallery Images <small class="text-muted">(Click 'X' to delete image on save)</small></label>
+      <div class="mb-3 card p-3">
+        <label class="form-label fw-semibold d-block text-dark">Current Gallery Images <small class="text-muted">(Click 'X' to delete image on save)</small></label>
         <div class="d-flex flex-wrap gap-3">
           @foreach($product->images as $img)
             <div class="position-relative border rounded p-1 bg-white gallery-img-box" style="width: 80px; height: 80px;">
@@ -144,22 +160,6 @@
         </div>
       </div>
     @endif
-
-    <div class="row" id="discountDatesRow" style="display: none;">
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Discount Start Date</label>
-        <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date', $product->discount_start_date ? $product->discount_start_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
-      </div>
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Discount Expiry Date</label>
-        <input type="datetime-local" name="discount_expiry_date" class="form-control" value="{{ old('discount_expiry_date', $product->discount_expiry_date ? $product->discount_expiry_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
-      </div>
-    </div>
-
-    <div class="mb-3 form-check">
-      <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-      <label class="form-check-label">Active</label>
-    </div>
 
     <hr>
     <h5 class="fw-bold mb-3"><i class="bi bi-palette me-2 text-primary"></i>Attributes</h5>
@@ -194,6 +194,13 @@
 
     {{-- Hidden inputs (sent with form) --}}
     <div id="variantsContainer"></div>
+
+    <div id="variantsConfigurationsWrapper" class="mt-4 card p-3" style="display: none;">
+      <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-gear me-2 text-primary"></i>Configure Variant Prices &amp; Images</h6>
+      <div id="variantsConfigurationsList" class="row g-3">
+        <!-- Dynamically populated via JS -->
+      </div>
+    </div>
 
     <hr class="mt-4">
     <button type="submit" class="btn btn-primary">Update Product</button>
@@ -283,13 +290,30 @@
   });
 
   const container         = document.getElementById('variantsContainer');
+  const existingVariantsData = @json($product->variants ?? []);
+  const storageBaseUrl = "{{ asset('storage') }}";
 
   // Global state for selected variants: { "Color": ["Red", "Blue"], "Size": ["L"] }
   let selectedVariants = {};
+  let removedVariantImages = {};
 
   // ─── Sync global state to UI and hidden inputs ──────────────────────
   function syncVariants() {
     container.innerHTML = '';
+    const configList = document.getElementById('variantsConfigurationsList');
+    const configWrapper = document.getElementById('variantsConfigurationsWrapper');
+
+    // Save current values entered in input fields to restore them after rebuilding
+    const currentPrices = {};
+    document.querySelectorAll('[name^="variant_prices"]').forEach(input => {
+      const matches = input.name.match(/variant_prices\[([^\]]+)\]\[([^\]]+)\]/);
+      if (matches) {
+        currentPrices[`${matches[1]}_${matches[2]}`] = input.value;
+      }
+    });
+
+    // Clean list
+    configList.innerHTML = '';
 
     // Check/uncheck checkbox elements on screen to match selectedVariants state
     document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
@@ -300,19 +324,70 @@
 
     const keys = Object.keys(selectedVariants);
     if (keys.length === 0) {
+      configWrapper.style.display = 'none';
       return;
     }
+
+    configWrapper.style.display = 'block';
 
     keys.forEach(attrName => {
       const vals = selectedVariants[attrName];
       if (!vals || vals.length === 0) return;
 
-      // Add hidden inputs
       vals.forEach(v => {
+        // Add hidden inputs
         container.insertAdjacentHTML('beforeend',
           `<input type="hidden" name="variant_labels[]" value="${attrName}">` +
           `<input type="hidden" name="variant_values[]" value="${v}">`
         );
+
+        const key = `${attrName}_${v}`;
+        let existingPrice = '';
+        let existingImgHtml = '';
+        
+        const match = existingVariantsData.find(item => item.label === attrName && item.value === v);
+        if (match) {
+          existingPrice = match.price || '';
+          if (match.image) {
+            if (removedVariantImages[key]) {
+              existingImgHtml = `<input type="checkbox" name="remove_variant_images[${attrName}][${v}]" value="1" class="d-none" checked>`;
+            } else {
+              existingImgHtml = `
+                <div class="mt-1 position-relative d-inline-block variant-img-box" style="width: 50px; height: 50px;">
+                  <img src="${storageBaseUrl}/${match.image}" class="rounded border" style="width: 100%; height: 100%; object-fit: cover;">
+                  <button type="button" class="position-absolute top-0 end-0 bg-danger text-white rounded-circle d-flex align-items-center justify-content-center border-0 variant-img-delete-btn" style="width: 18px; height: 18px; font-size: 9px; transform: translate(35%, -35%); cursor: pointer;" title="Remove image">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                  <input type="checkbox" name="remove_variant_images[${attrName}][${v}]" value="1" class="d-none variant-remove-checkbox">
+                </div>
+              `;
+            }
+          }
+        }
+
+        if (currentPrices[key] !== undefined) {
+          existingPrice = currentPrices[key];
+        }
+
+        const html = `
+          <div class="col-12 col-md-6 variant-config-item">
+            <div class="p-3 border rounded bg-white">
+              <span class="badge bg-secondary mb-2">${attrName}: ${v}</span>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label small fw-semibold mb-1">Price Override (৳)</label>
+                  <input type="number" step="0.01" name="variant_prices[${attrName}][${v}]" class="form-control form-control-sm" placeholder="Price (Optional)" value="${existingPrice}" style="border-color: #a1a1a1 !important;">
+                </div>
+                <div class="col-6">
+                  <label class="form-label small fw-semibold mb-1">Variant Image</label>
+                  <input type="file" name="variant_images[${attrName}][${v}]" class="form-control form-control-sm" accept="image/*" style="border-color: #a1a1a1 !important;">
+                  ${existingImgHtml}
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        configList.insertAdjacentHTML('beforeend', html);
       });
     });
   }
@@ -330,6 +405,52 @@
       syncVariants();
     });
   });
+
+  // ─── Bind change event to variant configurations file inputs for preview ───
+  const configListElement = document.getElementById('variantsConfigurationsList');
+  if (configListElement) {
+    configListElement.addEventListener('change', function(e) {
+      if (e.target && e.target.type === 'file' && e.target.name.startsWith('variant_images')) {
+        const fileInput = e.target;
+        const parentDiv = fileInput.closest('.variant-config-item');
+        if (parentDiv && fileInput.files && fileInput.files[0]) {
+          const reader = new FileReader();
+          reader.onload = function(ev) {
+            let previewWrapper = parentDiv.querySelector('.variant-preview-wrapper');
+            if (!previewWrapper) {
+              previewWrapper = document.createElement('div');
+              previewWrapper.className = 'mt-2 variant-preview-wrapper';
+              previewWrapper.innerHTML = `<img class="rounded border variant-preview-img" style="max-height:60px;"><small class="d-block text-muted">New image preview</small>`;
+              fileInput.parentNode.appendChild(previewWrapper);
+            }
+            const previewImg = previewWrapper.querySelector('.variant-preview-img');
+            previewImg.src = ev.target.result;
+          };
+          reader.readAsDataURL(fileInput.files[0]);
+        }
+      }
+    });
+
+    configListElement.addEventListener('click', function(e) {
+      const deleteBtn = e.target.closest('.variant-img-delete-btn');
+      if (deleteBtn) {
+        e.preventDefault();
+        const parentItem = deleteBtn.closest('.variant-config-item');
+        if (parentItem) {
+          const badge = parentItem.querySelector('.badge');
+          if (badge) {
+            const parts = badge.textContent.split(':');
+            if (parts.length === 2) {
+              const label = parts[0].trim();
+              const val = parts[1].trim();
+              removedVariantImages[`${label}_${val}`] = true;
+              syncVariants();
+            }
+          }
+        }
+      }
+    });
+  }
 
   // ─── Restore existing database variants & old() inputs ─────────────
   (function restoreExistingAndOld() {

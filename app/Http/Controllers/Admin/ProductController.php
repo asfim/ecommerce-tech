@@ -105,9 +105,23 @@ class ProductController extends Controller implements HasMiddleware
         if (! empty($request->variant_labels)) {
             foreach ($request->variant_labels as $index => $label) {
                 if (! empty($label) && isset($request->variant_values[$index])) {
+                    $val = $request->variant_values[$index];
+
+                    $price = null;
+                    if (isset($request->variant_prices[$label][$val])) {
+                        $price = $request->variant_prices[$label][$val];
+                    }
+
+                    $imagePath = null;
+                    if ($request->hasFile("variant_images.$label.$val")) {
+                        $imagePath = $request->file("variant_images.$label.$val")->store('products/variants', 'public');
+                    }
+
                     $variant = [
                         'label' => $label,
-                        'value' => $request->variant_values[$index],
+                        'value' => $val,
+                        'price' => $price ? floatval($price) : null,
+                        'image' => $imagePath,
                     ];
                     if (strtolower($label) === 'color' && ! empty($request->variant_colors[$index])) {
                         $variant['color'] = $request->variant_colors[$index];
@@ -180,9 +194,38 @@ class ProductController extends Controller implements HasMiddleware
         if (! empty($request->variant_labels)) {
             foreach ($request->variant_labels as $index => $label) {
                 if (! empty($label) && isset($request->variant_values[$index])) {
+                    $val = $request->variant_values[$index];
+
+                    $price = null;
+                    if (isset($request->variant_prices[$label][$val])) {
+                        $price = $request->variant_prices[$label][$val];
+                    }
+
+                    // Retrieve existing image path if any
+                    $existingImage = null;
+                    if (isset($product->variants)) {
+                        foreach ($product->variants as $v) {
+                            if ($v['label'] === $label && $v['value'] === $val && isset($v['image'])) {
+                                $existingImage = $v['image'];
+                            }
+                        }
+                    }
+
+                    // Check if requested to remove the image
+                    if ($request->has("remove_variant_images.$label.$val")) {
+                        $existingImage = null;
+                    }
+
+                    $imagePath = $existingImage;
+                    if ($request->hasFile("variant_images.$label.$val")) {
+                        $imagePath = $request->file("variant_images.$label.$val")->store('products/variants', 'public');
+                    }
+
                     $variant = [
                         'label' => $label,
-                        'value' => $request->variant_values[$index],
+                        'value' => $val,
+                        'price' => $price ? floatval($price) : null,
+                        'image' => $imagePath,
                     ];
                     if (strtolower($label) === 'color' && ! empty($request->variant_colors[$index])) {
                         $variant['color'] = $request->variant_colors[$index];
