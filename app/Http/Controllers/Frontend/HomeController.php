@@ -60,8 +60,8 @@ class HomeController extends Controller
         $bestSellingProducts = Product::where('is_active', true)
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-            ->orderBy('sales_count', 'desc')
-            ->take(5)
+            ->latest()
+            ->take(10)
             ->get();
         $discountedProducts = Product::where('is_active', true)
             ->whereNotNull('discount_type')

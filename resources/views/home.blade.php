@@ -26,7 +26,7 @@
                         </li>
                         @endforeach
                         <li class="view-all-cats">
-                            <a href="{{ route('home') }}">
+                            <a href="{{ route('home') }}#products-grid">
                                 <i class="bi bi-grid-3x3-gap hero-cat-icon-bi"></i>
                                 <span>View All Categories</span>
                                 <i class="bi bi-chevron-right ms-auto cat-arrow"></i>
@@ -145,46 +145,217 @@
     <div class="wrap">
 
 
+        @push('styles')
+        <style>
+            .latest-products-slider {
+                display: flex;
+                overflow-x: auto;
+                gap: 1.25rem;
+                padding: 1rem 1rem 1.5rem 1rem;
+                scroll-snap-type: x mandatory;
+                scrollbar-width: none;
+            }
+            .latest-products-slider::-webkit-scrollbar {
+                display: none;
+            }
+            .latest-products-slider .slider-card {
+                flex: 0 0 auto;
+                width: 220px;
+                scroll-snap-align: start;
+                background: #ffeee9;
+                border: 1px solid #ffd6ca;
+                border-radius: 12px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                display: flex;
+                flex-direction: column;
+                position: relative;
+                overflow: hidden;
+            }
+            .latest-products-slider .slider-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            }
+            .latest-products-slider .slider-img-wrap {
+                width: 100%;
+                height: 210px;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #f8f9fa;
+                border-radius: 10px 10px 0 0;
+            }
+            .latest-products-slider .slider-img-wrap img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: top center;
+                transition: transform 0.3s ease;
+            }
+            .latest-products-slider .slider-card:hover .slider-img-wrap img {
+                transform: scale(1.05);
+            }
+            .latest-products-slider .slider-card-body {
+                padding: 1rem 1rem 0 1rem;
+                display: flex;
+                flex-direction: column;
+                flex-grow: 1;
+            }
+            .latest-products-slider .product-title {
+                font-size: 0.95rem;
+                font-weight: 600;
+                color: #2b2b2b;
+                margin-bottom: 0.3rem;
+                line-height: 1.3;
+                height: 2.5rem;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .latest-products-slider .product-code {
+                font-size: 0.75rem;
+                color: #777;
+                margin-bottom: 0.5rem;
+            }
+            .latest-products-slider .product-price {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: #E0471B;
+                margin-bottom: 1rem;
+                margin-top: auto;
+            }
+            .latest-products-slider .btn-add-to-cart {
+                background: #2b2b2b;
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 0.6rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+                transition: background 0.2s ease;
+            }
+            .latest-products-slider .btn-add-to-cart:hover {
+                background: #E0471B;
+                color: #fff;
+            }
+            .new-badge {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: #E0471B;
+                color: #fff;
+                font-size: 0.7rem;
+                font-weight: 700;
+                padding: 3px 8px;
+                border-radius: 4px;
+                z-index: 2;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+            }
+            .latest-slider-wrapper {
+                position: relative;
+            }
+            .latest-slider-btn {
+                position: absolute;
+                top: 50%;
+
+                z-index: 10;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                background: #fff;
+                border: 1px solid #e0e0e0;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                color: #2b2b2b;
+                font-size: 1rem;
+            }
+            .latest-slider-btn.prev-btn {
+                left: -18px;
+            }
+            .latest-slider-btn.next-btn {
+                right: -18px;
+            }
+            @media (max-width: 576px) {
+                .latest-slider-btn.prev-btn { left: 4px; }
+                .latest-slider-btn.next-btn { right: 4px; }
+            }
+        </style>
+        @endpush
+
         <div class="row g-3 mb-4">
             <div class="col-12">
-                <div class="bestselling-panel h-100">
-                    <div class="panel-title">Best Selling
+                <div class="bestselling-panel h-100" style="background: transparent; border: none; box-shadow: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3 px-2 mt-4">
+                        <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;">
+                            <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
+                            Latest Products
+                        </h4>
                     </div>
-                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-2 px-3 pb-3">
-                        @forelse($bestSellingProducts as $bp)
-                            <div class="col mini-prod">
-                                <a href="{{ route('product.details', $bp->slug) }}" class="text-decoration-none">
-                                    <div class="mini-img-wrap">
-                                        @if ($bp->image)
-                                            <img src="{{ asset('storage/' . $bp->image) }}">
-                                        @else
-                                            <img
-                                                src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($bp->name, 8, '')) }}">
-                                        @endif
+                    <div class="latest-slider-wrapper">
+                        <button class="latest-slider-btn prev-btn" id="latestPrev" type="button" aria-label="Previous">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="latest-slider-btn next-btn" id="latestNext" type="button" aria-label="Next">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <div class="latest-products-slider" id="latestSlider">
+                            @forelse($bestSellingProducts as $bp)
+                                <div class="slider-card">
+                                    <span class="new-badge">New</span>
+                                    <a href="{{ route('product.details', $bp->slug) }}" class="text-decoration-none d-flex flex-column" style="flex-grow: 1;">
+                                        <div class="slider-img-wrap">
+                                            @if ($bp->image)
+                                                <img src="{{ asset('storage/' . $bp->image) }}" alt="{{ $bp->name }}">
+                                            @else
+                                                <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($bp->name, 8, '')) }}" alt="{{ $bp->name }}">
+                                            @endif
+                                        </div>
+                                        <div class="slider-card-body">
+                                            <div class="product-title hover-blue">{{ $bp->name }}</div>
+                                            <div class="product-code">Code: {{ $bp->id < 100 ? 'P' . $bp->id : $bp->id }}</div>
+                                            <div class="product-price">Tk {{ number_format($bp->price, 0) }}</div>
+                                        </div>
+                                    </a>
+                                    <div class="px-3 pb-3 mt-auto">
+                                        <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                                            data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
+                                            data-price="{{ $bp->price }}"
+                                            data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}"
+                                            title="Add to Cart">
+                                            <i class="bi bi-cart3"></i><span> Add to Cart</span>
+                                        </button>
                                     </div>
-                                    <div class="t text-dark hover-blue">{{ Str::limit($bp->name, 35) }}</div>
-                                </a>
-                                <div class="code">Code: {{ $bp->id < 100 ? 'P' . $bp->id : $bp->id }}</div>
-                                <div class="p">Tk {{ number_format($bp->price, 0) }}</div>
-                                <div class="mt-2 d-flex justify-content-center align-items-center">
-                                    <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1"
-                                        style="font-size: 12px; font-weight: 600; border-radius: 6px;"
-                                        data-id="{{ $bp->id }}" data-name="{{ $bp->name }}"
-                                        data-price="{{ $bp->price }}"
-                                        data-image="{{ $bp->image ? asset('storage/' . $bp->image) : 'https://placehold.co/150x150/eee/aaa?text=' . urlencode(Str::limit($bp->name, 8, '')) }}"
-                                        title="Add to Cart">
-                                        <i class="bi bi-cart3"></i><span> Add to Cart</span>
-                                    </button>
                                 </div>
-                            </div>
-                        @empty
-                            <div class="text-muted small px-3">No best selling products yet.</div>
-                        @endforelse
+                            @empty
+                                <div class="text-muted small px-3">No latest products yet.</div>
+                            @endforelse
+                        </div>
                     </div>
+                    @push('scripts')
+                    <script>
+                        (function() {
+                            const slider = document.getElementById('latestSlider');
+                            const prevBtn = document.getElementById('latestPrev');
+                            const nextBtn = document.getElementById('latestNext');
+                            if (!slider) return;
+                            const scrollAmount = 240;
+                            prevBtn.addEventListener('click', () => {
+                                slider.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+                            });
+                            nextBtn.addEventListener('click', () => {
+                                slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+                            });
+                        })();
+                    </script>
+                    @endpush
                 </div>
             </div>
-
-
         </div>
 
 
@@ -222,10 +393,13 @@
     </div>
 
     <div class="wrap">
-        <!-- Discounted Products -->
+        <!-- Flash Sale -->
         <div class="preorder-panel my-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-                <h5 class="fw-bold mb-0">Discounted Products</h5>
+                <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;">
+                    <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
+                    <i class="bi bi-lightning-fill me-1" style="color:#E0471B; font-size:1rem;"></i> Flash Sale
+                </h4>
                 <div class="d-flex gap-1 align-items-center discounted-controls">
                     <span class="arrow d-inline-flex" id="discountedPrev" title="Previous"><i class="bi bi-chevron-left"></i></span>
                     <span class="arrow d-inline-flex" id="discountedNext" title="Next"><i class="bi bi-chevron-right"></i></span>
@@ -260,7 +434,7 @@
                                         }
                                     }
                                 @endphp
-                                <div class="mini-prod discounted-product-card">
+                                 <div class="mini-prod discounted-product-card">
                                     <a href="{{ route('product.details', $dp->slug) }}" class="text-decoration-none">
                                         <div class="mini-img-wrap">
                                             @if ($dp->image)
@@ -272,19 +446,21 @@
                                                     class="mini-product-img">
                                             @endif
                                         </div>
-                                        <div class="t text-dark hover-blue">{{ Str::limit($dp->name, 35) }}</div>
+                                        <div class="t text-dark hover-blue px-2 pt-2">{{ Str::limit($dp->name, 35) }}</div>
                                     </a>
-                                    <div class="code">Code: {{ $dp->id < 100 ? 'P' . $dp->id : $dp->id }}</div>
-                                    <div class="p">
-                                        @if ($hasDiscount)
-                                            Tk {{ number_format($discountedPrice, 0) }}
-                                            <span class="old text-decoration-line-through text-muted"
-                                                style="font-size:10px;">Tk {{ number_format($dp->price, 0) }}</span>
-                                        @else
-                                            Tk {{ number_format($dp->price, 0) }}
-                                        @endif
+                                    <div class="px-2">
+                                        <div class="code">Code: {{ $dp->id < 100 ? 'P' . $dp->id : $dp->id }}</div>
+                                        <div class="p">
+                                            @if ($hasDiscount)
+                                                Tk {{ number_format($discountedPrice, 0) }}
+                                                <span class="old text-decoration-line-through text-muted"
+                                                    style="font-size:10px;">Tk {{ number_format($dp->price, 0) }}</span>
+                                            @else
+                                                Tk {{ number_format($dp->price, 0) }}
+                                            @endif
+                                        </div>
                                     </div>
-                                    <div class="mt-2 d-flex gap-2 justify-content-center align-items-center product-card-actions">
+                                    <div class="px-2 pb-2 mt-1 d-flex gap-2 justify-content-center align-items-center product-card-actions">
                                         <button type="button" class="btn btn-add-to-cart add-to-cart-btn w-50 py-2 d-inline-flex align-items-center justify-content-center gap-1"
                                             style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                                             data-id="{{ $dp->id }}" data-name="{{ $dp->name }}"
@@ -326,8 +502,11 @@
         <div id="products-grid" class="mb-3">
             @forelse($homeCategories as $category)
                 @if($category->products->isNotEmpty())
-                    <div class="col-12 mt-4 mb-2">
-                        <h5 class="fw-bold mb-0">{{ $category->name }}</h5>
+                    <div class="col-12 mt-4 mb-3">
+                        <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;">
+                            <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
+                            {{ $category->name }}
+                        </h4>
                     </div>
                     <div id="category-products-{{ $category->id }}" class="row g-3">
                         @foreach($category->products as $product)
@@ -845,7 +1024,7 @@
                 });
             });            document.addEventListener('DOMContentLoaded', function() {
                 const loadMoreBtns = document.querySelectorAll('.load-more-category-btn');
-                
+
                 loadMoreBtns.forEach(btn => {
                     btn.addEventListener('click', function() {
                         const page = btn.getAttribute('data-page');

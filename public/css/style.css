@@ -1353,16 +1353,16 @@ a {
 }
 
 .mini-prod {
-    background: #ffffff !important;
-    border: 1px solid #eaeaea !important;
+    background: #ffeee9 !important;
+    border: 1px solid #ffd6ca !important;
     border-radius: 12px !important;
     overflow: hidden !important;
     /* padding: 12px !important; */
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03) !important;
-    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
     text-align: left !important;
     position: relative !important;
     height: 100% !important;
@@ -1377,23 +1377,21 @@ a {
 .mini-img-wrap {
     position: relative !important;
     width: 100% !important;
-    height: 180% !important;
+    height: 220px !important;
     overflow: hidden !important;
-    background: white !important;
+    background: #f8f9fa !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    border-radius: 10px !important;
-    /* margin-bottom: 10px !important; */
-    /* padding: 10px !important; */
+    border-radius: 10px 10px 0 0 !important;
 }
 
 .mini-img-wrap img {
     width: 100% !important;
-    height: 280px !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    border-radius: 8px !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: top center !important;
+    border-radius: 0 !important;
     transition: transform 0.3s ease !important;
 }
 
@@ -1710,16 +1708,16 @@ a {
 }
 
 .prod-card {
-    background: #ffffff !important;
-    border: 1px solid #eaeaea !important;
-    border-radius: 14px !important;
+    background: #ffeee9 !important;
+    border: 1px solid #ffd6ca !important;
+    border-radius: 12px !important;
     overflow: hidden !important;
     height: 100% !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
-    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06) !important;
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
     text-align: left !important;
     position: relative !important;
 }
@@ -1735,19 +1733,19 @@ a {
     width: 100% !important;
     height: 300px !important;
     overflow: hidden !important;
-    background: linear-gradient(135deg, #f8fafc 0%, #eef4f8 100%) !important;
+    background: #f8f9fa !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-
+    border-radius: 10px 10px 0 0 !important;
 }
 
 .prod-img-wrap img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important;
-    object-position: center !important;
-    border-radius: 10px !important;
+    object-fit: cover !important;
+    object-position: top center !important;
+    border-radius: 0 !important;
     transition: transform 0.3s ease !important;
 }
 
@@ -2360,7 +2358,7 @@ input[type="submit"]:hover {
 /* Product Card Action Buttons */
 .btn-add-to-cart,
 .btn-buy-now {
-    background-color: #111826 !important;
+    background-color: #E0471B !important;
     color: #fff !important;
     border: none !important;
     transition: all 0.2s ease;
@@ -2373,7 +2371,7 @@ input[type="submit"]:hover {
 }
 
 .btn-bid {
-    background-color: #111826 !important;
+    background-color: #E0471B !important;
     color: #fff !important;
     border: none !important;
     transition: all 0.2s ease;

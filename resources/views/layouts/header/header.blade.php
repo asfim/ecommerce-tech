@@ -29,12 +29,6 @@
 
             <form action="{{ route('home') }}" method="GET" class="search-input flex-grow-1 d-flex mb-0 position-relative">
                 <div class="search-input-wrap w-100">
-                    <select class="search-cat-select" name="category" aria-label="Category">
-                        <option value="">All Categories</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>{{ $cat->name }}</option>
-                        @endforeach
-                    </select>
                     <input type="text" name="search" class="form-control search-input-field" placeholder="Search for products..." value="{{ request()->query('search') }}" autocomplete="off">
                     <button type="submit" class="btn"><i class="bi bi-search"></i></button>
                 </div>
