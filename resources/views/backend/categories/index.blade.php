@@ -47,7 +47,6 @@
                     <th>Image</th>
                     <th>Name</th>
                     <th>Status</th>
-                    <th>Trending</th>
                     <th>Actions</th>
 
                 </tr>
@@ -70,13 +69,6 @@
                                 <input type="checkbox" class="form-check-input toggle-status" role="switch"
                                     data-url="{{ route('admin.categories.toggle-status', $category) }}"
                                     {{ $category->is_active ? 'checked' : '' }}>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="form-check form-switch mb-0">
-                                <input type="checkbox" class="form-check-input toggle-trending" role="switch"
-                                    data-url="{{ route('admin.categories.toggle-trending', $category) }}"
-                                    {{ $category->is_trending ? 'checked' : '' }}>
                             </div>
                         </td>
                         <td>
@@ -113,29 +105,6 @@
                     .then(response => response.json())
                     .then(data => {
                         checkbox.checked = data.is_active;
-                    })
-                    .catch(() => {
-                        checkbox.checked = !checkbox.checked;
-                    });
-            });
-        });
-
-        document.querySelectorAll('.toggle-trending').forEach(function(toggle) {
-            toggle.addEventListener('change', function() {
-                const url = this.dataset.url;
-                const checkbox = this;
-
-                fetch(url, {
-                        method: 'PATCH',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json',
-                        },
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        checkbox.checked = data.is_trending;
                     })
                     .catch(() => {
                         checkbox.checked = !checkbox.checked;

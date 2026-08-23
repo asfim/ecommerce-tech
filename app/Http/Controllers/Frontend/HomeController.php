@@ -24,7 +24,7 @@ class HomeController extends Controller
             return response()->json([]);
         }
 
-        $products = Product::where('is_active', true)
+        $products = Product::frontendActive()
             ->where('name', 'like', '%'.$query.'%')
             ->take(5)
             ->get(['id', 'name', 'price', 'slug', 'image']);
@@ -51,19 +51,19 @@ class HomeController extends Controller
         $hotCategories = Category::where('is_active', true)->take(8)->get();
         $trendingCategories = Category::where('is_trending', true)->get();
         $featuredProducts = Product::where('is_featured', true)
-            ->where('is_active', true)
+            ->frontendActive()
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->latest()
             ->get();
 
-        $bestSellingProducts = Product::where('is_active', true)
+        $bestSellingProducts = Product::frontendActive()
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->latest()
             ->take(10)
             ->get();
-        $discountedProducts = Product::where('is_active', true)
+        $discountedProducts = Product::frontendActive()
             ->whereNotNull('discount_type')
             ->where('discount_value', '>', 0)
             ->withAvg('reviews', 'rating')
@@ -71,7 +71,7 @@ class HomeController extends Controller
             ->latest()
             ->take(5)
             ->get();
-        $newArrivalProducts = Product::where('is_active', true)
+        $newArrivalProducts = Product::frontendActive()
             ->where('is_new_arrival', true)
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
@@ -79,7 +79,7 @@ class HomeController extends Controller
             ->take(12)
             ->get();
         $search = request()->query('search');
-        
+
         if (request()->ajax() && request()->has('category_id')) {
             $categoryId = request()->query('category_id');
             $page = (int) request()->query('page', 1);
@@ -87,13 +87,13 @@ class HomeController extends Controller
             $offset = 8 + ($page - 2) * 4;
 
             $productsQuery = Product::where('category_id', $categoryId)
-                ->where('is_active', true)
+                ->frontendActive()
                 ->withAvg('reviews', 'rating')
                 ->withCount('reviews')
                 ->latest();
 
-            if (!empty($search)) {
-                $productsQuery->where('name', 'like', '%' . $search . '%');
+            if (! empty($search)) {
+                $productsQuery->where('name', 'like', '%'.$search.'%');
             }
 
             $ajaxProducts = $productsQuery->skip($offset)->take($limit)->get();
@@ -112,26 +112,26 @@ class HomeController extends Controller
 
         $categoriesQuery = Category::where('is_active', true)
             ->whereHas('products', function ($q) use ($search) {
-                $q->where('is_active', true);
-                if (!empty($search)) {
-                    $q->where('name', 'like', '%' . $search . '%');
+                $q->frontendActive();
+                if (! empty($search)) {
+                    $q->where('name', 'like', '%'.$search.'%');
                 }
             })
             ->withCount(['products' => function ($q) use ($search) {
-                $q->where('is_active', true);
-                if (!empty($search)) {
-                    $q->where('name', 'like', '%' . $search . '%');
+                $q->frontendActive();
+                if (! empty($search)) {
+                    $q->where('name', 'like', '%'.$search.'%');
                 }
             }])
             ->with(['products' => function ($q) use ($search) {
-                $q->where('is_active', true)
-                  ->withAvg('reviews', 'rating')
-                  ->withCount('reviews')
-                  ->latest()
-                  ->take(8);
-                  
-                if (!empty($search)) {
-                    $q->where('name', 'like', '%' . $search . '%');
+                $q->frontendActive()
+                    ->withAvg('reviews', 'rating')
+                    ->withCount('reviews')
+                    ->latest()
+                    ->take(8);
+
+                if (! empty($search)) {
+                    $q->where('name', 'like', '%'.$search.'%');
                 }
             }]);
 
@@ -156,10 +156,10 @@ class HomeController extends Controller
 
     public function productDetails(string $slug): View
     {
-        $product = Product::with('reviews')->where('slug', $slug)->firstOrFail();
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        $product = Product::frontendActive()->with('reviews')->where('slug', $slug)->firstOrFail();
+        $relatedProducts = Product::frontendActive()
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
-            ->where('is_active', true)
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
             ->take(4)
@@ -172,8 +172,7 @@ class HomeController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        $query = Product::where('category_id', $category->id)
-            ->where('is_active', true);
+        $query = Product::frontendActive()->where('category_id', $category->id);
 
         $selectedSubCategory = null;
         if (request()->has('subcategory')) {

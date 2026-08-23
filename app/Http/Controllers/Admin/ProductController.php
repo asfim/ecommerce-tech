@@ -88,6 +88,8 @@ class ProductController extends Controller implements HasMiddleware
             'price' => 'required|numeric|min:0',
             'discount_type' => 'nullable|string|in:percent,fixed',
             'discount_value' => 'nullable|numeric|min:0',
+            'discount_start_date' => 'nullable|date',
+            'discount_expiry_date' => 'nullable|date|after_or_equal:discount_start_date',
             'stock' => 'required|integer|min:0',
             'sales_count' => 'nullable|integer|min:0',
             'image' => 'nullable|image|max:10240',
@@ -117,8 +119,8 @@ class ProductController extends Controller implements HasMiddleware
         $validated['variants'] = $variants ?: null;
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
         $validated['discount_value'] = $validated['discount_value'] ?? 0;
-        $validated['is_active'] = $request->boolean('is_active');
-        $validated['is_new_arrival'] = $request->boolean('is_new_arrival');
+        $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : true;
+        $validated['is_new_arrival'] = $request->has('is_new_arrival') ? $request->boolean('is_new_arrival') : true;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
@@ -161,6 +163,8 @@ class ProductController extends Controller implements HasMiddleware
             'price' => 'required|numeric|min:0',
             'discount_type' => 'nullable|string|in:percent,fixed',
             'discount_value' => 'nullable|numeric|min:0',
+            'discount_start_date' => 'nullable|date',
+            'discount_expiry_date' => 'nullable|date|after_or_equal:discount_start_date',
             'stock' => 'required|integer|min:0',
             'sales_count' => 'nullable|integer|min:0',
             'image' => 'nullable|image|max:10240',
@@ -190,8 +194,8 @@ class ProductController extends Controller implements HasMiddleware
         $validated['variants'] = $variants ?: null;
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
         $validated['discount_value'] = $validated['discount_value'] ?? 0;
-        $validated['is_active'] = $request->boolean('is_active');
-        $validated['is_new_arrival'] = $request->boolean('is_new_arrival');
+        $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : false;
+        $validated['is_new_arrival'] = $request->has('is_new_arrival') ? $request->boolean('is_new_arrival') : $product->is_new_arrival;
 
         if ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');

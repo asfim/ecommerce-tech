@@ -145,14 +145,20 @@
       </div>
     @endif
 
-    <div class="mb-3 form-check">
-      <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
-      <label class="form-check-label">Active</label>
+    <div class="row" id="discountDatesRow" style="display: none;">
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Discount Start Date</label>
+        <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date', $product->discount_start_date ? $product->discount_start_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
+      </div>
+      <div class="col-md-6 mb-3">
+        <label class="form-label">Discount Expiry Date</label>
+        <input type="datetime-local" name="discount_expiry_date" class="form-control" value="{{ old('discount_expiry_date', $product->discount_expiry_date ? $product->discount_expiry_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
+      </div>
     </div>
 
     <div class="mb-3 form-check">
-      <input type="checkbox" name="is_new_arrival" value="1" class="form-check-input" {{ old('is_new_arrival', $product->is_new_arrival) ? 'checked' : '' }}>
-      <label class="form-check-label">New Arrival</label>
+      <input type="checkbox" name="is_active" value="1" class="form-check-input" {{ old('is_active', $product->is_active) ? 'checked' : '' }}>
+      <label class="form-check-label">Active</label>
     </div>
 
     <hr>
@@ -419,13 +425,26 @@
     discountedPriceText.style.display = 'block';
   }
 
+  const discountDatesRow = document.getElementById('discountDatesRow');
+  function toggleDiscountDates() {
+    if (discountTypeSelect && discountDatesRow) {
+      if (discountTypeSelect.value) {
+        discountDatesRow.style.display = 'flex';
+      } else {
+        discountDatesRow.style.display = 'none';
+      }
+    }
+  }
+
   if (priceInput && discountTypeSelect && discountValueInput && discountedPriceText) {
     priceInput.addEventListener('input', calculateDiscountedPrice);
     discountTypeSelect.addEventListener('change', calculateDiscountedPrice);
     discountValueInput.addEventListener('input', calculateDiscountedPrice);
+    discountTypeSelect.addEventListener('change', toggleDiscountDates);
 
     // Run once on load
     calculateDiscountedPrice();
+    toggleDiscountDates();
   }
 </script>
 @endpush

@@ -73,7 +73,6 @@
                 <tr>
                     <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllProducts" class="form-check-input"></th>
                     <th style="width: 60px;">#</th>
-                    <th style="width: 70px;">Image</th>
                     <th>Name</th>
                     <th>Category</th>
                     <th>Brand</th>
@@ -92,15 +91,6 @@
                     <tr>
                         <td class="text-center"><input type="checkbox" class="product-checkbox form-check-input" value="{{ $product->id }}"></td>
                         <td>{{ $loop->iteration }}</td>
-                        <td>
-                            @if ($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" class="rounded border"
-                                    style="width: 40px; height: 40px; object-fit: cover;">
-                            @else
-                                <img src="https://placehold.co/40x40/eee/aaa?text=No+Img" class="rounded border"
-                                    style="width: 40px; height: 40px; object-fit: cover;">
-                            @endif
-                        </td>
                         <td>{{ $product->name }}</td>
                         <td>{{ $product->category->name ?? '-' }}</td>
                         <td>{{ $product->brand->name ?? '-' }}</td>
