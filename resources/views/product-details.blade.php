@@ -8,7 +8,7 @@
     overflow: hidden;
     border-radius: 12px;
     position: relative;
-    cursor: zoom-in;
+    cursor: crosshair;
     background: #fff;
     border: 1px solid #eee;
     display: flex;
@@ -21,11 +21,48 @@
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    transition: transform 0.3s ease;
+    display: block;
+    user-select: none;
+    pointer-events: none;
 }
 
-.main-image:hover .product-main {
-    transform: scale(1.5);
+/* Daraz-style zoom result panel */
+#zoomResult {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: calc(100% + 16px);
+    width: 420px;
+    height: 420px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    background-color: #fff;
+    background-repeat: no-repeat;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+    z-index: 200;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+/* Zoom lens indicator on main image */
+#zoomLens {
+    display: none;
+    position: absolute;
+    border: 2px solid #1a73e8;
+    background: rgba(26,115,232,0.10);
+    pointer-events: none;
+    cursor: crosshair;
+    z-index: 10;
+    border-radius: 4px;
+}
+
+.gallery-wrap {
+    position: relative;
+}
+
+@media (max-width: 991px) {
+    #zoomResult { display: none !important; }
+    .main-image { cursor: default; }
 }
 
 .thumbs {
@@ -284,11 +321,6 @@
     transform: scale(0.97);
 }
 
-@media (max-width: 768px) {
-    .main-image:hover .product-main {
-        transform: scale(1);
-    }
-}
 </style>
 @endpush
 
@@ -351,8 +383,12 @@
         <div class="row">
             <!-- LEFT: Gallery -->
             <div class="col-lg-6 mb-4 mb-lg-0">
-                <div class="main-image">
-                    <img id="mainImage" src="{{ $allImages[0] }}" class="img-fluid rounded product-main">
+                <div class="gallery-wrap">
+                    <div class="main-image" id="mainImageWrap">
+                        <img id="mainImage" src="{{ $allImages[0] }}" class="img-fluid rounded product-main">
+                        <div id="zoomLens"></div>
+                    </div>
+                    <div id="zoomResult"></div>
                 </div>
                 <div class="thumbs mt-3">
                     @foreach($allImages as $idx => $imgUrl)
@@ -956,4 +992,71 @@
     }
 })();
 </script>
+
+<script>
+// ── Daraz-style Magnifier Zoom ────────────────────────────────────────────
+(function () {
+    const wrap   = document.getElementById('mainImageWrap');
+    const img    = document.getElementById('mainImage');
+    const lens   = document.getElementById('zoomLens');
+    const result = document.getElementById('zoomResult');
+    if (!wrap || !img || !lens || !result) return;
+
+    const ZOOM = 2.8; // magnification factor
+
+    function updateZoom(e) {
+        if (window.innerWidth < 992) return;
+
+        const imgRect  = img.getBoundingClientRect();
+        const wrapRect = wrap.getBoundingClientRect();
+
+        const rw = result.offsetWidth  || 420;
+        const rh = result.offsetHeight || 420;
+        const lw = rw / ZOOM;
+        const lh = rh / ZOOM;
+
+        // Cursor position relative to the image element
+        let x = e.clientX - imgRect.left;
+        let y = e.clientY - imgRect.top;
+
+        // Clamp so lens stays fully within the image
+        let lensLeft = x - lw / 2;
+        let lensTop  = y - lh / 2;
+        lensLeft = Math.max(0, Math.min(imgRect.width  - lw, lensLeft));
+        lensTop  = Math.max(0, Math.min(imgRect.height - lh, lensTop));
+
+        // Place lens div relative to wrap (not image) since wrap has position:relative via main-image
+        const offsetX = imgRect.left - wrapRect.left;
+        const offsetY = imgRect.top  - wrapRect.top;
+        lens.style.left   = (lensLeft + offsetX) + 'px';
+        lens.style.top    = (lensTop  + offsetY) + 'px';
+        lens.style.width  = lw + 'px';
+        lens.style.height = lh + 'px';
+
+        // Background in result panel: image zoomed ZOOM times, shifted so lens area fills it
+        const bgW = imgRect.width  * ZOOM;
+        const bgH = imgRect.height * ZOOM;
+        const bgX = -lensLeft * ZOOM;
+        const bgY = -lensTop  * ZOOM;
+
+        result.style.backgroundImage    = `url('${img.src}')`;
+        result.style.backgroundSize     = `${bgW}px ${bgH}px`;
+        result.style.backgroundPosition = `${bgX}px ${bgY}px`;
+    }
+
+    wrap.addEventListener('mouseenter', () => {
+        if (window.innerWidth < 992) return;
+        lens.style.display   = 'block';
+        result.style.display = 'block';
+    });
+
+    wrap.addEventListener('mousemove', updateZoom);
+
+    wrap.addEventListener('mouseleave', () => {
+        lens.style.display   = 'none';
+        result.style.display = 'none';
+    });
+})();
+</script>
 @endpush
+
