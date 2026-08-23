@@ -2381,3 +2381,127 @@ input[type="submit"]:hover {
     background-color: #1f2937 !important;
     color: #fff !important;
 }
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.main-footer {
+    background: #111827;
+    color: #9ca3af;
+    padding: 60px 0 0;
+    font-size: 13.5px;
+    margin-top: 40px;
+}
+
+.footer-col {
+    padding-right: 0;
+}
+
+.footer-heading {
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #E0471B;
+    display: inline-block;
+}
+
+.footer-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+}
+
+.footer-links li {
+    color: #9ca3af;
+    line-height: 1.5;
+}
+
+.footer-links a {
+    color: #9ca3af;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: #E0471B;
+    padding-left: 4px;
+}
+
+.footer-desc {
+    color: #9ca3af;
+    font-size: 13px;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.footer-input {
+    background: #1f2937 !important;
+    border: 1px solid #374151 !important;
+    color: #e5e7eb !important;
+    border-radius: 6px;
+}
+
+.footer-input::placeholder {
+    color: #6b7280 !important;
+}
+
+.footer-input:focus {
+    border-color: #E0471B !important;
+    box-shadow: 0 0 0 2px rgba(224, 71, 27, 0.15) !important;
+    outline: none;
+}
+
+.footer-subscribe-btn {
+    background: #E0471B !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    white-space: nowrap;
+    font-weight: 600 !important;
+    padding: 6px 16px !important;
+    transition: background 0.2s ease !important;
+    transform: none !important;
+}
+
+.footer-subscribe-btn:hover {
+    background: #c43c16 !important;
+    transform: none !important;
+}
+
+.footer-divider {
+    border-color: #1f2937 !important;
+    margin-bottom: 0;
+}
+
+.footer-bottom {
+    padding: 18px 0;
+    font-size: 12.5px;
+}
+
+.footer-copy {
+    color: #6b7280;
+}
+
+.social-ic {
+    color: #6b7280;
+    font-size: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #1f2937;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.social-ic:hover {
+    background: #E0471B;
+    color: #fff;
+}

@@ -55,12 +55,8 @@
                 </div>
                 @if(auth()->guard('admin')->check())
                     <div class="position-relative">
-                        <a href="#" class="user-chip dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="https://placehold.co/28x28/1a73e8/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}" class="rounded-circle">
-                            <span>
-                                <span class="name d-block">{{ auth()->guard('admin')->user()->email }}</span>
-                                <span class="role">eCommerce</span>
-                            </span>
+                        <a href="#" class="user-chip" data-bs-toggle="dropdown" style="padding: 4px; border-radius: 50px; gap: 6px;">
+                            <img src="https://placehold.co/34x34/E0471B/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}" class="rounded-circle" style="width:34px;height:34px;">
                             <i class="bi bi-chevron-down small ms-1"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
@@ -76,12 +72,9 @@
                     </div>
                 @elseif(auth()->guard('web')->check())
                     <div class="position-relative">
-                        <a href="{{ route('user.dashboard') }}" class="user-chip dropdown-toggle" data-bs-toggle="dropdown">
-                            <img src="https://placehold.co/28x28/1a73e8/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}" class="rounded-circle">
-                            <span>
-                                <span class="name d-block">{{ auth()->user()->name }}</span>
-                                <span class="role">eCommerce</span>
-                            </span>
+                        <a href="{{ route('user.dashboard') }}" class="user-chip dropdown-toggle" data-bs-toggle="dropdown" style="padding: 4px; border-radius: 50px; gap: 6px;">
+                            <img src="https://placehold.co/34x34/E0471B/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}" class="rounded-circle" style="width:34px;height:34px;">
+                            <i class="bi bi-chevron-down small ms-1"></i>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
@@ -355,7 +348,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const searchInputs = document.querySelectorAll('.search-input-field');
-        
+
         searchInputs.forEach(input => {
             const form = input.closest('form');
             const dropdown = form.querySelector('.search-results-dropdown');
@@ -376,7 +369,7 @@
                         .then(res => res.json())
                         .then(products => {
                             dropdown.innerHTML = '';
-                            
+
                             if (products.length === 0) {
                                 dropdown.innerHTML = '<div class="text-muted text-center py-3 small">No products found</div>';
                                 dropdown.classList.remove('d-none');
@@ -408,7 +401,7 @@
                     dropdown.classList.add('d-none');
                 }
             });
-            
+
             // Show dropdown on focus if it has items
             input.addEventListener('focus', function() {
                 if (dropdown.children.length > 0) {

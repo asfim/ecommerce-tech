@@ -12,22 +12,26 @@ class CouponSeeder extends Seeder
      */
     public function run(): void
     {
-        Coupon::create([
-            'code' => 'SAVE10',
-            'type' => 'percent',
-            'value' => 10.00,
-            'min_order_amount' => 0.00,
-            'is_active' => true,
-            'expires_at' => now()->addYear(),
-        ]);
+        Coupon::firstOrCreate(
+            ['code' => 'SAVE10'],
+            [
+                'type' => 'percent',
+                'value' => 10.00,
+                'min_order_amount' => 0.00,
+                'is_active' => true,
+                'expires_at' => now()->addYear(),
+            ]
+        );
 
-        Coupon::create([
-            'code' => 'FLAT50',
-            'type' => 'fixed',
-            'value' => 50.00,
-            'min_order_amount' => 200.00,
-            'is_active' => true,
-            'expires_at' => now()->addYear(),
-        ]);
+        Coupon::firstOrCreate(
+            ['code' => 'FLAT50'],
+            [
+                'type' => 'fixed',
+                'value' => 50.00,
+                'min_order_amount' => 200.00,
+                'is_active' => true,
+                'expires_at' => now()->addYear(),
+            ]
+        );
     }
 }
