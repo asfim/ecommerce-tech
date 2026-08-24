@@ -173,26 +173,76 @@ class HomeController extends Controller
         return view('product-details', compact('product', 'relatedProducts'));
     }
 
-    public function categoryProducts(int $id): View
+    public function categoryProducts(Request $request, int $id): View|JsonResponse
     {
         $category = Category::findOrFail($id);
 
-        $query = Product::frontendActive()->where('category_id', $category->id);
+        $query = Product::frontendActive()
+            ->where('category_id', $category->id)
+            ->with('brand');
 
         $selectedSubCategory = null;
-        if (request()->has('subcategory')) {
-            $subCatId = request()->query('subcategory');
+        if ($request->has('subcategory')) {
+            $subCatId = $request->query('subcategory');
             $query->where('sub_category_id', $subCatId);
             $selectedSubCategory = SubCategory::find($subCatId);
         }
 
+        // Price filter
+        if ($request->filled('min_price')) {
+            $query->where('price', '>=', (float) $request->min_price);
+        }
+        if ($request->filled('max_price')) {
+            $query->where('price', '<=', (float) $request->max_price);
+        }
+
+        // Brand filter
+        if ($request->filled('brands')) {
+            $brandIds = explode(',', $request->brands);
+            $query->whereIn('brand_id', $brandIds);
+        }
+
+        // Sort
+        $sort = $request->query('sort', '');
+        if ($sort === 'price_asc') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sort === 'price_desc') {
+            $query->orderBy('price', 'desc');
+        } else {
+            $query->latest();
+        }
+
+        $isFiltered = $request->filled('min_price') || $request->filled('max_price') || $request->filled('brands') || $request->filled('sort');
+        $perPage = $isFiltered ? 10000 : 12;
+
         $products = $query
             ->withAvg('reviews', 'rating')
             ->withCount('reviews')
-            ->latest()
-            ->paginate(12);
+            ->paginate($perPage)
+            ->withQueryString();
 
-        return view('category-products', compact('category', 'products', 'selectedSubCategory'));
+        // Price range for this category
+        $priceRange = Product::frontendActive()
+            ->where('category_id', $category->id)
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
+
+        if ($request->ajax()) {
+            $html = '';
+            foreach ($products as $product) {
+                $html .= '<div class="col-6 col-md-4 col-lg-3">'
+                    . view('frontend.partials.category_product_card', compact('product'))->render()
+                    . '</div>';
+            }
+            return response()->json([
+                'html'       => $html,
+                'pagination' => (string) $products->links(),
+                'total'      => $products->total(),
+                'has_more'   => $products->hasMorePages(),
+            ]);
+        }
+
+        return view('category-products', compact('category', 'products', 'selectedSubCategory', 'priceRange'));
     }
 
     public function checkout(): View|RedirectResponse
