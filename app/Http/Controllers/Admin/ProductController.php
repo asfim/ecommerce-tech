@@ -13,6 +13,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller implements HasMiddleware
@@ -208,7 +209,12 @@ class ProductController extends Controller implements HasMiddleware
         $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : false;
         $validated['is_new_arrival'] = $request->has('is_new_arrival') ? $request->boolean('is_new_arrival') : $product->is_new_arrival;
 
-        if ($request->hasFile('image')) {
+        if ($request->has('remove_main_image') && $request->remove_main_image == '1') {
+            if ($product->image && Storage::disk('public')->exists($product->image)) {
+                Storage::disk('public')->delete($product->image);
+            }
+            $validated['image'] = null;
+        } elseif ($request->hasFile('image')) {
             $validated['image'] = $request->file('image')->store('products', 'public');
         } else {
             unset($validated['image']);

@@ -585,11 +585,11 @@
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="stock" value="${v.stock}" placeholder="0">
         </td>
         <td>
-          <div class="vt-img-wrap">
+          <div class="vt-img-wrap position-relative">
             <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}" style="${v.imagePreview ? 'display:none;' : ''}">
               <i class="bi bi-cloud-arrow-up"></i> Upload
             </label>
-            <input type="file" id="vt-file-${idx}" class="d-none vt-file-input" data-idx="${idx}" accept="image/*">
+            <input type="file" name="variants[${idx}][image]" id="vt-file-${idx}" class="d-none vt-file-input" data-idx="${idx}" accept="image/*">
             <img src="${v.imagePreview || ''}" class="vt-img-preview" id="vt-preview-${idx}" style="${v.imagePreview ? '' : 'display:none;'}" title="Click to change image">
           </div>
         </td>
@@ -617,7 +617,11 @@
     document.querySelectorAll('.vt-active-toggle').forEach(el => {
       el.addEventListener('change', function() {
         variantState[this.dataset.idx].active = this.checked;
-        renderVariants();
+        if (this.checked) {
+            this.closest('tr').classList.remove('opacity-50');
+        } else {
+            this.closest('tr').classList.add('opacity-50');
+        }
       });
     });
   
@@ -641,7 +645,7 @@
           reader.onload = e => {
             variantState[idx].imagePreview = e.target.result;
             document.getElementById(`vt-preview-${idx}`).src = e.target.result;
-            document.getElementById(`vt-preview-${idx}`).style.display = 'block';
+            document.getElementById(`vt-preview-${idx}`).style.display = 'inline-block';
             document.getElementById(`vt-label-${idx}`).style.display = 'none';
           };
           reader.readAsDataURL(file);

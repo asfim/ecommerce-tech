@@ -160,11 +160,13 @@
         <label class="form-label">Main Image</label>
         <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
         <small class="form-text text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Recommended size: <strong>600x600 pixels</strong> (1:1 square) for best fit.</small>
-        <div id="mainImagePreview" class="mt-2" style="{{ $product->image ? '' : 'display:none;' }}">
+        <div id="mainImagePreview" class="mt-2 position-relative d-inline-block" style="{{ $product->image ? '' : 'display:none;' }}">
           @if($product->image)
-            <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;">
+            <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;" id="mainImageImg">
+            <button type="button" class="btn btn-sm btn-danger position-absolute top-0 end-0 rounded-circle" style="transform: translate(30%, -30%); padding: 0.1rem 0.3rem; z-index: 10;" onclick="removeMainImage()" title="Remove Image"><i class="bi bi-x"></i></button>
           @endif
         </div>
+        <input type="hidden" name="remove_main_image" id="removeMainImageInput" value="0">
       </div>
       <div class="col-md-6 mb-3">
         <label class="form-label">Gallery Images <small class="text-muted">(multiple)</small></label>
@@ -611,23 +613,13 @@
       const row = document.createElement('tr');
       if (!v.active) row.classList.add('opacity-50');
       
-      let imageHtml = '';
-      if (v.imagePreview) {
-          imageHtml = `
-            <img src="${v.imagePreview}" class="vt-img-preview" id="vt-preview-${idx}" title="Click to change image">
-            <button type="button" class="btn btn-sm btn-outline-danger ms-2 py-0 px-1 vt-remove-img-btn" data-idx="${idx}" title="Remove image"><i class="bi bi-x"></i></button>
-            <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}" style="display:none;">
+      let imageHtml = `
+            <img src="${v.imagePreview || ''}" class="vt-img-preview" id="vt-preview-${idx}" style="${v.imagePreview ? '' : 'display:none;'}" title="Click to change image">
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2 py-0 px-1 vt-remove-img-btn" id="vt-remove-img-${idx}" data-idx="${idx}" title="Remove image" style="${v.imagePreview ? '' : 'display:none;'}"><i class="bi bi-x"></i></button>
+            <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}" style="${v.imagePreview ? 'display:none;' : ''}">
               <i class="bi bi-cloud-arrow-up"></i> Upload
             </label>
-          `;
-      } else {
-          imageHtml = `
-            <img src="" class="vt-img-preview" id="vt-preview-${idx}" style="display:none;" title="Click to change image">
-            <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}">
-              <i class="bi bi-cloud-arrow-up"></i> Upload
-            </label>
-          `;
-      }
+      `;
 
       row.innerHTML = `
         <td class="ps-4">
@@ -662,7 +654,7 @@
         </td>
         <td>
           <div class="vt-img-wrap">
-            <input type="file" id="vt-file-${idx}" class="d-none vt-file-input" data-idx="${idx}" accept="image/*">
+            <input type="file" name="variants[${idx}][image]" id="vt-file-${idx}" class="d-none vt-file-input" data-idx="${idx}" accept="image/*">
             ${imageHtml}
           </div>
         </td>
@@ -690,7 +682,11 @@
     document.querySelectorAll('.vt-active-toggle').forEach(el => {
       el.addEventListener('change', function() {
         variantState[this.dataset.idx].active = this.checked;
-        renderVariants();
+        if (this.checked) {
+            this.closest('tr').classList.remove('opacity-50');
+        } else {
+            this.closest('tr').classList.add('opacity-50');
+        }
       });
     });
   
@@ -709,7 +705,12 @@
             variantState[idx].imagePreview = null;
             variantState[idx].imageFile = null;
             variantState[idx].removedDbImage = true;
-            renderVariants();
+            
+            document.getElementById(`vt-file-${idx}`).value = '';
+            document.getElementById(`vt-preview-${idx}`).src = '';
+            document.getElementById(`vt-preview-${idx}`).style.display = 'none';
+            document.getElementById(`vt-remove-img-${idx}`).style.display = 'none';
+            document.getElementById(`vt-label-${idx}`).style.display = 'inline-block';
         });
     });
   
@@ -724,7 +725,10 @@
           const reader = new FileReader();
           reader.onload = e => {
             variantState[idx].imagePreview = e.target.result;
-            renderVariants(); // re-render to show image and remove button
+            document.getElementById(`vt-preview-${idx}`).src = e.target.result;
+            document.getElementById(`vt-preview-${idx}`).style.display = 'inline-block';
+            document.getElementById(`vt-remove-img-${idx}`).style.display = 'inline-block';
+            document.getElementById(`vt-label-${idx}`).style.display = 'none';
           };
           reader.readAsDataURL(file);
         }
@@ -1048,5 +1052,22 @@
     }
   }, 150);
 
+  window.removeMainImage = function() {
+      document.getElementById('mainImagePreview').style.display = 'none';
+      document.getElementById('removeMainImageInput').value = '1';
+      document.getElementById('mainImageInput').value = '';
+  };
+
+  document.querySelectorAll('input[name="delete_images[]"]').forEach(chk => {
+      chk.addEventListener('change', function() {
+          if (this.checked) {
+              this.closest('.gallery-img-box').style.opacity = '0.3';
+              this.closest('.gallery-img-box').style.backgroundColor = '#ffcccc';
+          } else {
+              this.closest('.gallery-img-box').style.opacity = '1';
+              this.closest('.gallery-img-box').style.backgroundColor = '';
+          }
+      });
+  });
 </script>
 @endpush

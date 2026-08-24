@@ -90,8 +90,19 @@
                         <td class="text-center"><input type="checkbox" class="product-checkbox form-check-input" value="{{ $product->id }}"></td>
                         <td>{{ $loop->iteration }}</td>
                         <td>
-                            @if($product->image)
-                                <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            @php
+                                $displayImage = $product->image;
+                                if (!$displayImage && !empty($product->variants)) {
+                                    foreach ($product->variants as $v) {
+                                        if (isset($v['combo']) && !empty($v['image'])) {
+                                            $displayImage = $v['image'];
+                                            break;
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @if($displayImage)
+                                <img src="{{ asset('storage/' . $displayImage) }}" alt="Product Image" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
                             @else
                                 <div style="width: 40px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Img</div>
                             @endif
