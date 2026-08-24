@@ -282,14 +282,16 @@
                 <tr>
                   <th class="ps-4" style="min-width:140px;">Variant</th>
                   <th style="min-width:120px;">SKU</th>
+                  <th style="min-width:100px;">Buy Price</th>
                   <th style="min-width:100px;">Price (৳)</th>
-                  <th style="min-width:100px;">Discount</th>
+                  <th style="min-width:80px;">Disc. Type</th>
+                  <th style="min-width:90px;">Discount</th>
                   <th style="min-width:130px;">Start Date</th>
                   <th style="min-width:130px;">End Date</th>
-                  <th style="min-width:90px;">Stock</th>
-                  <th style="min-width:170px;">Image</th>
+                  <th style="min-width:80px;">Stock</th>
+                  <th style="min-width:90px;">Image</th>
                   <th class="text-center" style="min-width:70px;">Active</th>
-                  <th class="text-center" style="min-width:50px;"></th>
+                  <th class="text-center" style="min-width:80px;"><i class="bi bi-gear"></i></th>
                 </tr>
               </thead>
               <tbody id="variantTableBody"></tbody>
@@ -562,7 +564,7 @@
         
         if (!exists) {
           variantState.push({
-            combo, sku: generateSku(prefix, combo), price: '', discount: '',
+            combo, sku: generateSku(prefix, combo), buy_price: '', price: '', discount_type: 'percent', discount: '',
             discount_start: '', discount_end: '', stock: '', imagePreview: null, imageFile: null, active: true,
             removedDbImage: false
           });
@@ -634,16 +636,25 @@
           <input type="text" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="sku" value="${v.sku}">
         </td>
         <td>
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="buy_price" value="${v.buy_price || ''}" step="0.01" placeholder="0.00">
+        </td>
+        <td>
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="price" value="${v.price}" step="0.01" placeholder="0.00">
+        </td>
+        <td>
+          <select class="form-select form-select-sm vt-bind" data-idx="${idx}" data-field="discount_type">
+            <option value="percent" ${v.discount_type === 'percent' ? 'selected' : ''}>%</option>
+            <option value="fixed" ${v.discount_type === 'fixed' ? 'selected' : ''}>Fixed</option>
+          </select>
         </td>
         <td>
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount" value="${v.discount}" step="0.01" placeholder="0.00">
         </td>
         <td>
-          <input type="datetime-local" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_start" value="${v.discount_start ? v.discount_start.replace(' ', 'T') : ''}">
+          <input type="date" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_start" value="${v.discount_start ? (v.discount_start.includes('T') ? v.discount_start.split('T')[0] : v.discount_start.split(' ')[0]) : ''}">
         </td>
         <td>
-          <input type="datetime-local" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_end" value="${v.discount_end ? v.discount_end.replace(' ', 'T') : ''}">
+          <input type="date" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_end" value="${v.discount_end ? (v.discount_end.includes('T') ? v.discount_end.split('T')[0] : v.discount_end.split(' ')[0]) : ''}">
         </td>
         <td>
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="stock" value="${v.stock}" placeholder="0">
@@ -797,7 +808,9 @@
         if (isVariant) {
             variantState.forEach((v, idx) => {
                 if (v.sku) make(`variants[${idx}][sku]`, v.sku);
+                if (v.buy_price) make(`variants[${idx}][buy_price]`, v.buy_price);
                 if (v.price) make(`variants[${idx}][price]`, v.price);
+                if (v.discount_type) make(`variants[${idx}][discount_type]`, v.discount_type);
                 if (v.discount) make(`variants[${idx}][discount]`, v.discount);
                 if (v.discount_start) make(`variants[${idx}][discount_start]`, v.discount_start);
                 if (v.discount_end) make(`variants[${idx}][discount_end]`, v.discount_end);
@@ -877,7 +890,9 @@
                         variantState.push({
                             combo: dbV.combo,
                             sku: dbV.sku || '',
+                            buy_price: dbV.buy_price || '',
                             price: dbV.price || '',
+                            discount_type: dbV.discount_type || 'percent',
                             discount: dbV.discount || '',
                             discount_start: dbV.discount_start || '',
                             discount_end: dbV.discount_end || '',

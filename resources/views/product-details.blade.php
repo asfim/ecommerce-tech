@@ -362,7 +362,17 @@
     $groupedVariants = [];
     if (is_array($product->variants)) {
         foreach ($product->variants as $variant) {
-            if (isset($variant['label']) && isset($variant['value'])) {
+            if (isset($variant['combo']) && is_array($variant['combo'])) {
+                foreach ($variant['combo'] as $label => $val) {
+                    $labelKey = strtolower(trim($label));
+                    if (!isset($groupedVariants[$labelKey])) {
+                        $groupedVariants[$labelKey] = [];
+                    }
+                    if (!in_array($val, $groupedVariants[$labelKey])) {
+                        $groupedVariants[$labelKey][] = $val;
+                    }
+                }
+            } elseif (isset($variant['label']) && isset($variant['value'])) {
                 $labelKey = strtolower(trim($variant['label']));
                 if (!isset($groupedVariants[$labelKey])) {
                     $groupedVariants[$labelKey] = [];
@@ -702,15 +712,28 @@
             });
 
             if (matchedVariant) {
-                const group = document.querySelector(`.variant-group[data-label="${matchedVariant.label.toLowerCase().trim()}"]`);
-                if (group) {
-                    const btn = group.querySelector(`.variant-btn[data-value="${matchedVariant.value}"]`);
-                    if (btn) {
-                        group.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        updateVariantDisplay(true);
+                if (matchedVariant.combo) {
+                    for (const [label, val] of Object.entries(matchedVariant.combo)) {
+                        const group = document.querySelector(`.variant-group[data-label="${label.toLowerCase().trim()}"]`);
+                        if (group) {
+                            const btn = group.querySelector(`.variant-btn[data-value="${val}"]`);
+                            if (btn) {
+                                group.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                                btn.classList.add('active');
+                            }
+                        }
+                    }
+                } else if (matchedVariant.label && matchedVariant.value) {
+                    const group = document.querySelector(`.variant-group[data-label="${matchedVariant.label.toLowerCase().trim()}"]`);
+                    if (group) {
+                        const btn = group.querySelector(`.variant-btn[data-value="${matchedVariant.value}"]`);
+                        if (btn) {
+                            group.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                            btn.classList.add('active');
+                        }
                     }
                 }
+                updateVariantDisplay(true);
             } else {
                 // Clear all selected variant buttons
                 document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
@@ -825,20 +848,50 @@
         let priceOverridden = false;
         let imageOverridden = false;
 
-        for (const [label, val] of Object.entries(selections)) {
-            const match = productVariants.find(v => 
-                v.label.toLowerCase().trim() === label.toLowerCase().trim() && 
-                v.value.toLowerCase().trim() === val.toLowerCase().trim()
-            );
+        let isComboProduct = productVariants.some(v => v.combo);
 
-            if (match) {
-                if (match.price !== null && match.price !== undefined && match.price !== '') {
-                    activePrice = parseFloat(match.price);
-                    priceOverridden = true;
+        if (isComboProduct) {
+            const selectionKeys = Object.keys(selections);
+            if (selectionKeys.length > 0) {
+                const exactComboMatch = productVariants.find(v => {
+                    if (!v.combo) return false;
+                    return selectionKeys.every(label => {
+                        const val = selections[label];
+                        for (const [cLabel, cVal] of Object.entries(v.combo)) {
+                            if (cLabel.toLowerCase().trim() === label.toLowerCase().trim() && cVal.toLowerCase().trim() === val.toLowerCase().trim()) {
+                                return true;
+                            }
+                        }
+                        return false;
+                    });
+                });
+                if (exactComboMatch) {
+                    if (exactComboMatch.price !== null && exactComboMatch.price !== undefined && exactComboMatch.price !== '') {
+                        activePrice = parseFloat(exactComboMatch.price);
+                        priceOverridden = true;
+                    }
+                    if (exactComboMatch.image) {
+                        activeImage = '/storage/' + exactComboMatch.image;
+                        imageOverridden = true;
+                    }
                 }
-                if (match.image) {
-                    activeImage = '/storage/' + match.image;
-                    imageOverridden = true;
+            }
+        } else {
+            for (const [label, val] of Object.entries(selections)) {
+                const match = productVariants.find(v => 
+                    v.label && v.label.toLowerCase().trim() === label.toLowerCase().trim() && 
+                    v.value && v.value.toLowerCase().trim() === val.toLowerCase().trim()
+                );
+
+                if (match) {
+                    if (match.price !== null && match.price !== undefined && match.price !== '') {
+                        activePrice = parseFloat(match.price);
+                        priceOverridden = true;
+                    }
+                    if (match.image) {
+                        activeImage = '/storage/' + match.image;
+                        imageOverridden = true;
+                    }
                 }
             }
         }
@@ -882,6 +935,12 @@
     // Variant buttons selection toggling
     document.querySelectorAll('.variant-group').forEach(group => {
         const buttons = group.querySelectorAll('.variant-btn');
+        
+        // Select the first button by default
+        if (buttons.length > 0) {
+            buttons[0].classList.add('active');
+        }
+
         buttons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
