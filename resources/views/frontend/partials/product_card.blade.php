@@ -8,6 +8,44 @@
             $discountedPrice = $product->price - $product->discount_value;
         }
     }
+
+    $displayImage = $product->image;
+    $isVariant = false;
+    $minPrice = $product->price;
+    $maxPrice = $product->price;
+    $hasMultiplePrices = false;
+    
+    if (!empty($product->variants) && is_array($product->variants)) {
+        $prices = [];
+        $firstVariantImage = null;
+        foreach ($product->variants as $v) {
+            if (isset($v['combo'])) {
+                $isVariant = true;
+                if (isset($v['price']) && $v['price'] > 0) {
+                    $prices[] = $v['price'];
+                }
+                if (!$firstVariantImage && isset($v['image']) && !empty($v['image'])) {
+                    $firstVariantImage = $v['image'];
+                }
+            }
+        }
+        
+        if ($firstVariantImage) {
+            $displayImage = $firstVariantImage;
+        }
+        
+        if (count($prices) > 0) {
+            $minPrice = min($prices);
+            $maxPrice = max($prices);
+            if ($minPrice != $maxPrice) {
+                $hasMultiplePrices = true;
+            } else {
+                // If all variations have the same price, just show that price.
+                $minPrice = $prices[0];
+                $discountedPrice = $minPrice; // Ignore simple product discount calculation for variant if prices are overwritten, or we could apply discount to minPrice
+            }
+        }
+    }
 @endphp
 <div class="col-6 col-sm-6 col-md-4 col-lg-3">
     <div class="prod-card">
@@ -31,8 +69,8 @@
                         style="top:10px;right:10px;font-size:9px;z-index:5;">Out of Stock</span>
                 @endif
 
-                @if ($product->image)
-                    <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="prod-product-img">
+                @if ($displayImage)
+                    <img src="{{ asset('storage/' . $displayImage) }}" alt="{{ $product->name }}" class="prod-product-img">
                 @else
                     <img
                         src="https://placehold.co/240x240/eee/aaa?text={{ urlencode(Str::limit($product->name, 8, '')) }}"
@@ -47,27 +85,16 @@
                 <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
                     <div class="t text-dark hover-blue">{{ Str::limit($product->name, 35) }}</div>
                 </a>
-                <div class="prod-stars">
-                    @php $avgRating = $product->average_rating; @endphp
-                    @for ($s = 1; $s <= 5; $s++)
-                        @if ($s <= floor($avgRating))
-                            <i class="bi bi-star-fill star-filled"></i>
-                        @elseif ($s - $avgRating < 1 && $s - $avgRating > 0)
-                            <i class="bi bi-star-half star-filled"></i>
-                        @else
-                            <i class="bi bi-star star-empty"></i>
-                        @endif
-                    @endfor
-                    @if ($product->reviews_count > 0)
-                        <span class="prod-review-count">({{ $product->reviews_count }})</span>
-                    @endif
-                </div>
                 <div class="p">
-                    @if ($hasDiscount)
-                        Tk {{ number_format($discountedPrice, 0) }}
-                        <span class="old">Tk {{ number_format($product->price, 0) }}</span>
+                    @if ($hasMultiplePrices)
+                        <span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
                     @else
-                        Tk {{ number_format($product->price, 0) }}
+                        @if ($hasDiscount)
+                            <span style="font-size: 1.2em;">৳</span>{{ number_format($discountedPrice, 0) }}
+                            <span class="old"><span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }}</span>
+                        @else
+                            <span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }}
+                        @endif
                     @endif
                 </div>
                 <div class="prod-stock-badge">

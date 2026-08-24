@@ -39,6 +39,23 @@
 
   <form method="POST" action="{{ route('admin.products.store') }}" enctype="multipart/form-data">
     @csrf
+    
+        <div class="row mb-3">
+      <div class="col-md-12">
+        <label class="form-label fw-bold"><i class="bi bi-box-seam me-2 text-primary"></i>Product Type</label>
+        <div class="d-flex gap-4 p-3 bg-light rounded-3" style="border: 1px dashed #ccc;">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="product_type" id="typeSimple" value="simple" checked>
+            <label class="form-check-label fw-semibold" for="typeSimple">Simple Product</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="product_type" id="typeVariant" value="variant">
+            <label class="form-check-label fw-semibold" for="typeVariant">Variant Product</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="row">
       <div class="col-md-12 mb-3">
         <label class="form-label">Product Name</label>
@@ -73,7 +90,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row general-inputs-section">
       <div class="col-md-3 mb-3">
         <label class="form-label">Buy Price</label>
         <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price') }}" style="border-color: #a1a1a1 !important;">
@@ -95,7 +112,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row general-inputs-section">
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Type</label>
         <select name="discount_type" id="discountTypeSelect" class="form-select">
@@ -110,7 +127,7 @@
       </div>
     </div>
 
-    <div class="row" id="discountDatesRow" style="display: none;">
+    <div class="row general-inputs-section" id="discountDatesRow" style="display: none;">
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Start Date</label>
         <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date') }}" style="border-color: #a1a1a1 !important;">
@@ -121,7 +138,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row general-inputs-section">
       <div class="col-md-6 mb-3">
         <label class="form-label">Main Image</label>
         <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
@@ -136,7 +153,7 @@
 
     <hr>
     <div class="d-flex align-items-center justify-content-between mb-3">
-      <h5 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Product Variants</h5>
+      <h5 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Product Attributes & Variants</h5>
       <span class="badge bg-primary-subtle text-primary rounded-pill fs-6 px-3" id="variantCountBadge" style="display:none;"></span>
     </div>
 
@@ -183,7 +200,9 @@
           @endforeach
         </div>
 
-        <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
+        </div></div>
+    <div id="variantBuilderWrapper" style="display:none;">
+          <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
           <div class="input-group" style="max-width:240px;">
             <span class="input-group-text bg-light border-end-0 text-muted small">SKU Prefix</span>
             <input type="text" id="skuPrefix" class="form-control border-start-0" placeholder="e.g. SHIRT" style="border-color:#dee2e6!important;">
@@ -192,9 +211,7 @@
             <i class="bi bi-lightning-fill me-2"></i>Generate Variants
           </button>
           <span id="variantGeneratedMsg" class="text-success fw-semibold small" style="display:none;"></span>
-        </div>
-      </div>
-    </div>
+          </div>
 
     {{-- Step 2: Variant Combination Table --}}
     <div id="variantBuilderSection" style="display:none;">
@@ -213,7 +230,7 @@
             </div>
             <button type="button" class="btn btn-sm btn-outline-success" onclick="activateAll()"><i class="bi bi-check-all me-1"></i>Activate All</button>
             <button type="button" class="btn btn-sm btn-outline-danger" onclick="deactivateAll()"><i class="bi bi-x-circle me-1"></i>Deactivate All</button>
-            <button type="button" class="btn btn-sm btn-outline-secondary ms-auto" onclick="clearAllVariants()"><i class="bi bi-trash me-1"></i>Clear All</button>
+            <button type="button" class="btn btn-sm btn-danger ms-auto" onclick="clearAllVariants()"><i class="bi bi-trash me-1"></i>Clear All</button>
           </div>
         </div>
       </div>
@@ -245,6 +262,7 @@
     </div>
 
     {{-- Hidden inputs container (populated on submit) --}}
+    </div> <!-- end variantBuilderWrapper -->
     <div id="variantsHiddenContainer"></div>
     {{-- Backward-compat hidden inputs --}}
     <div id="variantsContainer"></div>
@@ -356,56 +374,87 @@
   const categorySelect = document.getElementById('categorySelect');
   const subCategorySelect = document.getElementById('subCategorySelect');
 
-  categorySelect.addEventListener('change', function () {
-    const selectedCategoryId = this.value;
-    subCategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+  if (categorySelect && subCategorySelect) {
+    categorySelect.addEventListener('change', function () {
+      const selectedCategoryId = this.value;
+      subCategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
 
-    if (selectedCategoryId) {
-      const filtered = subCategoriesData.filter(sub => sub.category_id == selectedCategoryId);
-      filtered.forEach(sub => {
-        const option = document.createElement('option');
-        option.value = sub.id;
-        option.textContent = sub.name;
-        subCategorySelect.appendChild(option);
-      });
-    }
-  });
-
-  // Restore old() on validation failure
-  (function () {
-    const oldSubCategoryId = @json(old('sub_category_id'));
-    if (categorySelect.value) {
-      categorySelect.dispatchEvent(new Event('change'));
-      if (oldSubCategoryId) {
-        subCategorySelect.value = oldSubCategoryId;
+      if (selectedCategoryId) {
+        const filtered = subCategoriesData.filter(sub => sub.category_id == selectedCategoryId);
+        filtered.forEach(sub => {
+          const option = document.createElement('option');
+          option.value = sub.id;
+          option.textContent = sub.name;
+          subCategorySelect.appendChild(option);
+        });
       }
-    }
-  })();
+    });
 
+    (function () {
+      const oldSubCategoryId = @json(old('sub_category_id'));
+      if (categorySelect.value) {
+        categorySelect.dispatchEvent(new Event('change'));
+        if (oldSubCategoryId) {
+          subCategorySelect.value = oldSubCategoryId;
+        }
+      }
+    })();
+  }
 
   // ═══════════════════════════════════════════════════════════════════
-  // Professional Variant Builder
+  // Professional Variant Builder & Product Type Toggle
   // ═══════════════════════════════════════════════════════════════════
-
-  // CSS color name → hex map
-  const COLOR_MAP = {
-    'black':'#1a1a1a','white':'#f8f9fa','red':'#dc3545','blue':'#0d6efd',
-    'green':'#198754','yellow':'#ffc107','orange':'#fd7e14','purple':'#6f42c1',
-    'pink':'#d63384','grey':'#6c757d','gray':'#6c757d','brown':'#795548',
-    'navy':'#001f5b','teal':'#20c997','cyan':'#0dcaf0','maroon':'#800000',
-    'gold':'#ffd700','silver':'#c0c0c0','beige':'#f5f5dc','cream':'#fffdd0',
-    'violet':'#8b00ff','indigo':'#6610f2','lime':'#d4edda','khaki':'#c3b17d',
-  };
-  function getCssColor(name) { return COLOR_MAP[name.toLowerCase()] || name.toLowerCase(); }
-
-  // Initialize color swatches from data-color attribute
-  document.querySelectorAll('.color-swatch[data-color]').forEach(el => {
-    el.style.background = getCssColor(el.dataset.color);
-  });
 
   // ── State ──────────────────────────────────────────────────────────
   let selectedAttrs = {};   // { Color: ['Black', 'White'], Size: ['M', 'L'] }
   let variantState  = [];   // Array of combination objects
+
+  // ── Toggle Logic ───────────────────────────────────────────────────
+  const togglePriceInput = document.getElementById('priceInput');
+  const toggleStockInput = document.querySelector('input[name="stock"]');
+  const generalSections = document.querySelectorAll('.general-inputs-section');
+  const variantBuilderWrapper = document.getElementById('variantBuilderWrapper');
+  const variantTableSection = document.getElementById('variantBuilderSection');
+  const variantCountBadge = document.getElementById('variantCountBadge');
+
+  function toggleProductType() {
+    const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+    
+    if (isVariant) {
+      generalSections.forEach(sec => sec.style.display = 'none');
+      if (variantBuilderWrapper) variantBuilderWrapper.style.display = 'block';
+      if (variantTableSection) {
+          variantTableSection.style.display = variantState.length > 0 ? 'block' : 'none';
+      }
+      if (togglePriceInput) togglePriceInput.removeAttribute('required');
+      if (toggleStockInput) toggleStockInput.removeAttribute('required');
+    } else {
+      generalSections.forEach(sec => {
+        if (sec.id !== 'discountDatesRow') sec.style.display = 'flex';
+      });
+      if (variantBuilderWrapper) variantBuilderWrapper.style.display = 'none';
+      
+      if (togglePriceInput) togglePriceInput.setAttribute('required', 'required');
+      if (toggleStockInput) toggleStockInput.setAttribute('required', 'required');
+      
+      const discountType = document.getElementById('discountTypeSelect') ? document.getElementById('discountTypeSelect').value : '';
+      const datesRow = document.getElementById('discountDatesRow');
+      if (datesRow) {
+          datesRow.style.display = (discountType && discountType !== '') ? 'flex' : 'none';
+      }
+    }
+  }
+
+  document.querySelectorAll('input[name="product_type"]').forEach(r => { r.addEventListener('change', toggleProductType); r.addEventListener('click', toggleProductType); });
+
+  // ── Attribute Selection ────────────────────────────────────────────
+  document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
+    chk.addEventListener('change', function() {
+      const attr = this.dataset.attrName;
+      const checked = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]:checked`)].map(c => c.value);
+      if (checked.length > 0) { selectedAttrs[attr] = checked; } else { delete selectedAttrs[attr]; }
+    });
+  });
 
   // ── Cartesian Product ──────────────────────────────────────────────
   function generateCombinations(attrs) {
@@ -422,25 +471,69 @@
     return result;
   }
 
-  // ── Auto-SKU ───────────────────────────────────────────────────────
   function generateSku(prefix, combo) {
-    if (!prefix) return '';
     const parts = [prefix.toUpperCase().replace(/\s+/g, '-')];
-    Object.values(combo).forEach(val => {
-      parts.push(val.toString().toUpperCase().replace(/\s+/g, '').substring(0, 4));
+    Object.values(combo).forEach(v => {
+      const isColor = Object.keys(combo).find(k => combo[k] === v && k.toLowerCase() === 'color');
+      if (isColor && v.length >= 3) {
+        parts.push(v.substring(0,4).toUpperCase());
+      } else {
+        parts.push(v.toUpperCase().replace(/\s+/g, '-'));
+      }
     });
-    return parts.join('-');
+    return parts.filter(Boolean).join('-');
   }
 
-  // ── Combo Label HTML ───────────────────────────────────────────────
-  function comboLabelHtml(combo) {
-    return Object.entries(combo).map(([k, v], i) => {
-      const isColor = k.toLowerCase() === 'color';
+  // ── Generate Button ────────────────────────────────────────────────
+  const generateBtn = document.getElementById('generateVariantsBtn');
+  if (generateBtn) {
+    generateBtn.addEventListener('click', function() {
+      const combos = generateCombinations(selectedAttrs);
+      const prefixEl = document.getElementById('skuPrefix');
+      const prefix = prefixEl ? prefixEl.value.trim() : '';
+  
+      if (!combos.length) {
+        alert("Please select at least one attribute value to generate variants.");
+        return;
+      }
+  
+      let addedCount = 0;
+  
+      combos.forEach(combo => {
+        const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
+        const exists = variantState.find(p => Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|') === key);
+        
+        if (!exists) {
+          variantState.push({
+            combo, sku: generateSku(prefix, combo), price: '', discount: '',
+            discount_start: '', discount_end: '', stock: '', imagePreview: null, imageFile: null, active: true,
+          });
+          addedCount++;
+        }
+      });
+  
+      if (addedCount > 0) {
+        renderVariants();
+        if (variantTableSection) variantTableSection.style.display = 'block';
+        const msg = document.getElementById('variantGeneratedMsg');
+        if (msg) {
+            msg.textContent = `+ ${addedCount} new variant${addedCount !== 1 ? 's' : ''} added`;
+            msg.style.display = 'inline-block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+      } else {
+        alert("All selected combinations have already been generated.");
+      }
+    });
+  }
+
+  // ── Rendering Variants ─────────────────────────────────────────────
+  function formatCombo(combo) {
+    return Object.entries(combo).map(([k,v]) => {
       let html = '';
-      if (i > 0) html += '<span class="text-muted mx-1" style="font-size:11px;">/</span>';
-      if (isColor) {
-        html += `<span class="combo-attr d-inline-flex align-items-center gap-1">
-          <span class="combo-color-dot" style="background:${getCssColor(v)};"></span>${v}</span>`;
+      if (k.toLowerCase() === 'color') {
+        const c = v.toLowerCase();
+        html += `<span class="combo-attr"><span class="combo-color-dot me-1" style="background:${c}"></span>${v}</span>`;
       } else {
         html += `<span class="combo-attr">${v}</span>`;
       }
@@ -448,353 +541,269 @@
     }).join('');
   }
 
-  // ── Generate Variants (Additive) ───────────────────────────────────
-  function generateVariants() {
-    const combos   = generateCombinations(selectedAttrs);
-    const prefix   = document.getElementById('skuPrefix').value.trim();
-
-    if (!combos.length) {
-      alert("Please select at least one attribute value to generate variants.");
-      return;
-    }
-
-    let addedCount = 0;
-
-    combos.forEach(combo => {
-      const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
-      
-      // Check if this combination already exists in the table
-      const exists = variantState.find(p =>
-        Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|') === key
-      );
-      
-      if (!exists) {
-        variantState.push({
-          combo,
-          sku:            generateSku(prefix, combo),
-          price:          '',
-          discount:       '',
-          discount_start: '',
-          discount_end:   '',
-          stock:          '',
-          imagePreview:   null,
-          imageFile:      null,
-          active:         true,
-        });
-        addedCount++;
-      }
-    });
-
-    if (addedCount > 0) {
-      renderVariants();
-      document.getElementById('variantBuilderSection').style.display = 'block';
-      const msg = document.getElementById('variantGeneratedMsg');
-      msg.textContent = `✓ ${addedCount} new variant${addedCount !== 1 ? 's' : ''} added`;
-      msg.className = 'text-success fw-semibold small';
-      msg.style.display = 'inline';
-      setTimeout(() => { msg.style.display = 'none'; }, 4000);
-      updateVariantCountBadge();
-    } else {
-      const msg = document.getElementById('variantGeneratedMsg');
-      msg.textContent = `Selected variants already exist in the list.`;
-      msg.className = 'text-warning fw-semibold small';
-      msg.style.display = 'inline';
-      setTimeout(() => { msg.style.display = 'none'; }, 4000);
-    }
-  }
-
-  // ── Render Table ───────────────────────────────────────────────────
   function renderVariants() {
     const tbody = document.getElementById('variantTableBody');
+    if (!tbody) return;
     tbody.innerHTML = '';
-
+  
     variantState.forEach((v, idx) => {
       const row = document.createElement('tr');
+      if (!v.active) row.classList.add('opacity-50');
+      
       row.innerHTML = `
-        <td class="ps-4 py-3">
-          <div class="combo-badge">${comboLabelHtml(v.combo)}</div>
+        <td class="ps-4">
+          <div class="combo-badge mb-1">${formatCombo(v.combo)}</div>
         </td>
         <td>
-          <input type="text" class="form-control form-control-sm vt-sku"
-                 value="${escHtml(v.sku)}" data-idx="${idx}"
-                 placeholder="SKU" style="border-color:#dee2e6!important;min-width:100px;">
+          <input type="text" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="sku" value="${v.sku}">
         </td>
         <td>
-          <input type="number" class="form-control form-control-sm vt-price"
-                 value="${v.price}" data-idx="${idx}"
-                 step="0.01" min="0" placeholder="Price"
-                 style="border-color:#dee2e6!important;min-width:80px;">
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="price" value="${v.price}" step="0.01" placeholder="0.00">
         </td>
         <td>
-          <input type="number" class="form-control form-control-sm vt-discount"
-                 value="${v.discount}" data-idx="${idx}"
-                 step="0.01" min="0" placeholder="Discount"
-                 style="border-color:#dee2e6!important;min-width:80px;">
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount" value="${v.discount}" step="0.01" placeholder="0.00">
         </td>
         <td>
-          <input type="date" class="form-control form-control-sm vt-discount-start"
-                 value="${v.discount_start}" data-idx="${idx}"
-                 style="border-color:#dee2e6!important;min-width:120px;">
+          <input type="datetime-local" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_start" value="${v.discount_start}">
         </td>
         <td>
-          <input type="date" class="form-control form-control-sm vt-discount-end"
-                 value="${v.discount_end}" data-idx="${idx}"
-                 style="border-color:#dee2e6!important;min-width:120px;">
+          <input type="datetime-local" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_end" value="${v.discount_end}">
         </td>
         <td>
-          <input type="number" class="form-control form-control-sm vt-stock"
-                 value="${v.stock}" data-idx="${idx}"
-                 min="0" placeholder="Stock"
-                 style="border-color:#dee2e6!important;min-width:70px;">
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="stock" value="${v.stock}" placeholder="0">
         </td>
         <td>
           <div class="vt-img-wrap">
-            ${v.imagePreview
-              ? `<img src="${v.imagePreview}" class="vt-img-preview" id="vt-preview-${idx}"
-                     title="Click to remove" onclick="removeVariantImage(${idx})">`
-              : `<span id="vt-preview-${idx}"></span>`}
-            <label class="vt-img-upload-label" for="vt-file-${idx}">
-              <i class="bi bi-image"></i> ${v.imagePreview ? 'Change' : 'Upload'}
+            <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}" style="${v.imagePreview ? 'display:none;' : ''}">
+              <i class="bi bi-cloud-arrow-up"></i> Upload
             </label>
-            <input type="file" id="vt-file-${idx}"
-                   name="variant_images[${idx}]"
-                   class="d-none" accept="image/*" data-idx="${idx}"
-                   onchange="previewVariantImage(${idx}, this)">
+            <input type="file" id="vt-file-${idx}" class="d-none vt-file-input" data-idx="${idx}" accept="image/*">
+            <img src="${v.imagePreview || ''}" class="vt-img-preview" id="vt-preview-${idx}" style="${v.imagePreview ? '' : 'display:none;'}" title="Click to change image">
           </div>
         </td>
         <td class="text-center">
-          <div class="form-check form-switch d-inline-flex m-0">
-            <input class="form-check-input vt-active" type="checkbox"
-                   data-idx="${idx}" ${v.active ? 'checked' : ''}
-                   style="cursor:pointer;width:2.2em;height:1.1em;">
+          <div class="form-check form-switch d-inline-block m-0 p-0">
+            <input class="form-check-input ms-0 vt-active-toggle" type="checkbox" role="switch" data-idx="${idx}" ${v.active ? 'checked' : ''}>
           </div>
         </td>
         <td class="text-center">
-          <button type="button" class="btn btn-sm btn-light border-0 p-1 text-danger"
-                  onclick="removeVariant(${idx})" title="Remove">
-            <i class="bi bi-x-lg"></i>
+          <button type="button" class="btn btn-sm btn-danger vt-remove-btn" data-idx="${idx}">
+            <i class="bi bi-trash"></i> Remove
           </button>
         </td>
       `;
       tbody.appendChild(row);
     });
-
-    // Restore file objects (DataTransfer) after innerHTML wipe
-    variantState.forEach((v, idx) => {
-      if (v.imageFile) {
-        try {
-          const dt = new DataTransfer();
-          dt.items.add(v.imageFile);
-          const fi = document.getElementById(`vt-file-${idx}`);
-          if (fi) fi.files = dt.files;
-        } catch(e) {}
-      }
+  
+    // Rebind events
+    document.querySelectorAll('.vt-bind').forEach(el => {
+      el.addEventListener('input', function() {
+        variantState[this.dataset.idx][this.dataset.field] = this.value;
+      });
     });
-
-    // Live bindings
-    tbody.querySelectorAll('.vt-sku').forEach(el => {
-      el.addEventListener('input', e => { variantState[+e.target.dataset.idx].sku = e.target.value; });
-    });
-    tbody.querySelectorAll('.vt-price').forEach(el => {
-      el.addEventListener('input', e => { variantState[+e.target.dataset.idx].price = e.target.value; });
-    });
-    tbody.querySelectorAll('.vt-discount').forEach(el => {
-      el.addEventListener('input', e => { variantState[+e.target.dataset.idx].discount = e.target.value; });
-    });
-    tbody.querySelectorAll('.vt-discount-start').forEach(el => {
-      el.addEventListener('input', e => { variantState[+e.target.dataset.idx].discount_start = e.target.value; });
-    });
-    tbody.querySelectorAll('.vt-discount-end').forEach(el => {
-      el.addEventListener('input', e => { variantState[+e.target.dataset.idx].discount_end = e.target.value; });
-    });
-    tbody.querySelectorAll('.vt-stock').forEach(el => {
-      el.addEventListener('input', e => { variantState[+e.target.dataset.idx].stock = e.target.value; });
-    });
-    tbody.querySelectorAll('.vt-active').forEach(el => {
-      el.addEventListener('change', e => { variantState[+e.target.dataset.idx].active = e.target.checked; });
-    });
-
-    updateVariantCountBadge();
-  }
-
-  function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  // ── Image Actions ──────────────────────────────────────────────────
-  function previewVariantImage(idx, input) {
-    if (!input.files || !input.files[0]) return;
-    variantState[idx].imageFile = input.files[0];
-    const reader = new FileReader();
-    reader.onload = e => {
-      variantState[idx].imagePreview = e.target.result;
-      const wrap = input.closest('.vt-img-wrap');
-      const previewEl = document.getElementById(`vt-preview-${idx}`);
-      if (previewEl) {
-        previewEl.outerHTML = `<img src="${e.target.result}" class="vt-img-preview"
-          id="vt-preview-${idx}" title="Click to remove" onclick="removeVariantImage(${idx})">`;
-      }
-      const lbl = wrap.querySelector('.vt-img-upload-label');
-      if (lbl) lbl.innerHTML = '<i class="bi bi-image"></i> Change';
-    };
-    reader.readAsDataURL(input.files[0]);
-  }
-
-  function removeVariantImage(idx) {
-    variantState[idx].imagePreview = null;
-    variantState[idx].imageFile    = null;
-    const fi = document.getElementById(`vt-file-${idx}`);
-    if (fi) fi.value = '';
-    renderVariants();
-  }
-
-  // ── Row Actions ────────────────────────────────────────────────────
-  function removeVariant(idx) { variantState.splice(idx, 1); renderVariants(); }
-
-  function clearAllVariants() {
-    if (!confirm('Clear all variants?')) return;
-    variantState = [];
-    renderVariants();
-    document.getElementById('variantBuilderSection').style.display = 'none';
-    document.getElementById('variantGeneratedMsg').style.display   = 'none';
-  }
-
-  // ── Bulk Actions ───────────────────────────────────────────────────
-  function applyBulkPrice() {
-    const v = document.getElementById('bulkPrice').value;
-    if (v === '') return;
-    variantState.forEach(x => { x.price = v; }); renderVariants();
-  }
-  function applyBulkStock() {
-    const v = document.getElementById('bulkStock').value;
-    if (v === '') return;
-    variantState.forEach(x => { x.stock = v; }); renderVariants();
-  }
-  function activateAll()   { variantState.forEach(x => { x.active = true;  }); renderVariants(); }
-  function deactivateAll() { variantState.forEach(x => { x.active = false; }); renderVariants(); }
-
-  function updateVariantCountBadge() {
-    const badge = document.getElementById('variantCountBadge');
-    if (variantState.length > 0) {
-      badge.textContent = variantState.length + ' variant' + (variantState.length !== 1 ? 's' : '');
-      badge.style.display = '';
-    } else {
-      badge.style.display = 'none';
-    }
-  }
-
-  // ── Chip Binding ───────────────────────────────────────────────────
-  document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
-    chk.addEventListener('change', function() {
-      const attr    = this.dataset.attrName;
-      const checked = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]:checked`)].map(c => c.value);
-      if (checked.length > 0) { selectedAttrs[attr] = checked; } else { delete selectedAttrs[attr]; }
-    });
-  });
-
-  document.getElementById('generateVariantsBtn').addEventListener('click', generateVariants);
-
-  // ── Form Submit: Serialize variants[] for controller ───────────────
-  document.querySelector('form').addEventListener('submit', function() {
-    const container = document.getElementById('variantsHiddenContainer');
-    container.innerHTML = '';
-
-    const make = (name, value) => {
-      const inp = document.createElement('input');
-      inp.type = 'hidden'; inp.name = name; inp.value = value;
-      container.appendChild(inp);
-    };
-
-    // To satisfy the existing controller logic, we must extract unique label-value pairs
-    // and attach the first matching price/image to them.
-    const uniqueVariants = {}; // key: "Label|Value"
     
-    variantState.forEach((v, idx) => {
-      // Ensure file inputs are properly named for the controller: variant_images[Label][Value]
-      // Because combinations have multiple attributes, we'll assign the image/price to the FIRST attribute of the combo.
-      // E.g. {Color: Red, Size: M} -> we tie price/image to Color: Red
-      
-      const attrKeys = Object.keys(v.combo);
-      if(attrKeys.length === 0) return;
-      
-      // Let's create entries for ALL attributes in the combo so they exist in the DB
-      attrKeys.forEach((k, attrIdx) => {
-        const val = v.combo[k];
-        const flatKey = `${k}|${val}`;
-        
-        if (!uniqueVariants[flatKey]) {
-           uniqueVariants[flatKey] = {
-             label: k,
-             value: val,
-             price: '',
-             discount: '',
-             discount_start: '',
-             discount_end: '',
-             imageIdx: -1
-           };
-        }
-        
-        // Tie the price, discount, and image to the primary attribute (first one)
-        if (attrIdx === 0) {
-           if (v.price && !uniqueVariants[flatKey].price) uniqueVariants[flatKey].price = v.price;
-           if (v.discount && !uniqueVariants[flatKey].discount) uniqueVariants[flatKey].discount = v.discount;
-           if (v.discount_start && !uniqueVariants[flatKey].discount_start) uniqueVariants[flatKey].discount_start = v.discount_start;
-           if (v.discount_end && !uniqueVariants[flatKey].discount_end) uniqueVariants[flatKey].discount_end = v.discount_end;
-           if (v.imageFile && uniqueVariants[flatKey].imageIdx === -1) uniqueVariants[flatKey].imageIdx = idx;
+    document.querySelectorAll('.vt-active-toggle').forEach(el => {
+      el.addEventListener('change', function() {
+        variantState[this.dataset.idx].active = this.checked;
+        renderVariants();
+      });
+    });
+  
+    document.querySelectorAll('.vt-remove-btn').forEach(el => {
+      el.addEventListener('click', function() {
+        if (confirm('Are you sure you want to remove this variant?')) {
+            variantState.splice(this.dataset.idx, 1);
+            renderVariants();
         }
       });
     });
-
-    Object.values(uniqueVariants).forEach(uv => {
-      make('variant_labels[]', uv.label);
-      make('variant_values[]', uv.value);
-      
-      if (uv.price) {
-        make(`variant_prices[${uv.label}][${uv.value}]`, uv.price);
-      }
-      if (uv.discount) {
-        make(`variant_discounts[${uv.label}][${uv.value}]`, uv.discount);
-      }
-      if (uv.discount_start) {
-        make(`variant_discount_starts[${uv.label}][${uv.value}]`, uv.discount_start);
-      }
-      if (uv.discount_end) {
-        make(`variant_discount_ends[${uv.label}][${uv.value}]`, uv.discount_end);
-      }
-      
-      if (uv.imageIdx !== -1) {
-        // Rename the original file input so PHP receives it in the expected nested array structure
-        const fi = document.getElementById(`vt-file-${uv.imageIdx}`);
-        if (fi && fi.files.length > 0) {
-          fi.name = `variant_images[${uv.label}][${uv.value}]`;
+  
+    // File upload logic
+    document.querySelectorAll('.vt-file-input').forEach(input => {
+      input.addEventListener('change', function() {
+        const file = this.files[0];
+        const idx = this.dataset.idx;
+        if (file) {
+          variantState[idx].imageFile = file;
+          const reader = new FileReader();
+          reader.onload = e => {
+            variantState[idx].imagePreview = e.target.result;
+            document.getElementById(`vt-preview-${idx}`).src = e.target.result;
+            document.getElementById(`vt-preview-${idx}`).style.display = 'block';
+            document.getElementById(`vt-label-${idx}`).style.display = 'none';
+          };
+          reader.readAsDataURL(file);
         }
-      }
+      });
     });
-
-    // Clear names of unused file inputs so they don't upload
-    variantState.forEach((v, idx) => {
-      const fi = document.getElementById(`vt-file-${idx}`);
-      if (fi && !fi.name.includes('[' + Object.keys(v.combo)[0] + ']')) {
-        fi.name = ''; 
-      }
+    
+    document.querySelectorAll('.vt-img-preview').forEach(img => {
+      img.addEventListener('click', function() {
+        const idx = this.id.split('-')[2];
+        document.getElementById(`vt-file-${idx}`).click();
+      });
     });
-  });
+  
+    if (variantCountBadge) {
+      if (variantState.length > 0) {
+        variantCountBadge.textContent = variantState.length + ' variant' + (variantState.length !== 1 ? 's' : '');
+        variantCountBadge.style.display = '';
+      } else {
+        variantCountBadge.style.display = 'none';
+        if (variantTableSection) variantTableSection.style.display = 'none';
+      }
+    }
+  }
 
-  // ── Restore old() on validation failure ───────────────────────────
+  // ── Bulk Actions ───────────────────────────────────────────────────
+  window.applyBulkPrice = function() {
+    const v = document.getElementById('bulkPrice').value;
+    if (v !== '') { variantState.forEach(x => { x.price = v; }); renderVariants(); }
+  };
+  
+  window.applyBulkStock = function() {
+    const v = document.getElementById('bulkStock').value;
+    if (v !== '') { variantState.forEach(x => { x.stock = v; }); renderVariants(); }
+  };
+
+  window.clearAllVariants = function() {
+    if (confirm('Are you sure you want to remove all generated variants?')) {
+        variantState = [];
+        renderVariants();
+    }
+  };
+
+  window.activateAll = function() { variantState.forEach(x => { x.active = true;  }); renderVariants(); };
+  window.deactivateAll = function() { variantState.forEach(x => { x.active = false; }); renderVariants(); };
+
+  // ── Form Submission ────────────────────────────────────────────────
+  const form = document.getElementById('variantsHiddenContainer') ? document.getElementById('variantsHiddenContainer').closest('form') : document.querySelector('form');
+  if (form) {
+      form.addEventListener('submit', function(e) {
+        const container = document.getElementById('variantsHiddenContainer');
+        if(container) container.innerHTML = ''; 
+        
+        const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+        
+        // Auto-fill general price and stock for Variant Products to pass backend validation
+        if (isVariant) {
+            let minPrice = 0;
+            let totalStock = 0;
+            let hasVariants = false;
+            
+            variantState.forEach(v => {
+                if (v.price) {
+                    const p = parseFloat(v.price);
+                    if (!hasVariants || p < minPrice) minPrice = p;
+                    hasVariants = true;
+                }
+                if (v.stock) {
+                    totalStock += parseInt(v.stock) || 0;
+                }
+            });
+            
+            if (togglePriceInput) togglePriceInput.value = minPrice;
+            if (toggleStockInput) toggleStockInput.value = totalStock;
+        }
+    
+        const make = (name, value) => {
+          const inp = document.createElement('input');
+          inp.type = 'hidden'; inp.name = name; inp.value = value;
+          if(container) container.appendChild(inp);
+        };
+    
+        // Only submit variant details if Product Type is Variant
+        if (isVariant) {
+            variantState.forEach((v, idx) => {
+                if (v.sku) make(`variants[${idx}][sku]`, v.sku);
+                if (v.price) make(`variants[${idx}][price]`, v.price);
+                if (v.discount) make(`variants[${idx}][discount]`, v.discount);
+                if (v.discount_start) make(`variants[${idx}][discount_start]`, v.discount_start);
+                if (v.discount_end) make(`variants[${idx}][discount_end]`, v.discount_end);
+                if (v.stock) make(`variants[${idx}][stock]`, v.stock);
+                make(`variants[${idx}][active]`, v.active ? 1 : 0);
+                
+                if (v.combo) {
+                    Object.entries(v.combo).forEach(([label, value]) => {
+                        make(`variants[${idx}][combo][${label}]`, value);
+                    });
+                }
+
+                const fi = document.getElementById(`vt-file-${idx}`);
+                if (fi && fi.files.length > 0) {
+                    fi.name = `variants[${idx}][image]`;
+                }
+                
+                if (v.removedDbImage) {
+                    make(`variants[${idx}][removedDbImage]`, 1);
+                }
+            });
+        } else {
+            let idx = 0;
+            Object.entries(selectedAttrs).forEach(([label, values]) => {
+                values.forEach(val => {
+                    make(`variants[${idx}][label]`, label);
+                    make(`variants[${idx}][value]`, val);
+                    idx++;
+                });
+            });
+        }
+      });
+  }
+
+    // ── Restore old() on validation failure & Edit Initialization ───────
   (function() {
-    const labels = @json(old('variant_labels', []));
-    const values = @json(old('variant_values', []));
-    if (!labels.length) return;
-    labels.forEach((l, i) => {
-      if (i === 0 || l !== labels[i - 1]) {
-        (selectedAttrs[l] = selectedAttrs[l] || []);
-      }
-      if (!selectedAttrs[l].includes(values[i])) selectedAttrs[l].push(values[i]);
-      const chk = document.querySelector(`.attribute-value-checkbox[data-attr-name="${l}"][value="${values[i]}"]`);
-      if (chk) chk.checked = true;
-    });
-    if (Object.keys(selectedAttrs).length) generateVariants();
+    let labels = @json(old('variant_labels', []));
+    let values = @json(old('variant_values', []));
+    
+    const dbVariants = [];
+    
+    // If no old() inputs (not a validation fail), try loading from DB
+    if (labels.length === 0 && dbVariants.length > 0) {
+        dbVariants.forEach(v => {
+            labels.push(v.label);
+            values.push(v.value);
+        });
+    }
+    
+    if (labels.length > 0) {
+        labels.forEach((l, i) => {
+          if (i === 0 || l !== labels[i - 1]) {
+            (selectedAttrs[l] = selectedAttrs[l] || []);
+          }
+          if (!selectedAttrs[l].includes(values[i])) selectedAttrs[l].push(values[i]);
+          const chk = document.querySelector(`.attribute-value-checkbox[data-attr-name="${l}"][value="${values[i]}"]`);
+          if (chk) chk.checked = true;
+        });
+        
+        // Auto-generate variants for Variant Products on Edit
+        const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+        if (isVariant && typeof generateCombinations === 'function') {
+            const generateBtn = document.getElementById('generateVariantsBtn');
+            if (generateBtn) generateBtn.click();
+            
+            // Map prices/images from DB back to generated combos
+            if (dbVariants.length > 0) {
+                setTimeout(() => {
+                    variantState.forEach(v => {
+                        dbVariants.forEach(dbV => {
+                            if (v.combo[dbV.label] === dbV.value) {
+                                if (dbV.price && !v.price) v.price = dbV.price;
+                                if (dbV.discount && !v.discount) v.discount = dbV.discount;
+                                if (dbV.discount_start && !v.discount_start) v.discount_start = dbV.discount_start;
+                                if (dbV.discount_end && !v.discount_end) v.discount_end = dbV.discount_end;
+                                if (dbV.image && !v.imagePreview) {
+                                    v.imagePreview = '/storage/' + dbV.image;
+                                }
+                            }
+                        });
+                    });
+                    if (typeof renderVariants === 'function') renderVariants();
+                }, 300);
+            }
+        }
+    }
   })();
-
-
 
   // ─── Image Previews ───────────────────────────────────────────────
   const mainImageInput = document.getElementById('mainImageInput');
@@ -837,13 +846,13 @@
   }
 
   // ─── Discount Calculation ──────────────────────────────────────────
-  const priceInput = document.getElementById('priceInput');
+  const calcPriceInput = document.getElementById('priceInput');
   const discountTypeSelect = document.getElementById('discountTypeSelect');
   const discountValueInput = document.getElementById('discountValueInput');
   const discountedPriceText = document.getElementById('discountedPriceText');
 
   function calculateDiscountedPrice() {
-    const price = parseFloat(priceInput.value) || 0;
+    const price = parseFloat(calcPriceInput.value) || 0;
     const discountType = discountTypeSelect.value;
     const discountValue = parseFloat(discountValueInput.value) || 0;
 
@@ -859,9 +868,7 @@
       discountedPrice = price - discountValue;
     }
 
-    if (discountedPrice < 0) {
-      discountedPrice = 0;
-    }
+    if (discountedPrice < 0) discountedPrice = 0;
 
     discountedPriceText.textContent = `After Discount: ৳${discountedPrice.toFixed(2)}`;
     discountedPriceText.style.display = 'block';
@@ -870,24 +877,35 @@
   const discountDatesRow = document.getElementById('discountDatesRow');
   function toggleDiscountDates() {
     if (discountTypeSelect && discountDatesRow) {
-      if (discountTypeSelect.value) {
-        discountDatesRow.style.display = 'flex';
-      } else {
-        discountDatesRow.style.display = 'none';
-      }
+      discountDatesRow.style.display = discountTypeSelect.value ? 'flex' : 'none';
     }
   }
 
-  if (priceInput && discountTypeSelect && discountValueInput && discountedPriceText) {
-    priceInput.addEventListener('input', calculateDiscountedPrice);
+  if (calcPriceInput && discountTypeSelect && discountValueInput && discountedPriceText) {
+    calcPriceInput.addEventListener('input', calculateDiscountedPrice);
     discountTypeSelect.addEventListener('change', calculateDiscountedPrice);
     discountValueInput.addEventListener('input', calculateDiscountedPrice);
     discountTypeSelect.addEventListener('change', toggleDiscountDates);
 
-    // Run once on load
     calculateDiscountedPrice();
     toggleDiscountDates();
   }
+
+  // Final Initialization
+  setTimeout(() => {
+    if ((typeof variantState !== 'undefined' && variantState.length > 0) || (document.getElementById('typeVariant') && document.getElementById('typeVariant').checked)) {
+        const typeVar = document.getElementById('typeVariant');
+        if (typeVar) {
+            typeVar.checked = true;
+            toggleProductType();
+        }
+    } else {
+        const typeSimp = document.getElementById('typeSimple');
+        if(typeSimp) typeSimp.checked = true;
+        toggleProductType();
+    }
+  }, 150);
+
 </script>
 @endpush
 

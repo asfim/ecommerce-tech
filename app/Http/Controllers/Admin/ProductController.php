@@ -97,58 +97,24 @@ class ProductController extends Controller implements HasMiddleware
             'images.*' => 'image|max:10240',
             'is_active' => 'boolean',
             'is_new_arrival' => 'boolean',
-            'variant_labels' => 'array',
-            'variant_values' => 'array',
+            'is_new_arrival' => 'boolean',
+            'variants' => 'nullable|array',
         ]);
 
         $variants = [];
-        if (! empty($request->variant_labels)) {
-            foreach ($request->variant_labels as $index => $label) {
-                if (! empty($label) && isset($request->variant_values[$index])) {
-                    $val = $request->variant_values[$index];
-
-                    $price = null;
-                    if (isset($request->variant_prices[$label][$val])) {
-                        $price = $request->variant_prices[$label][$val];
-                    }
-
-                    $discount = null;
-                    if (isset($request->variant_discounts[$label][$val])) {
-                        $discount = $request->variant_discounts[$label][$val];
-                    }
-
-                    $discountStart = null;
-                    if (isset($request->variant_discount_starts[$label][$val])) {
-                        $discountStart = $request->variant_discount_starts[$label][$val];
-                    }
-
-                    $discountEnd = null;
-                    if (isset($request->variant_discount_ends[$label][$val])) {
-                        $discountEnd = $request->variant_discount_ends[$label][$val];
-                    }
-
-                    $imagePath = null;
-                    if ($request->hasFile("variant_images.$label.$val")) {
-                        $imagePath = $request->file("variant_images.$label.$val")->store('products/variants', 'public');
-                    }
-
-                    $variant = [
-                        'label' => $label,
-                        'value' => $val,
-                        'price' => $price ? floatval($price) : null,
-                        'discount' => $discount ? floatval($discount) : null,
-                        'discount_start' => $discountStart,
-                        'discount_end' => $discountEnd,
-                        'image' => $imagePath,
-                    ];
-                    if (strtolower($label) === 'color' && ! empty($request->variant_colors[$index])) {
-                        $variant['color'] = $request->variant_colors[$index];
-                    }
-                    $variants[] = $variant;
+        if ($request->has('variants')) {
+            foreach ($request->variants as $index => $vData) {
+                $imagePath = null;
+                if ($request->hasFile("variants.$index.image")) {
+                    $imagePath = $request->file("variants.$index.image")->store('products/variants', 'public');
                 }
+                $vData['image'] = $imagePath;
+                $vData['active'] = isset($vData['active']) ? (bool) $vData['active'] : true;
+                $variants[] = $vData;
             }
         }
         $validated['variants'] = $variants ?: null;
+
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
         $validated['discount_value'] = $validated['discount_value'] ?? 0;
         $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : true;
@@ -204,73 +170,39 @@ class ProductController extends Controller implements HasMiddleware
             'images.*' => 'image|max:10240',
             'is_active' => 'boolean',
             'is_new_arrival' => 'boolean',
-            'variant_labels' => 'array',
-            'variant_values' => 'array',
+            'is_new_arrival' => 'boolean',
+            'variants' => 'nullable|array',
         ]);
 
         $variants = [];
-        if (! empty($request->variant_labels)) {
-            foreach ($request->variant_labels as $index => $label) {
-                if (! empty($label) && isset($request->variant_values[$index])) {
-                    $val = $request->variant_values[$index];
-
-                    $price = null;
-                    if (isset($request->variant_prices[$label][$val])) {
-                        $price = $request->variant_prices[$label][$val];
-                    }
-
-                    $discount = null;
-                    if (isset($request->variant_discounts[$label][$val])) {
-                        $discount = $request->variant_discounts[$label][$val];
-                    }
-
-                    $discountStart = null;
-                    if (isset($request->variant_discount_starts[$label][$val])) {
-                        $discountStart = $request->variant_discount_starts[$label][$val];
-                    }
-
-                    $discountEnd = null;
-                    if (isset($request->variant_discount_ends[$label][$val])) {
-                        $discountEnd = $request->variant_discount_ends[$label][$val];
-                    }
-
-                    // Retrieve existing image path if any
-                    $existingImage = null;
-                    if (isset($product->variants)) {
-                        foreach ($product->variants as $v) {
-                            if ($v['label'] === $label && $v['value'] === $val && isset($v['image'])) {
-                                $existingImage = $v['image'];
-                            }
+        if ($request->has('variants')) {
+            foreach ($request->variants as $index => $vData) {
+                $existingImage = null;
+                // Preserve existing image if available
+                if (isset($product->variants)) {
+                    foreach ($product->variants as $v) {
+                        if (isset($v['combo']) && isset($vData['combo']) && $v['combo'] === $vData['combo'] && isset($v['image'])) {
+                            $existingImage = $v['image'];
                         }
                     }
-
-                    // Check if requested to remove the image
-                    if ($request->has("remove_variant_images.$label.$val")) {
-                        $existingImage = null;
-                    }
-
-                    $imagePath = $existingImage;
-                    if ($request->hasFile("variant_images.$label.$val")) {
-                        $imagePath = $request->file("variant_images.$label.$val")->store('products/variants', 'public');
-                    }
-
-                    $variant = [
-                        'label' => $label,
-                        'value' => $val,
-                        'price' => $price ? floatval($price) : null,
-                        'discount' => $discount ? floatval($discount) : null,
-                        'discount_start' => $discountStart,
-                        'discount_end' => $discountEnd,
-                        'image' => $imagePath,
-                    ];
-                    if (strtolower($label) === 'color' && ! empty($request->variant_colors[$index])) {
-                        $variant['color'] = $request->variant_colors[$index];
-                    }
-                    $variants[] = $variant;
                 }
+
+                if (isset($vData['removedDbImage']) && $vData['removedDbImage']) {
+                    $existingImage = null;
+                }
+
+                $imagePath = $existingImage;
+                if ($request->hasFile("variants.$index.image")) {
+                    $imagePath = $request->file("variants.$index.image")->store('products/variants', 'public');
+                }
+                
+                $vData['image'] = $imagePath;
+                $vData['active'] = isset($vData['active']) ? (bool) $vData['active'] : true;
+                $variants[] = $vData;
             }
         }
         $validated['variants'] = $variants ?: null;
+
         $validated['sales_count'] = $validated['sales_count'] ?? 0;
         $validated['discount_value'] = $validated['discount_value'] ?? 0;
         $validated['is_active'] = $request->has('is_active') ? $request->boolean('is_active') : false;

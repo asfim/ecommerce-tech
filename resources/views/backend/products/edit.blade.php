@@ -40,13 +40,41 @@
   <form method="POST" action="{{ route('admin.products.update', $product) }}" enctype="multipart/form-data">
     @csrf
     @method('PUT')
+    
+    @php
+      $isVariantProduct = false;
+      if (!empty($product->variants)) {
+          foreach ($product->variants as $v) {
+              if (isset($v['combo']) || array_key_exists('price', $v) || array_key_exists('sku', $v)) {
+                  $isVariantProduct = true;
+                  break;
+              }
+          }
+      }
+    @endphp
+
+    <div class="row mb-3">
+      <div class="col-md-12">
+        <label class="form-label fw-bold"><i class="bi bi-box-seam me-2 text-primary"></i>Product Type</label>
+        <div class="d-flex gap-4 p-3 bg-light rounded-3" style="border: 1px dashed #ccc;">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="product_type" id="typeSimple" value="simple" {{ (!old('product_type') && !$isVariantProduct) || old('product_type') === 'simple' ? 'checked' : '' }}>
+            <label class="form-check-label fw-semibold" for="typeSimple">Simple Product</label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="product_type" id="typeVariant" value="variant" {{ (!old('product_type') && $isVariantProduct) || old('product_type') === 'variant' ? 'checked' : '' }}>
+            <label class="form-check-label fw-semibold" for="typeVariant">Variant Product</label>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="row">
       <div class="col-md-6 mb-3">
         <label class="form-label">Product Name</label>
         <input type="text" name="name" id="productName" class="form-control" value="{{ old('name', $product->name) }}" required style="border-color: #a1a1a1 !important;">
       </div>
-       <div class="col-md-6 mb-3">
+      <div class="col-md-6 mb-3">
         <label class="form-label">Slug</label>
         <input type="text" name="slug" id="productSlug" class="form-control" value="{{ old('slug', $product->slug) }}" required style="border-color: #a1a1a1 !important;">
       </div>
@@ -79,13 +107,13 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row general-inputs-section">
       <div class="col-md-3 mb-3">
-        <label class="form-label">purchase Price</label>
+        <label class="form-label">Buy Price</label>
         <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price', $product->buy_price) }}" style="border-color: #a1a1a1 !important;">
       </div>
       <div class="col-md-3 mb-3">
-        <label class="form-label">Sell Price</label>
+        <label class="form-label">Price</label>
         <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price', $product->price) }}" required style="border-color: #a1a1a1 !important;">
         <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
@@ -101,7 +129,7 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row general-inputs-section">
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Type</label>
         <select name="discount_type" id="discountTypeSelect" class="form-select">
@@ -116,7 +144,7 @@
       </div>
     </div>
 
-    <div class="row" id="discountDatesRow" style="display: none;">
+    <div class="row general-inputs-section" id="discountDatesRow" style="display: none;">
       <div class="col-md-6 mb-3">
         <label class="form-label">Discount Start Date</label>
         <input type="datetime-local" name="discount_start_date" class="form-control" value="{{ old('discount_start_date', $product->discount_start_date ? $product->discount_start_date->format('Y-m-d\TH:i') : '') }}" style="border-color: #a1a1a1 !important;">
@@ -127,11 +155,11 @@
       </div>
     </div>
 
-    <div class="row">
+    <div class="row general-inputs-section">
       <div class="col-md-6 mb-3">
         <label class="form-label">Main Image</label>
         <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
-        <div id="mainImagePreview" class="mt-2">
+        <div id="mainImagePreview" class="mt-2" style="{{ $product->image ? '' : 'display:none;' }}">
           @if($product->image)
             <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;">
           @endif
@@ -145,7 +173,7 @@
     </div>
 
     @if(!empty($product->images))
-      <div class="mb-3 card p-3">
+      <div class="mb-3 card p-3 general-inputs-section">
         <label class="form-label fw-semibold d-block text-dark">Current Gallery Images <small class="text-muted">(Click 'X' to delete image on save)</small></label>
         <div class="d-flex flex-wrap gap-3">
           @foreach($product->images as $img)
@@ -162,45 +190,120 @@
     @endif
 
     <hr>
-    <h5 class="fw-bold mb-3"><i class="bi bi-palette me-2 text-primary"></i>Attributes</h5>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Product Attributes & Variants</h5>
+      <span class="badge bg-primary-subtle text-primary rounded-pill fs-6 px-3" id="variantCountBadge" style="display:none;"></span>
+    </div>
 
-    {{-- Attributes list with directly displayed values --}}
-    <div class="card border-0 bg-light p-3 mb-3 rounded-3">
-      <div class="row g-3">
-        @foreach($attributes as $attribute)
-          <div class="col-12 pb-2 @if(!$loop->last) border-bottom @endif">
-            <label class="form-label fw-bold text-dark mb-2">{{ $attribute->name }}</label>
-            <div class="p-2 rounded border bg-white d-flex flex-wrap gap-3 align-items-center" style="min-height:44px;">
+    {{-- Step 1: Attribute Value Chip Selectors --}}
+    <div class="card border-0 shadow-sm rounded-4 mb-3" id="attributeBuilderCard">
+      <div class="card-body p-4">
+        <p class="text-muted small mb-3"><i class="bi bi-info-circle me-1"></i>Select values for each attribute, then click <strong>Generate Variants</strong>.</p>
+
+        <div id="attributeChipsContainer">
+          @foreach($attributes as $attribute)
+          <div class="mb-3 attribute-chip-group" data-attr-name="{{ $attribute->name }}">
+            <label class="fw-semibold text-dark small mb-2 d-block">
+              @if(strtolower($attribute->name) === 'color')
+                <i class="bi bi-palette2 me-1 text-primary"></i>
+              @elseif(strtolower($attribute->name) === 'size')
+                <i class="bi bi-rulers me-1 text-primary"></i>
+              @else
+                <i class="bi bi-tag me-1 text-primary"></i>
+              @endif
+              {{ $attribute->name }}
+            </label>
+            <div class="d-flex flex-wrap gap-2">
               @forelse($attribute->values as $val)
-                @php $uid = 'chk_' . $attribute->id . '_' . $val->id; @endphp
-                <label class="form-check-label d-flex align-items-center gap-1 cursor-pointer" style="font-weight: 500;" for="{{ $uid }}">
-                  <input type="checkbox"
-                         class="form-check-input attribute-value-checkbox"
-                         id="{{ $uid }}"
+                @php
+                  $isColor = strtolower($attribute->name) === 'color';
+                  $uid = 'chip_' . $attribute->id . '_' . $val->id;
+                @endphp
+                <label class="variant-chip @if($isColor) variant-chip-color @endif" for="{{ $uid }}">
+                  <input type="checkbox" id="{{ $uid }}"
+                         class="variant-chip-input attribute-value-checkbox"
                          data-attr-name="{{ $attribute->name }}"
-                         value="{{ $val->value }}">
-                  {{ $val->value }}
+                         value="{{ $val->value }}" hidden>
+                  @if($isColor)
+                    <span class="color-swatch" data-color="{{ strtolower($val->value) }}"></span>
+                  @endif
+                  <span class="chip-label">{{ $val->value }}</span>
+                  <i class="bi bi-check2 chip-check"></i>
                 </label>
               @empty
-                <span class="text-muted small">No values for this attribute.</span>
+                <span class="text-muted small fst-italic">No values configured.</span>
               @endforelse
             </div>
           </div>
-        @endforeach
+          @endforeach
+        </div>
+
+        </div></div>
+    <div id="variantBuilderWrapper" style="display:none;">
+          <div class="mt-4 d-flex align-items-center gap-3 flex-wrap">
+          <div class="input-group" style="max-width:240px;">
+            <span class="input-group-text bg-light border-end-0 text-muted small">SKU Prefix</span>
+            <input type="text" id="skuPrefix" class="form-control border-start-0" placeholder="e.g. SHIRT" style="border-color:#dee2e6!important;">
+          </div>
+          <button type="button" id="generateVariantsBtn" class="btn btn-primary rounded-3 px-4 fw-semibold">
+            <i class="bi bi-lightning-fill me-2"></i>Generate Variants
+          </button>
+          <span id="variantGeneratedMsg" class="text-success fw-semibold small" style="display:none;"></span>
+          </div>
+
+    {{-- Step 2: Variant Combination Table --}}
+    <div id="variantBuilderSection" style="display:none;">
+      {{-- Bulk Actions Bar --}}
+      <div class="card border-0 shadow-sm rounded-4 mb-3 mt-3">
+        <div class="card-body p-3">
+          <div class="d-flex align-items-center flex-wrap gap-2">
+            <span class="text-muted small fw-semibold me-1"><i class="bi bi-lightning me-1 text-warning"></i>Bulk:</span>
+            <div class="input-group input-group-sm" style="max-width:210px;">
+              <input type="number" id="bulkPrice" class="form-control" placeholder="Set all prices" step="0.01" min="0" style="border-color:#dee2e6!important;">
+              <button type="button" class="btn btn-outline-secondary" onclick="applyBulkPrice()">Apply</button>
+            </div>
+            <div class="input-group input-group-sm" style="max-width:210px;">
+              <input type="number" id="bulkStock" class="form-control" placeholder="Set all stock" min="0" style="border-color:#dee2e6!important;">
+              <button type="button" class="btn btn-outline-secondary" onclick="applyBulkStock()">Apply</button>
+            </div>
+            <button type="button" class="btn btn-sm btn-outline-success" onclick="activateAll()"><i class="bi bi-check-all me-1"></i>Activate All</button>
+            <button type="button" class="btn btn-sm btn-outline-danger" onclick="deactivateAll()"><i class="bi bi-x-circle me-1"></i>Deactivate All</button>
+            <button type="button" class="btn btn-sm btn-danger ms-auto" onclick="clearAllVariants()"><i class="bi bi-trash me-1"></i>Clear All</button>
+          </div>
+        </div>
+      </div>
+
+      {{-- Variant Table --}}
+      <div class="card border-0 shadow-sm rounded-4">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0" id="variantTable">
+              <thead class="table-light">
+                <tr>
+                  <th class="ps-4" style="min-width:140px;">Variant</th>
+                  <th style="min-width:120px;">SKU</th>
+                  <th style="min-width:100px;">Price (৳)</th>
+                  <th style="min-width:100px;">Discount</th>
+                  <th style="min-width:130px;">Start Date</th>
+                  <th style="min-width:130px;">End Date</th>
+                  <th style="min-width:90px;">Stock</th>
+                  <th style="min-width:170px;">Image</th>
+                  <th class="text-center" style="min-width:70px;">Active</th>
+                  <th class="text-center" style="min-width:50px;"></th>
+                </tr>
+              </thead>
+              <tbody id="variantTableBody"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
 
-
-
-    {{-- Hidden inputs (sent with form) --}}
+    {{-- Hidden inputs container (populated on submit) --}}
+    </div> <!-- end variantBuilderWrapper -->
+    <div id="variantsHiddenContainer"></div>
+    {{-- Backward-compat hidden inputs --}}
     <div id="variantsContainer"></div>
-
-    <div id="variantsConfigurationsWrapper" class="mt-4 card p-3" style="display: none;">
-      <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-gear me-2 text-primary"></i>Configure Variant Prices &amp; Images</h6>
-      <div id="variantsConfigurationsList" class="row g-3">
-        <!-- Dynamically populated via JS -->
-      </div>
-    </div>
 
     <hr class="mt-4">
     <button type="submit" class="btn btn-primary">Update Product</button>
@@ -211,42 +314,98 @@
 
 @push('styles')
 <style>
-  .attr-chip {
+  /* ── Variant Chip Selectors ────────────────────────────────────── */
+  .variant-chip {
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1.5px solid #dee2e6;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: #495057;
+    background: #fff;
+    transition: all 0.15s ease;
+    user-select: none;
+    position: relative;
+  }
+  .variant-chip:hover {
+    border-color: #1a73e8;
+    background: #f0f5ff;
+    color: #1a73e8;
+  }
+  .variant-chip:has(.variant-chip-input:checked) {
+    border-color: #1a73e8;
     background: #e8f0fe;
     color: #1a73e8;
-    border: 1px solid #c5d8fc;
-    border-radius: 20px;
-    padding: 2px 10px;
+    font-weight: 600;
+  }
+  .chip-check { display: none; font-size: 11px; }
+  .variant-chip:has(.variant-chip-input:checked) .chip-check { display: inline; }
+
+  /* ── Color Swatch ─────────────────────────────────────────────── */
+  .color-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(0,0,0,0.15);
+    display: inline-block;
+    flex-shrink: 0;
+  }
+
+  /* ── Variant Table Image Upload ───────────────────────────────── */
+  .vt-img-wrap { display: flex; align-items: center; gap: 8px; }
+  .vt-img-preview {
+    width: 46px; height: 46px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .vt-img-preview:hover { opacity: 0.75; }
+  .vt-img-upload-label {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 5px 10px;
+    border: 1.5px dashed #adb5bd;
+    border-radius: 8px;
+    cursor: pointer;
     font-size: 12px;
-    font-weight: 500;
-    margin: 2px 3px;
+    color: #6c757d;
+    transition: all 0.15s;
+    white-space: nowrap;
   }
-  #valueCheckboxes label {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    margin: 3px 8px 3px 0;
-    font-size: 13px;
-    cursor: pointer;
-    user-select: none;
+  .vt-img-upload-label:hover { border-color: #1a73e8; color: #1a73e8; background: #f0f5ff; }
+
+  /* ── Combo Badge in Table ─────────────────────────────────────── */
+  .combo-badge { display: inline-flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+  .combo-attr {
+    font-size: 11px; background: #f8f9fa;
+    border: 1px solid #e9ecef; border-radius: 4px;
+    padding: 2px 7px; color: #495057; font-weight: 500;
   }
-  #valueCheckboxes input[type=checkbox] {
-    cursor: pointer;
-    width: 15px;
-    height: 15px;
-    accent-color: #1a73e8;
+  .combo-color-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.2); display: inline-block; flex-shrink: 0;
   }
+
+  /* ── Variant Table ────────────────────────────────────────────── */
+  #variantTable thead th { font-size: 12px; font-weight: 600; color: #6c757d; text-transform: uppercase; letter-spacing: 0.04em; }
+  #variantTable tbody tr { border-bottom: 1px solid #f0f0f0; }
+  #variantTable tbody tr:last-child { border-bottom: none; }
+  #variantTable .form-control-sm { font-size: 13px; }
+
+  /* ── Responsive card fallback on very small screens ──────────── */
+  @media (max-width: 576px) {
+    .variant-chip { padding: 5px 10px; font-size: 12px; }
+  }
+
+  /* Gallery edit images */
   .gallery-img-box { transition: all 0.2s; position: relative; }
-  .gallery-img-box label:has(input:checked) {
-    background: #222 !important;
-  }
-  .gallery-img-box:has(input:checked) img {
-    opacity: 0.25;
-    filter: grayscale(1) blur(1px);
-  }
+  .gallery-img-box label:has(input:checked) { background: #222 !important; }
+  .gallery-img-box:has(input:checked) img { opacity: 0.25; filter: grayscale(1) blur(1px); }
 </style>
 @endpush
 
@@ -257,223 +416,517 @@
   const categorySelect = document.getElementById('categorySelect');
   const subCategorySelect = document.getElementById('subCategorySelect');
 
-  categorySelect.addEventListener('change', function () {
-    const selectedCategoryId = this.value;
-    subCategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
+  if (categorySelect && subCategorySelect) {
+    categorySelect.addEventListener('change', function () {
+      const selectedCategoryId = this.value;
+      subCategorySelect.innerHTML = '<option value="">Select Subcategory</option>';
 
-    if (selectedCategoryId) {
-      const filtered = subCategoriesData.filter(sub => sub.category_id == selectedCategoryId);
-      filtered.forEach(sub => {
-        const option = document.createElement('option');
-        option.value = sub.id;
-        option.textContent = sub.name;
-        subCategorySelect.appendChild(option);
-      });
-    }
-  });
-
-  // Restore existing subcategory or old input on validation failure
-  (function () {
-    const currentSubCategoryId = @json(old('sub_category_id', $product->sub_category_id));
-    if (categorySelect.value) {
-      categorySelect.dispatchEvent(new Event('change'));
-      if (currentSubCategoryId) {
-        subCategorySelect.value = currentSubCategoryId;
+      if (selectedCategoryId) {
+        const filtered = subCategoriesData.filter(sub => sub.category_id == selectedCategoryId);
+        filtered.forEach(sub => {
+          const option = document.createElement('option');
+          option.value = sub.id;
+          option.textContent = sub.name;
+          subCategorySelect.appendChild(option);
+        });
       }
-    }
-  })();
+    });
 
+    (function () {
+      const oldSubCategoryId = @json(old('sub_category_id', $product->sub_category_id));
+      if (categorySelect.value) {
+        categorySelect.dispatchEvent(new Event('change'));
+        if (oldSubCategoryId) {
+          subCategorySelect.value = oldSubCategoryId;
+        }
+      }
+    })();
+  }
+  
   // ─── Slug Auto-generate ────────────────────────────────────────────
   document.getElementById('productName').addEventListener('input', function () {
     document.getElementById('productSlug').value = this.value
       .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   });
 
-  const container         = document.getElementById('variantsContainer');
-  const existingVariantsData = @json($product->variants ?? []);
-  const storageBaseUrl = "{{ asset('storage') }}";
+  // ═══════════════════════════════════════════════════════════════════
+  // Professional Variant Builder & Product Type Toggle
+  // ═══════════════════════════════════════════════════════════════════
 
-  // Global state for selected variants: { "Color": ["Red", "Blue"], "Size": ["L"] }
-  let selectedVariants = {};
-  let removedVariantImages = {};
+  // ── State ──────────────────────────────────────────────────────────
+  let selectedAttrs = {};   // { Color: ['Black', 'White'], Size: ['M', 'L'] }
+  let variantState  = [];   // Array of combination objects
 
-  // ─── Sync global state to UI and hidden inputs ──────────────────────
-  function syncVariants() {
-    container.innerHTML = '';
-    const configList = document.getElementById('variantsConfigurationsList');
-    const configWrapper = document.getElementById('variantsConfigurationsWrapper');
+  // ── Toggle Logic ───────────────────────────────────────────────────
+  const togglePriceInput = document.getElementById('priceInput');
+  const toggleStockInput = document.querySelector('input[name="stock"]');
+  const generalSections = document.querySelectorAll('.general-inputs-section');
+  const variantBuilderWrapper = document.getElementById('variantBuilderWrapper');
+  const variantTableSection = document.getElementById('variantBuilderSection');
+  const variantCountBadge = document.getElementById('variantCountBadge');
 
-    // Save current values entered in input fields to restore them after rebuilding
-    const currentPrices = {};
-    document.querySelectorAll('[name^="variant_prices"]').forEach(input => {
-      const matches = input.name.match(/variant_prices\[([^\]]+)\]\[([^\]]+)\]/);
-      if (matches) {
-        currentPrices[`${matches[1]}_${matches[2]}`] = input.value;
-      }
-    });
-
-    // Clean list
-    configList.innerHTML = '';
-
-    // Check/uncheck checkbox elements on screen to match selectedVariants state
-    document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
-      const attrName = chk.dataset.attrName;
-      const val = chk.value;
-      chk.checked = !!(selectedVariants[attrName] && selectedVariants[attrName].includes(val));
-    });
-
-    const keys = Object.keys(selectedVariants);
-    if (keys.length === 0) {
-      configWrapper.style.display = 'none';
-      return;
-    }
-
-    configWrapper.style.display = 'block';
-
-    keys.forEach(attrName => {
-      const vals = selectedVariants[attrName];
-      if (!vals || vals.length === 0) return;
-
-      vals.forEach(v => {
-        // Add hidden inputs
-        container.insertAdjacentHTML('beforeend',
-          `<input type="hidden" name="variant_labels[]" value="${attrName}">` +
-          `<input type="hidden" name="variant_values[]" value="${v}">`
-        );
-
-        const key = `${attrName}_${v}`;
-        let existingPrice = '';
-        let existingImgHtml = '';
-        
-        const match = existingVariantsData.find(item => item.label === attrName && item.value === v);
-        if (match) {
-          existingPrice = match.price || '';
-          if (match.image) {
-            if (removedVariantImages[key]) {
-              existingImgHtml = `<input type="checkbox" name="remove_variant_images[${attrName}][${v}]" value="1" class="d-none" checked>`;
-            } else {
-              existingImgHtml = `
-                <div class="mt-1 position-relative d-inline-block variant-img-box" style="width: 50px; height: 50px;">
-                  <img src="${storageBaseUrl}/${match.image}" class="rounded border" style="width: 100%; height: 100%; object-fit: cover;">
-                  <button type="button" class="position-absolute top-0 end-0 bg-danger text-white rounded-circle d-flex align-items-center justify-content-center border-0 variant-img-delete-btn" style="width: 18px; height: 18px; font-size: 9px; transform: translate(35%, -35%); cursor: pointer;" title="Remove image">
-                    <i class="bi bi-x-lg"></i>
-                  </button>
-                  <input type="checkbox" name="remove_variant_images[${attrName}][${v}]" value="1" class="d-none variant-remove-checkbox">
-                </div>
-              `;
-            }
-          }
+  function toggleProductType() {
+    const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+    
+    if (isVariant) {
+      generalSections.forEach(sec => {
+        if (!sec.classList.contains('gallery-img-box')) {
+           sec.style.display = 'none';
         }
-
-        if (currentPrices[key] !== undefined) {
-          existingPrice = currentPrices[key];
-        }
-
-        const html = `
-          <div class="col-12 col-md-6 variant-config-item">
-            <div class="p-3 border rounded bg-white">
-              <span class="badge bg-secondary mb-2">${attrName}: ${v}</span>
-              <div class="row g-2">
-                <div class="col-6">
-                  <label class="form-label small fw-semibold mb-1">Price Override (৳)</label>
-                  <input type="number" step="0.01" name="variant_prices[${attrName}][${v}]" class="form-control form-control-sm" placeholder="Price (Optional)" value="${existingPrice}" style="border-color: #a1a1a1 !important;">
-                </div>
-                <div class="col-6">
-                  <label class="form-label small fw-semibold mb-1">Variant Image</label>
-                  <input type="file" name="variant_images[${attrName}][${v}]" class="form-control form-control-sm" accept="image/*" style="border-color: #a1a1a1 !important;">
-                  ${existingImgHtml}
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-        configList.insertAdjacentHTML('beforeend', html);
       });
-    });
+      
+      if (variantBuilderWrapper) variantBuilderWrapper.style.display = 'block';
+      if (variantTableSection) {
+          variantTableSection.style.display = variantState.length > 0 ? 'block' : 'none';
+      }
+      if (togglePriceInput) togglePriceInput.removeAttribute('required');
+      if (toggleStockInput) toggleStockInput.removeAttribute('required');
+    } else {
+      generalSections.forEach(sec => {
+        if (sec.id !== 'discountDatesRow') sec.style.display = 'flex';
+      });
+      // Fix for gallery block display
+      const galleryBlock = document.querySelector('.card.p-3.general-inputs-section');
+      if(galleryBlock) galleryBlock.style.display = 'block';
+
+      if (variantBuilderWrapper) variantBuilderWrapper.style.display = 'none';
+      
+      if (togglePriceInput) togglePriceInput.setAttribute('required', 'required');
+      if (toggleStockInput) toggleStockInput.setAttribute('required', 'required');
+      
+      const discountType = document.getElementById('discountTypeSelect') ? document.getElementById('discountTypeSelect').value : '';
+      const datesRow = document.getElementById('discountDatesRow');
+      if (datesRow) {
+          datesRow.style.display = (discountType && discountType !== '') ? 'flex' : 'none';
+      }
+    }
   }
 
-  // ─── Bind change event to checkboxes ───────────────────────────────
+  document.querySelectorAll('input[name="product_type"]').forEach(r => { r.addEventListener('change', toggleProductType); r.addEventListener('click', toggleProductType); });
+
+  // ── Attribute Selection ────────────────────────────────────────────
   document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
-    chk.addEventListener('change', function () {
-      const attrName = this.dataset.attrName;
-      const checkedBoxes = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attrName}"]:checked`)];
-      if (checkedBoxes.length > 0) {
-        selectedVariants[attrName] = checkedBoxes.map(c => c.value);
-      } else {
-        delete selectedVariants[attrName];
-      }
-      syncVariants();
+    chk.addEventListener('change', function() {
+      const attr = this.dataset.attrName;
+      const checked = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]:checked`)].map(c => c.value);
+      if (checked.length > 0) { selectedAttrs[attr] = checked; } else { delete selectedAttrs[attr]; }
     });
   });
 
-  // ─── Bind change event to variant configurations file inputs for preview ───
-  const configListElement = document.getElementById('variantsConfigurationsList');
-  if (configListElement) {
-    configListElement.addEventListener('change', function(e) {
-      if (e.target && e.target.type === 'file' && e.target.name.startsWith('variant_images')) {
-        const fileInput = e.target;
-        const parentDiv = fileInput.closest('.variant-config-item');
-        if (parentDiv && fileInput.files && fileInput.files[0]) {
-          const reader = new FileReader();
-          reader.onload = function(ev) {
-            let previewWrapper = parentDiv.querySelector('.variant-preview-wrapper');
-            if (!previewWrapper) {
-              previewWrapper = document.createElement('div');
-              previewWrapper.className = 'mt-2 variant-preview-wrapper';
-              previewWrapper.innerHTML = `<img class="rounded border variant-preview-img" style="max-height:60px;"><small class="d-block text-muted">New image preview</small>`;
-              fileInput.parentNode.appendChild(previewWrapper);
-            }
-            const previewImg = previewWrapper.querySelector('.variant-preview-img');
-            previewImg.src = ev.target.result;
-          };
-          reader.readAsDataURL(fileInput.files[0]);
-        }
+  // ── Cartesian Product ──────────────────────────────────────────────
+  function generateCombinations(attrs) {
+    const keys = Object.keys(attrs).filter(k => attrs[k] && attrs[k].length > 0);
+    if (!keys.length) return [];
+    let result = [{}];
+    keys.forEach(key => {
+      const temp = [];
+      result.forEach(combo => {
+        attrs[key].forEach(val => { temp.push({ ...combo, [key]: val }); });
+      });
+      result = temp;
+    });
+    return result;
+  }
+
+  function generateSku(prefix, combo) {
+    const parts = [prefix.toUpperCase().replace(/\s+/g, '-')];
+    Object.values(combo).forEach(v => {
+      const isColor = Object.keys(combo).find(k => combo[k] === v && k.toLowerCase() === 'color');
+      if (isColor && v.length >= 3) {
+        parts.push(v.substring(0,4).toUpperCase());
+      } else {
+        parts.push(v.toUpperCase().replace(/\s+/g, '-'));
       }
     });
+    return parts.filter(Boolean).join('-');
+  }
 
-    configListElement.addEventListener('click', function(e) {
-      const deleteBtn = e.target.closest('.variant-img-delete-btn');
-      if (deleteBtn) {
-        e.preventDefault();
-        const parentItem = deleteBtn.closest('.variant-config-item');
-        if (parentItem) {
-          const badge = parentItem.querySelector('.badge');
-          if (badge) {
-            const parts = badge.textContent.split(':');
-            if (parts.length === 2) {
-              const label = parts[0].trim();
-              const val = parts[1].trim();
-              removedVariantImages[`${label}_${val}`] = true;
-              syncVariants();
-            }
-          }
+  // ── Generate Button ────────────────────────────────────────────────
+  const generateBtn = document.getElementById('generateVariantsBtn');
+  if (generateBtn) {
+    generateBtn.addEventListener('click', function() {
+      const combos = generateCombinations(selectedAttrs);
+      const prefixEl = document.getElementById('skuPrefix');
+      const prefix = prefixEl ? prefixEl.value.trim() : '';
+  
+      if (!combos.length) {
+        alert("Please select at least one attribute value to generate variants.");
+        return;
+      }
+  
+      let addedCount = 0;
+  
+      combos.forEach(combo => {
+        const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
+        const exists = variantState.find(p => Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|') === key);
+        
+        if (!exists) {
+          variantState.push({
+            combo, sku: generateSku(prefix, combo), price: '', discount: '',
+            discount_start: '', discount_end: '', stock: '', imagePreview: null, imageFile: null, active: true,
+            removedDbImage: false
+          });
+          addedCount++;
         }
+      });
+  
+      if (addedCount > 0) {
+        renderVariants();
+        if (variantTableSection) variantTableSection.style.display = 'block';
+        const msg = document.getElementById('variantGeneratedMsg');
+        if (msg) {
+            msg.textContent = `+ ${addedCount} new variant${addedCount !== 1 ? 's' : ''} added`;
+            msg.style.display = 'inline-block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+        }
+      } else {
+        alert("All selected combinations have already been generated.");
       }
     });
   }
 
-  // ─── Restore existing database variants & old() inputs ─────────────
-  (function restoreExistingAndOld() {
-    const existing  = @json($product->variants ?? []);
-    const oldLabels = @json(old('variant_labels', []));
-    const oldValues = @json(old('variant_values', []));
+  // ── Rendering Variants ─────────────────────────────────────────────
+  function formatCombo(combo) {
+    return Object.entries(combo).map(([k,v]) => {
+      let html = '';
+      if (k.toLowerCase() === 'color') {
+        const c = v.toLowerCase();
+        html += `<span class="combo-attr"><span class="combo-color-dot me-1" style="background:${c}"></span>${v}</span>`;
+      } else {
+        html += `<span class="combo-attr">${v}</span>`;
+      }
+      return html;
+    }).join('');
+  }
 
-    let items = [];
-    if (oldLabels.length > 0) {
-      oldLabels.forEach((l, i) => {
-        items.push({ label: l, value: oldValues[i] });
+  function renderVariants() {
+    const tbody = document.getElementById('variantTableBody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+  
+    variantState.forEach((v, idx) => {
+      const row = document.createElement('tr');
+      if (!v.active) row.classList.add('opacity-50');
+      
+      let imageHtml = '';
+      if (v.imagePreview) {
+          imageHtml = `
+            <img src="${v.imagePreview}" class="vt-img-preview" id="vt-preview-${idx}" title="Click to change image">
+            <button type="button" class="btn btn-sm btn-outline-danger ms-2 py-0 px-1 vt-remove-img-btn" data-idx="${idx}" title="Remove image"><i class="bi bi-x"></i></button>
+            <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}" style="display:none;">
+              <i class="bi bi-cloud-arrow-up"></i> Upload
+            </label>
+          `;
+      } else {
+          imageHtml = `
+            <img src="" class="vt-img-preview" id="vt-preview-${idx}" style="display:none;" title="Click to change image">
+            <label class="vt-img-upload-label" for="vt-file-${idx}" id="vt-label-${idx}">
+              <i class="bi bi-cloud-arrow-up"></i> Upload
+            </label>
+          `;
+      }
+
+      row.innerHTML = `
+        <td class="ps-4">
+          <div class="combo-badge mb-1">${formatCombo(v.combo)}</div>
+        </td>
+        <td>
+          <input type="text" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="sku" value="${v.sku}">
+        </td>
+        <td>
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="price" value="${v.price}" step="0.01" placeholder="0.00">
+        </td>
+        <td>
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount" value="${v.discount}" step="0.01" placeholder="0.00">
+        </td>
+        <td>
+          <input type="datetime-local" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_start" value="${v.discount_start ? v.discount_start.replace(' ', 'T') : ''}">
+        </td>
+        <td>
+          <input type="datetime-local" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_end" value="${v.discount_end ? v.discount_end.replace(' ', 'T') : ''}">
+        </td>
+        <td>
+          <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="stock" value="${v.stock}" placeholder="0">
+        </td>
+        <td>
+          <div class="vt-img-wrap">
+            <input type="file" id="vt-file-${idx}" class="d-none vt-file-input" data-idx="${idx}" accept="image/*">
+            ${imageHtml}
+          </div>
+        </td>
+        <td class="text-center">
+          <div class="form-check form-switch d-inline-block m-0 p-0">
+            <input class="form-check-input ms-0 vt-active-toggle" type="checkbox" role="switch" data-idx="${idx}" ${v.active ? 'checked' : ''}>
+          </div>
+        </td>
+        <td class="text-center">
+          <button type="button" class="btn btn-sm btn-danger vt-remove-btn" data-idx="${idx}">
+            <i class="bi bi-trash"></i>
+          </button>
+        </td>
+      `;
+      tbody.appendChild(row);
+    });
+  
+    // Rebind events
+    document.querySelectorAll('.vt-bind').forEach(el => {
+      el.addEventListener('input', function() {
+        variantState[this.dataset.idx][this.dataset.field] = this.value;
       });
-    } else {
-      items = existing.map(v => ({ label: v.label, value: v.value }));
-    }
-
-    if (!items.length) return;
-
-    items.forEach(item => {
-      (selectedVariants[item.label] = selectedVariants[item.label] || []).push(item.value);
+    });
+    
+    document.querySelectorAll('.vt-active-toggle').forEach(el => {
+      el.addEventListener('change', function() {
+        variantState[this.dataset.idx].active = this.checked;
+        renderVariants();
+      });
+    });
+  
+    document.querySelectorAll('.vt-remove-btn').forEach(el => {
+      el.addEventListener('click', function() {
+        if (confirm('Are you sure you want to remove this variant?')) {
+            variantState.splice(this.dataset.idx, 1);
+            renderVariants();
+        }
+      });
     });
 
-    syncVariants();
+    document.querySelectorAll('.vt-remove-img-btn').forEach(el => {
+        el.addEventListener('click', function() {
+            const idx = this.dataset.idx;
+            variantState[idx].imagePreview = null;
+            variantState[idx].imageFile = null;
+            variantState[idx].removedDbImage = true;
+            renderVariants();
+        });
+    });
+  
+    // File upload logic
+    document.querySelectorAll('.vt-file-input').forEach(input => {
+      input.addEventListener('change', function() {
+        const file = this.files[0];
+        const idx = this.dataset.idx;
+        if (file) {
+          variantState[idx].imageFile = file;
+          variantState[idx].removedDbImage = false;
+          const reader = new FileReader();
+          reader.onload = e => {
+            variantState[idx].imagePreview = e.target.result;
+            renderVariants(); // re-render to show image and remove button
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    });
+    
+    document.querySelectorAll('.vt-img-preview').forEach(img => {
+      img.addEventListener('click', function() {
+        const idx = this.id.split('-')[2];
+        document.getElementById(`vt-file-${idx}`).click();
+      });
+    });
+  
+    if (variantCountBadge) {
+      if (variantState.length > 0) {
+        variantCountBadge.textContent = variantState.length + ' variant' + (variantState.length !== 1 ? 's' : '');
+        variantCountBadge.style.display = '';
+      } else {
+        variantCountBadge.style.display = 'none';
+        if (variantTableSection) variantTableSection.style.display = 'none';
+      }
+    }
+  }
+
+  // ── Bulk Actions ───────────────────────────────────────────────────
+  window.applyBulkPrice = function() {
+    const v = document.getElementById('bulkPrice').value;
+    if (v !== '') { variantState.forEach(x => { x.price = v; }); renderVariants(); }
+  };
+  
+  window.applyBulkStock = function() {
+    const v = document.getElementById('bulkStock').value;
+    if (v !== '') { variantState.forEach(x => { x.stock = v; }); renderVariants(); }
+  };
+
+  window.clearAllVariants = function() {
+    if (confirm('Are you sure you want to remove all generated variants?')) {
+        variantState = [];
+        renderVariants();
+    }
+  };
+
+  window.activateAll = function() { variantState.forEach(x => { x.active = true;  }); renderVariants(); };
+  window.deactivateAll = function() { variantState.forEach(x => { x.active = false; }); renderVariants(); };
+
+  // ── Form Submission ────────────────────────────────────────────────
+  const form = document.getElementById('variantsHiddenContainer') ? document.getElementById('variantsHiddenContainer').closest('form') : document.querySelector('form');
+  if (form) {
+      form.addEventListener('submit', function(e) {
+        const container = document.getElementById('variantsHiddenContainer');
+        if(container) container.innerHTML = ''; 
+        
+        const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+        
+        // Auto-fill general price and stock for Variant Products to pass backend validation
+        if (isVariant) {
+            let minPrice = 0;
+            let totalStock = 0;
+            let hasVariants = false;
+            
+            variantState.forEach(v => {
+                if (v.price) {
+                    const p = parseFloat(v.price);
+                    if (!hasVariants || p < minPrice) minPrice = p;
+                    hasVariants = true;
+                }
+                if (v.stock) {
+                    totalStock += parseInt(v.stock) || 0;
+                }
+            });
+            
+            if (togglePriceInput) togglePriceInput.value = minPrice;
+            if (toggleStockInput) toggleStockInput.value = totalStock;
+        }
+    
+        const make = (name, value) => {
+          const inp = document.createElement('input');
+          inp.type = 'hidden'; inp.name = name; inp.value = value;
+          if(container) container.appendChild(inp);
+        };
+        // Only submit variant details if Product Type is Variant
+        if (isVariant) {
+            variantState.forEach((v, idx) => {
+                if (v.sku) make(`variants[${idx}][sku]`, v.sku);
+                if (v.price) make(`variants[${idx}][price]`, v.price);
+                if (v.discount) make(`variants[${idx}][discount]`, v.discount);
+                if (v.discount_start) make(`variants[${idx}][discount_start]`, v.discount_start);
+                if (v.discount_end) make(`variants[${idx}][discount_end]`, v.discount_end);
+                if (v.stock) make(`variants[${idx}][stock]`, v.stock);
+                make(`variants[${idx}][active]`, v.active ? 1 : 0);
+                
+                if (v.combo) {
+                    Object.entries(v.combo).forEach(([label, value]) => {
+                        make(`variants[${idx}][combo][${label}]`, value);
+                    });
+                }
+
+                const fi = document.getElementById(`vt-file-${idx}`);
+                if (fi && fi.files.length > 0) {
+                    fi.name = `variants[${idx}][image]`;
+                }
+                
+                if (v.removedDbImage) {
+                    make(`variants[${idx}][removedDbImage]`, 1);
+                }
+            });
+        } else {
+            let idx = 0;
+            Object.entries(selectedAttrs).forEach(([label, values]) => {
+                values.forEach(val => {
+                    make(`variants[${idx}][label]`, label);
+                    make(`variants[${idx}][value]`, val);
+                    idx++;
+                });
+            });
+        }
+      });
+  }
+
+    // ── Edit Initialization ───────
+  (function() {
+    let labels = [];
+    let values = [];
+    
+    const dbVariants = @json($product->variants ?? []);
+    
+    if (dbVariants.length > 0) {
+        dbVariants.forEach(v => {
+            if (v.combo) {
+                Object.entries(v.combo).forEach(([lbl, val]) => {
+                    labels.push(lbl);
+                    values.push(val);
+                });
+            } else {
+                if (v.label && v.value) {
+                    labels.push(v.label);
+                    values.push(v.value);
+                }
+            }
+        });
+    }
+    
+    if (labels.length > 0) {
+        labels.forEach((l, i) => {
+          if (typeof selectedAttrs[l] === 'undefined') {
+            selectedAttrs[l] = [];
+          }
+          if (!selectedAttrs[l].includes(values[i])) selectedAttrs[l].push(values[i]);
+          const chk = document.querySelector(`.attribute-value-checkbox[data-attr-name="${l}"][value="${values[i]}"]`);
+          if (chk) chk.checked = true;
+        });
+        
+        // Auto-generate variants for Variant Products on Edit
+        const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+        if (isVariant && typeof generateCombinations === 'function') {
+            const hasNewStructure = dbVariants.some(v => v.combo);
+            if (hasNewStructure) {
+                // Populating exactly what was saved previously
+                variantState = [];
+                dbVariants.forEach(dbV => {
+                    if (dbV.combo) {
+                        variantState.push({
+                            combo: dbV.combo,
+                            sku: dbV.sku || '',
+                            price: dbV.price || '',
+                            discount: dbV.discount || '',
+                            discount_start: dbV.discount_start || '',
+                            discount_end: dbV.discount_end || '',
+                            stock: dbV.stock !== undefined && dbV.stock !== null ? dbV.stock : '',
+                            active: dbV.active !== undefined ? (dbV.active == 1 || dbV.active === true) : true,
+                            imagePreview: dbV.image ? '{{ asset("storage") }}/' + dbV.image : null,
+                            imageFile: null,
+                            removedDbImage: false
+                        });
+                    }
+                });
+                
+                if (typeof renderVariants === 'function') renderVariants();
+                const variantTableSection = document.getElementById('variantBuilderSection');
+                if (variantTableSection && variantState.length > 0) {
+                    variantTableSection.style.display = 'block';
+                }
+                const variantCountBadge = document.getElementById('variantCountBadge');
+                if (variantCountBadge && variantState.length > 0) {
+                    variantCountBadge.textContent = variantState.length + ' variant' + (variantState.length !== 1 ? 's' : '');
+                    variantCountBadge.style.display = '';
+                }
+            } else {
+                const generateBtn = document.getElementById('generateVariantsBtn');
+                if (generateBtn) generateBtn.click();
+                
+                // Map prices/images from DB back to generated combos
+                if (dbVariants.length > 0) {
+                    setTimeout(() => {
+                        variantState.forEach(v => {
+                            dbVariants.forEach(dbV => {
+                                // OLD STRUCTURE
+                                if (!dbV.combo && dbV.label && v.combo[dbV.label] === dbV.value) {
+                                    if (dbV.price && !v.price) v.price = dbV.price;
+                                    if (dbV.discount && !v.discount) v.discount = dbV.discount;
+                                    if (dbV.discount_start && !v.discount_start) v.discount_start = dbV.discount_start;
+                                    if (dbV.discount_end && !v.discount_end) v.discount_end = dbV.discount_end;
+                                    if (dbV.image && !v.imagePreview) {
+                                        v.imagePreview = '{{ asset("storage") }}/' + dbV.image;
+                                    }
+                                }
+                            });
+                        });
+                        if (typeof renderVariants === 'function') renderVariants();
+                    }, 300);
+                }
+            }
+        }
+    }
   })();
 
   // ─── Image Previews ───────────────────────────────────────────────
@@ -489,6 +942,7 @@
         const reader = new FileReader();
         reader.onload = function (e) {
           mainImagePreview.innerHTML = `<img src="${e.target.result}" class="rounded border" style="height:60px; object-fit:cover;">`;
+          mainImagePreview.style.display = 'block';
         };
         reader.readAsDataURL(file);
       }
@@ -516,13 +970,13 @@
   }
 
   // ─── Discount Calculation ──────────────────────────────────────────
-  const priceInput = document.getElementById('priceInput');
+  const calcPriceInput = document.getElementById('priceInput');
   const discountTypeSelect = document.getElementById('discountTypeSelect');
   const discountValueInput = document.getElementById('discountValueInput');
   const discountedPriceText = document.getElementById('discountedPriceText');
 
   function calculateDiscountedPrice() {
-    const price = parseFloat(priceInput.value) || 0;
+    const price = parseFloat(calcPriceInput.value) || 0;
     const discountType = discountTypeSelect.value;
     const discountValue = parseFloat(discountValueInput.value) || 0;
 
@@ -538,9 +992,7 @@
       discountedPrice = price - discountValue;
     }
 
-    if (discountedPrice < 0) {
-      discountedPrice = 0;
-    }
+    if (discountedPrice < 0) discountedPrice = 0;
 
     discountedPriceText.textContent = `After Discount: ৳${discountedPrice.toFixed(2)}`;
     discountedPriceText.style.display = 'block';
@@ -549,23 +1001,34 @@
   const discountDatesRow = document.getElementById('discountDatesRow');
   function toggleDiscountDates() {
     if (discountTypeSelect && discountDatesRow) {
-      if (discountTypeSelect.value) {
-        discountDatesRow.style.display = 'flex';
-      } else {
-        discountDatesRow.style.display = 'none';
-      }
+      discountDatesRow.style.display = discountTypeSelect.value ? 'flex' : 'none';
     }
   }
 
-  if (priceInput && discountTypeSelect && discountValueInput && discountedPriceText) {
-    priceInput.addEventListener('input', calculateDiscountedPrice);
+  if (calcPriceInput && discountTypeSelect && discountValueInput && discountedPriceText) {
+    calcPriceInput.addEventListener('input', calculateDiscountedPrice);
     discountTypeSelect.addEventListener('change', calculateDiscountedPrice);
     discountValueInput.addEventListener('input', calculateDiscountedPrice);
     discountTypeSelect.addEventListener('change', toggleDiscountDates);
 
-    // Run once on load
     calculateDiscountedPrice();
     toggleDiscountDates();
   }
+
+  // Final Initialization
+  setTimeout(() => {
+    if ((typeof variantState !== 'undefined' && variantState.length > 0) || (document.getElementById('typeVariant') && document.getElementById('typeVariant').checked)) {
+        const typeVar = document.getElementById('typeVariant');
+        if (typeVar) {
+            typeVar.checked = true;
+            toggleProductType();
+        }
+    } else {
+        const typeSimp = document.getElementById('typeSimple');
+        if(typeSimp) typeSimp.checked = true;
+        toggleProductType();
+    }
+  }, 150);
+
 </script>
 @endpush

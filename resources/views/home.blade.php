@@ -316,6 +316,43 @@
                                             $bpDiscountedPrice = $bp->price - $bp->discount_value;
                                         }
                                     }
+
+                                    $displayImage = $bp->image;
+                                    $isVariant = false;
+                                    $minPrice = $bp->price;
+                                    $maxPrice = $bp->price;
+                                    $hasMultiplePrices = false;
+
+                                    if (!empty($bp->variants) && is_array($bp->variants)) {
+                                        $prices = [];
+                                        $firstVariantImage = null;
+                                        foreach ($bp->variants as $v) {
+                                            if (isset($v['combo'])) {
+                                                $isVariant = true;
+                                                if (isset($v['price']) && $v['price'] > 0) {
+                                                    $prices[] = $v['price'];
+                                                }
+                                                if (!$firstVariantImage && isset($v['image']) && !empty($v['image'])) {
+                                                    $firstVariantImage = $v['image'];
+                                                }
+                                            }
+                                        }
+
+                                        if ($firstVariantImage) {
+                                            $displayImage = $firstVariantImage;
+                                        }
+
+                                        if (count($prices) > 0) {
+                                            $minPrice = min($prices);
+                                            $maxPrice = max($prices);
+                                            if ($minPrice != $maxPrice) {
+                                                $hasMultiplePrices = true;
+                                            } else {
+                                                $minPrice = $prices[0];
+                                                $bpDiscountedPrice = $minPrice;
+                                            }
+                                        }
+                                    }
                                 @endphp
                                 <div class="slider-card position-relative">
                                     <span class="new-badge">New</span>
@@ -323,13 +360,13 @@
                                         @if ($bp->discount_type === 'percent')
                                             <span class="badge bg-danger position-absolute" style="top:10px; right:10px; font-size:10px; font-weight:bold; z-index:2; padding:4px 8px; border-radius:4px;">{{ round($bp->discount_value) }}% OFF</span>
                                         @else
-                                            <span class="badge bg-danger position-absolute" style="top:10px; right:10px; font-size:10px; font-weight:bold; z-index:2; padding:4px 8px; border-radius:4px;">৳{{ round($bp->discount_value) }} OFF</span>
+                                            <span class="badge bg-danger position-absolute" style="top:10px; right:10px; font-size:10px; font-weight:bold; z-index:2; padding:4px 8px; border-radius:4px;"><span style="font-size: 1.2em;">৳ </span>{{ round($bp->discount_value) }} OFF</span>
                                         @endif
                                     @endif
                                     <a href="{{ route('product.details', $bp->slug) }}" class="text-decoration-none d-flex flex-column" style="flex-grow: 1;">
                                         <div class="slider-img-wrap">
-                                            @if ($bp->image)
-                                                <img src="{{ asset('storage/' . $bp->image) }}" alt="{{ $bp->name }}">
+                                            @if ($displayImage)
+                                                <img src="{{ asset('storage/' . $displayImage) }}" alt="{{ $bp->name }}">
                                             @else
                                                 <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($bp->name, 8, '')) }}" alt="{{ $bp->name }}">
                                             @endif
@@ -338,11 +375,15 @@
                                             <div class="product-title hover-blue">{{ $bp->name }}</div>
                                             <div class="product-code">Code: {{ $bp->id < 100 ? 'P' . $bp->id : $bp->id }}</div>
                                             <div class="product-price">
-                                                @if ($bpHasDiscount)
-                                                    Tk {{ number_format($bpDiscountedPrice, 0) }}
-                                                    <span class="old text-decoration-line-through text-muted small ms-1" style="font-size: 11px;">Tk {{ number_format($bp->price, 0) }}</span>
+                                                @if ($hasMultiplePrices)
+                                                    <span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
                                                 @else
-                                                    Tk {{ number_format($bp->price, 0) }}
+                                                    @if ($bpHasDiscount)
+                                                        <span style="font-size: 1.2em;">৳</span>{{ number_format($bpDiscountedPrice, 0) }}
+                                                        <span class="old text-decoration-line-through text-muted small ms-1" style="font-size: 11px;"><span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }}</span>
+                                                    @else
+                                                        <span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }}
+                                                    @endif
                                                 @endif
                                             </div>
                                         </div>
@@ -532,13 +573,13 @@
                                     </a>
                                     <div class="px-2">
                                         <div class="code">Code: {{ $dp->id < 100 ? 'P' . $dp->id : $dp->id }}</div>
-                                        <div class="p">
-                                            @if ($hasDiscount)
-                                                Tk {{ number_format($discountedPrice, 0) }}
-                                                <span class="old text-decoration-line-through text-muted"
-                                                    style="font-size:10px;">Tk {{ number_format($dp->price, 0) }}</span>
+                                        <div class="mt-2 text-center">
+                                            @if ($dp->has_active_discount)
+                                            <span style="font-size: 1.2em;">৳</span>{{ number_format($discountedPrice, 0) }}
+                                            <span class="text-decoration-line-through text-muted ms-1"
+                                                style="font-size:10px;"><span style="font-size: 1.2em;">৳</span>{{ number_format($dp->price, 0) }}</span>
                                             @else
-                                                Tk {{ number_format($dp->price, 0) }}
+                                            <span style="font-size: 1.2em;">৳</span>{{ number_format($dp->price, 0) }}
                                             @endif
                                         </div>
                                     </div>
