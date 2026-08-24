@@ -142,6 +142,7 @@
       <div class="col-md-6 mb-3">
         <label class="form-label">Main Image</label>
         <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
+        <small class="form-text text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Recommended size: <strong>600x600 pixels</strong> (1:1 square) for best fit.</small>
         <div id="mainImagePreview" class="mt-2" style="display:none;"></div>
       </div>
       <div class="col-md-6 mb-3">

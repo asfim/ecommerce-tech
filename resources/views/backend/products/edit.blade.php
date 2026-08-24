@@ -159,6 +159,7 @@
       <div class="col-md-6 mb-3">
         <label class="form-label">Main Image</label>
         <input type="file" name="image" id="mainImageInput" class="form-control" accept="image/*" style="border-color: #a1a1a1 !important;">
+        <small class="form-text text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>Recommended size: <strong>600x600 pixels</strong> (1:1 square) for best fit.</small>
         <div id="mainImagePreview" class="mt-2" style="{{ $product->image ? '' : 'display:none;' }}">
           @if($product->image)
             <img src="{{ asset('storage/' . $product->image) }}" class="rounded border" style="height:60px; object-fit:cover;">
@@ -874,7 +875,9 @@
             selectedAttrs[l] = [];
           }
           if (!selectedAttrs[l].includes(values[i])) selectedAttrs[l].push(values[i]);
-          const chk = document.querySelector(`.attribute-value-checkbox[data-attr-name="${l}"][value="${values[i]}"]`);
+          
+          // Case-insensitive attribute and value matching
+          const chk = document.querySelector(`.attribute-value-checkbox[data-attr-name="${l}" i][value="${values[i]}" i]`);
           if (chk) chk.checked = true;
         });
         

@@ -73,13 +73,13 @@
                 <tr>
                     <th style="width: 40px; text-align: center;"><input type="checkbox" id="selectAllProducts" class="form-check-input"></th>
                     <th style="width: 60px;">#</th>
+                    <th style="width: 60px;">Image</th>
                     <th>Name</th>
                     <th>Category</th>
                     <th>Brand</th>
                     <th>Buy Price</th>
                     <th>Price</th>
                     <th>Stock</th>
-                    <th>Sales</th>
                     <th>Status</th>
                     <th style="width: 180px;">Actions</th>
                 </tr>
@@ -89,13 +89,34 @@
                     <tr>
                         <td class="text-center"><input type="checkbox" class="product-checkbox form-check-input" value="{{ $product->id }}"></td>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $product->name }}</td>
+                        <td>
+                            @if($product->image)
+                                <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
+                            @else
+                                <div style="width: 40px; height: 40px; background: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 10px; color: #999;">No Img</div>
+                            @endif
+                        </td>
+                        <td>
+                            <div class="d-flex flex-column">
+                                <span>{{ $product->name }}</span>
+                                @php
+                                    $isVariantProduct = false;
+                                    if(!empty($product->variants)) {
+                                        foreach($product->variants as $v) {
+                                            if(isset($v['combo'])) { $isVariantProduct = true; break; }
+                                        }
+                                    }
+                                @endphp
+                                @if($isVariantProduct)
+                                    <span class="badge bg-success mt-1 px-2 py-1 fw-normal" style="width: fit-content; font-size: 10px; letter-spacing: 0.5px;">Variant</span>
+                                @endif
+                            </div>
+                        </td>
                         <td>{{ $product->category->name ?? '-' }}</td>
                         <td>{{ $product->brand->name ?? '-' }}</td>
                         <td>{{ $product->buy_price ? '৳' . number_format($product->buy_price, 2) : '-' }}</td>
                         <td>৳{{ number_format($product->price, 2) }}</td>
                         <td>{{ $product->stock }}</td>
-                        <td>{{ $product->delivered_sales_count ?? 0 }}</td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input active-toggle" type="checkbox" data-id="{{ $product->id }}"
