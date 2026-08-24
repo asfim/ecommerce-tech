@@ -616,14 +616,14 @@
             justify-content: center;
             aspect-ratio: 1 / 1;
             overflow: hidden;
-            padding: 12px;
+            padding: 0;
             border-bottom: 1px solid #f0f2f5;
         }
 
         .rcat-img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
             object-position: center;
             transition: transform .32s ease;
             display: block;
