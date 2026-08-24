@@ -87,13 +87,13 @@
                 </a>
                 <div class="p">
                     @if ($hasMultiplePrices)
-                        <span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
+                        <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
                     @else
                         @if ($hasDiscount)
-                            <span style="font-size: 1.2em;">৳</span>{{ number_format($discountedPrice, 0) }}
-                            <span class="old"><span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }}</span>
+                            <span style="font-size: 1.2em;">৳</span> {{ number_format($discountedPrice, 0) }}
+                            <span class="old"><span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }}</span>
                         @else
-                            <span style="font-size: 1.2em;">৳</span>{{ number_format($minPrice, 0) }}
+                            <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }}
                         @endif
                     @endif
                 </div>
