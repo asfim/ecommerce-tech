@@ -397,6 +397,21 @@
   @media (max-width: 576px) {
     .variant-chip { padding: 5px 10px; font-size: 12px; }
   }
+
+  /* ── Date Input Icon Only (Until Selected) ────────────────────── */
+  input[type="date"].vt-date-input:not(.has-value) {
+    width: 38px;
+    color: transparent;
+    padding-left: 6px;
+    padding-right: 6px;
+    cursor: pointer;
+  }
+  input[type="date"].vt-date-input:not(.has-value)::-webkit-datetime-edit {
+    color: transparent;
+  }
+  input[type="date"].vt-date-input {
+    transition: width 0.2s ease;
+  }
 </style>
 @endpush
 
@@ -550,11 +565,11 @@
          const combos = generateCombinations(selectedAttrs);
          if (combos.length > 0) {
             const combo = combos[0];
-            const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
+            const key = Object.entries(combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
             
             // Check if this exact combination exists in variantState
             const exists = variantState.find(p => {
-               const pKey = Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|');
+               const pKey = Object.entries(p.combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
                return pKey === key && Object.keys(combo).length === Object.keys(p.combo).length;
             });
             
@@ -612,8 +627,11 @@
       let addedCount = 0;
   
       combos.forEach(combo => {
-        const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
-        const exists = variantState.find(p => Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|') === key);
+        const key = Object.entries(combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
+        const exists = variantState.find(p => {
+            const pKey = Object.entries(p.combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
+            return pKey === key;
+        });
         
         if (!exists) {
           variantState.push({
@@ -648,7 +666,7 @@
 
   // ── Rendering Variants ─────────────────────────────────────────────
   function formatCombo(combo) {
-    return Object.entries(combo).map(([k,v]) => {
+    return Object.entries(combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => {
       let html = '';
       if (k.toLowerCase() === 'color') {
         const c = v.toLowerCase();
@@ -692,10 +710,10 @@
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount" value="${v.discount}" step="0.01" placeholder="0.00">
         </td>
         <td>
-          <input type="date" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_start" value="${v.discount_start}">
+          <input type="date" class="form-control form-control-sm vt-bind vt-date-input ${v.discount_start ? 'has-value' : ''}" data-idx="${idx}" data-field="discount_start" value="${v.discount_start}">
         </td>
         <td>
-          <input type="date" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_end" value="${v.discount_end}">
+          <input type="date" class="form-control form-control-sm vt-bind vt-date-input ${v.discount_end ? 'has-value' : ''}" data-idx="${idx}" data-field="discount_end" value="${v.discount_end}">
         </td>
         <td>
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="stock" value="${v.stock}" placeholder="0">
@@ -727,6 +745,10 @@
     document.querySelectorAll('.vt-bind').forEach(el => {
       el.addEventListener('input', function() {
         variantState[this.dataset.idx][this.dataset.field] = this.value;
+        if (this.classList.contains('vt-date-input')) {
+           if (this.value) this.classList.add('has-value');
+           else this.classList.remove('has-value');
+        }
       });
     });
     
@@ -848,7 +870,9 @@
         if (isVariant) {
             variantState.forEach((v, idx) => {
                 if (v.sku) make(`variants[${idx}][sku]`, v.sku);
+                if (v.buy_price) make(`variants[${idx}][buy_price]`, v.buy_price);
                 if (v.price) make(`variants[${idx}][price]`, v.price);
+                if (v.discount_type) make(`variants[${idx}][discount_type]`, v.discount_type);
                 if (v.discount) make(`variants[${idx}][discount]`, v.discount);
                 if (v.discount_start) make(`variants[${idx}][discount_start]`, v.discount_start);
                 if (v.discount_end) make(`variants[${idx}][discount_end]`, v.discount_end);

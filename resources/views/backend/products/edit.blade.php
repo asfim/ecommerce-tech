@@ -446,6 +446,21 @@
     .variant-chip { padding: 5px 10px; font-size: 12px; }
   }
 
+  /* ── Date Input Icon Only (Until Selected) ────────────────────── */
+  input[type="date"].vt-date-input:not(.has-value) {
+    width: 38px;
+    color: transparent;
+    padding-left: 6px;
+    padding-right: 6px;
+    cursor: pointer;
+  }
+  input[type="date"].vt-date-input:not(.has-value)::-webkit-datetime-edit {
+    color: transparent;
+  }
+  input[type="date"].vt-date-input {
+    transition: width 0.2s ease;
+  }
+
   /* Gallery edit images */
   .gallery-img-box { transition: all 0.2s; position: relative; }
   .gallery-img-box label:has(input:checked) { background: #222 !important; }
@@ -617,11 +632,11 @@
          const combos = generateCombinations(selectedAttrs);
          if (combos.length > 0) {
             const combo = combos[0];
-            const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
+            const key = Object.entries(combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
             
             // Check if this exact combination exists in variantState
             const exists = variantState.find(p => {
-               const pKey = Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|');
+               const pKey = Object.entries(p.combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
                return pKey === key && Object.keys(combo).length === Object.keys(p.combo).length;
             });
             
@@ -679,8 +694,11 @@
       let addedCount = 0;
   
       combos.forEach(combo => {
-        const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
-        const exists = variantState.find(p => Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|') === key);
+        const key = Object.entries(combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
+        const exists = variantState.find(p => {
+            const pKey = Object.entries(p.combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => `${k}:${v}`).join('|');
+            return pKey === key;
+        });
         
         if (!exists) {
           variantState.push({
@@ -716,7 +734,7 @@
 
   // ── Rendering Variants ─────────────────────────────────────────────
   function formatCombo(combo) {
-    return Object.entries(combo).map(([k,v]) => {
+    return Object.entries(combo).sort(([k1], [k2]) => k1.localeCompare(k2)).map(([k,v]) => {
       let html = '';
       if (k.toLowerCase() === 'color') {
         const c = v.toLowerCase();
@@ -768,10 +786,10 @@
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount" value="${v.discount}" step="0.01" placeholder="0.00">
         </td>
         <td>
-          <input type="date" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_start" value="${v.discount_start ? (v.discount_start.includes('T') ? v.discount_start.split('T')[0] : v.discount_start.split(' ')[0]) : ''}">
+          <input type="date" class="form-control form-control-sm vt-bind vt-date-input ${v.discount_start ? 'has-value' : ''}" data-idx="${idx}" data-field="discount_start" value="${v.discount_start ? (v.discount_start.includes('T') ? v.discount_start.split('T')[0] : v.discount_start.split(' ')[0]) : ''}">
         </td>
         <td>
-          <input type="date" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="discount_end" value="${v.discount_end ? (v.discount_end.includes('T') ? v.discount_end.split('T')[0] : v.discount_end.split(' ')[0]) : ''}">
+          <input type="date" class="form-control form-control-sm vt-bind vt-date-input ${v.discount_end ? 'has-value' : ''}" data-idx="${idx}" data-field="discount_end" value="${v.discount_end ? (v.discount_end.includes('T') ? v.discount_end.split('T')[0] : v.discount_end.split(' ')[0]) : ''}">
         </td>
         <td>
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="stock" value="${v.stock}" placeholder="0">
@@ -800,6 +818,10 @@
     document.querySelectorAll('.vt-bind').forEach(el => {
       el.addEventListener('input', function() {
         variantState[this.dataset.idx][this.dataset.field] = this.value;
+        if (this.classList.contains('vt-date-input')) {
+           if (this.value) this.classList.add('has-value');
+           else this.classList.remove('has-value');
+        }
       });
     });
     
