@@ -96,7 +96,7 @@
         <input type="number" name="buy_price" step="0.01" class="form-control" value="{{ old('buy_price') }}" style="border-color: #a1a1a1 !important;">
       </div>
       <div class="col-md-3 mb-3">
-        <label class="form-label">Price</label>
+        <label class="form-label">Sell Price</label>
         <input type="number" name="price" id="priceInput" step="0.01" class="form-control" value="{{ old('price') }}" required style="border-color: #a1a1a1 !important;">
         <div class="form-text text-success fw-bold" id="discountedPriceText" style="display:none;">After Discount: $0.00</div>
       </div>
@@ -104,7 +104,10 @@
         <label class="form-label">Stock</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required style="border-color: #a1a1a1 !important;">
       </div>
-      <div class="col-md-3 mb-3 d-flex align-items-end">
+    </div>
+    
+    <div class="row general-inputs-section">
+      <div class="col-md-12 mb-3 d-flex align-items-end">
         <div class="form-check form-switch mb-2">
           <input type="checkbox" name="is_active" value="1" class="form-check-input" id="isActive" {{ old('is_active', true) ? 'checked' : '' }}>
           <label class="form-check-label fw-bold" for="isActive">Active</label>
@@ -251,9 +254,10 @@
       <div class="card border-0 shadow-sm rounded-4 mb-3">
         <div class="card-body p-3">
           <div class="d-flex align-items-center flex-wrap gap-2">
-            <span class="text-muted small fw-semibold me-1"><i class="bi bi-lightning me-1 text-warning"></i>Bulk:</span>
-            <div class="input-group input-group-sm" style="max-width:210px;">
-              <input type="number" id="bulkPrice" class="form-control" placeholder="Set all prices" step="0.01" min="0" style="border-color:#dee2e6!important;">
+            <label class="text-muted small fw-semibold me-2">Bulk Actions:</label>
+            <div class="input-group input-group-sm w-auto">
+              <span class="input-group-text bg-white"><i class="bi bi-tag"></i></span>
+              <input type="number" id="bulkPrice" class="form-control" placeholder="Set all sell prices" step="0.01" min="0" style="border-color:#dee2e6!important;">
               <button type="button" class="btn btn-outline-secondary" onclick="applyBulkPrice()">Apply</button>
             </div>
             <div class="input-group input-group-sm" style="max-width:210px;">
@@ -277,8 +281,8 @@
                   <th class="ps-4" style="min-width:140px;">Variant</th>
                   <th style="min-width:120px;">SKU</th>
                   <th style="min-width:100px;">Buy Price</th>
-                  <th style="min-width:100px;">Price (৳)</th>
-                  <th style="min-width:80px;">Disc. Type</th>
+                  <th style="min-width:100px;">Sell Price (৳)</th>
+                  <th style="min-width:110px;">Disc. Type</th>
                   <th style="min-width:90px;">Discount</th>
                   <th style="min-width:130px;">Start Date</th>
                   <th style="min-width:130px;">End Date</th>

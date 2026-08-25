@@ -78,7 +78,7 @@
                     <th>Category</th>
                     <th>Brand</th>
                     <th>Buy Price</th>
-                    <th>Price</th>
+                    <th>Sell Price</th>
                     <th>Stock</th>
                     <th>Status</th>
                     <th style="width: 180px;">Actions</th>

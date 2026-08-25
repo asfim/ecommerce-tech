@@ -48,7 +48,29 @@ class ReportController extends Controller
 
             foreach ($order->items as $item) {
                 $totalItemsSold += (int) $item->quantity;
+                
                 $buyPrice = $item->product ? (float) $item->product->buy_price : 0.00;
+                
+                if ($item->product && !empty($item->variants) && !empty($item->product->variants)) {
+                    foreach ($item->product->variants as $v) {
+                        if (isset($v['combo'])) {
+                            $isMatch = true;
+                            foreach ($v['combo'] as $k => $val) {
+                                if (!isset($item->variants[$k]) || $item->variants[$k] !== $val) {
+                                    $isMatch = false;
+                                    break;
+                                }
+                            }
+                            if ($isMatch && count($v['combo']) === count($item->variants)) {
+                                if (isset($v['buy_price']) && is_numeric($v['buy_price'])) {
+                                    $buyPrice = (float) $v['buy_price'];
+                                }
+                                break;
+                            }
+                        }
+                    }
+                }
+                
                 $totalCost += $buyPrice * $item->quantity;
             }
         }
@@ -119,11 +141,39 @@ class ReportController extends Controller
         $stockValueRetail = 0.00;
 
         foreach ($products as $product) {
-            $buyPrice = $product->buy_price ?? 0.00;
-            $salePrice = $product->price ?? 0.00;
+            $hasVariants = false;
+            
+            if (!empty($product->variants)) {
+                $isNewStructure = false;
+                foreach ($product->variants as $v) {
+                    if (isset($v['combo'])) {
+                        $isNewStructure = true;
+                        break;
+                    }
+                }
+                
+                if ($isNewStructure) {
+                    $hasVariants = true;
+                    foreach ($product->variants as $v) {
+                        if (!isset($v['active']) || $v['active']) {
+                            $vBuyPrice = isset($v['buy_price']) && is_numeric($v['buy_price']) ? (float) $v['buy_price'] : (float) ($product->buy_price ?? 0);
+                            $vSalePrice = isset($v['price']) && is_numeric($v['price']) ? (float) $v['price'] : (float) ($product->price ?? 0);
+                            $vStock = isset($v['stock']) ? (int) $v['stock'] : 0;
+                            
+                            $stockValueCost += ($vBuyPrice * $vStock);
+                            $stockValueRetail += ($vSalePrice * $vStock);
+                        }
+                    }
+                }
+            }
+            
+            if (!$hasVariants) {
+                $buyPrice = $product->buy_price ?? 0.00;
+                $salePrice = $product->price ?? 0.00;
 
-            $stockValueCost += ($buyPrice * $product->stock);
-            $stockValueRetail += ($salePrice * $product->stock);
+                $stockValueCost += ($buyPrice * $product->stock);
+                $stockValueRetail += ($salePrice * $product->stock);
+            }
         }
 
         $potentialProfit = $stockValueRetail - $stockValueCost;

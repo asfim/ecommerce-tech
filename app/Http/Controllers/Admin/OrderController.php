@@ -96,6 +96,15 @@ class OrderController extends Controller implements HasMiddleware
             $updateData['payment_status'] = 'paid';
         }
 
+        if ($order->payment_status === 'paid') {
+            if (
+                (isset($updateData['order_status']) && $updateData['order_status'] === 'pending') ||
+                (isset($updateData['payment_status']) && $updateData['payment_status'] === 'pending')
+            ) {
+                return back()->with('error', 'Cannot change status to Pending for a Paid order.');
+            }
+        }
+
         if (! empty($updateData)) {
             $order->update($updateData);
         }
