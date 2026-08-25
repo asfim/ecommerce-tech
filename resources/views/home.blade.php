@@ -10,10 +10,11 @@
 
                 <!-- LEFT: Category Sidebar -->
                 <div class="col-lg-3" style="z-index: 10;">
-                    <div class="hero-cat-sidebar" style="overflow: visible !important;">
+                    <div class="hero-cat-sidebar" style="overflow: visible !important; position: relative;">
+                    <div class="hero-cat-sidebar-inner" style="height: 100%; overflow-y: auto;">
                     <ul class="hero-cat-list">
                         @foreach($categories as $cat)
-                        <li class="position-relative hero-cat-item">
+                        <li class="hero-cat-item" style="position: static !important;">
                             <a href="{{ route('category.products', $cat->id) }}">
                                 @if($cat->image)
                                     <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}" class="hero-cat-icon">
@@ -26,7 +27,7 @@
                                 @endif
                             </a>
                             @if($cat->subCategories->isNotEmpty())
-                                <div class="hero-cat-submenu position-absolute bg-white" style="left: 100%; top: 0; min-width: 250px; z-index: 9999; border-radius: 0 12px 12px 0; box-shadow: 10px 10px 30px rgba(0,0,0,0.08); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);">
+                                <div class="hero-cat-submenu hero-cat-sidebar-inner position-absolute bg-white" style="left: 100%; top: 0; min-width: 250px; height: 100%; overflow-y: auto; z-index: 9999; border-radius: 0 12px 12px 0; box-shadow: 10px 10px 30px rgba(0,0,0,0.08); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);">
                                     <div class="text-uppercase fw-bold text-muted mb-2 px-3" style="font-size: 11px; letter-spacing: 1px;">{{ $cat->name }}</div>
                                     <ul class="list-unstyled mb-0">
                                         @foreach($cat->subCategories as $subCat)
@@ -41,7 +42,7 @@
                             @endif
                         </li>
                         @endforeach
-                        <li class="view-all-cats">
+                        <li class="view-all-cats" style="position: static !important;">
                             <a href="{{ route('home') }}#products-grid">
                                 <i class="bi bi-grid-3x3-gap hero-cat-icon-bi"></i>
                                 <span>View All Categories</span>
@@ -49,6 +50,7 @@
                             </a>
                         </li>
                     </ul>
+                    </div>
                 </div>
                 </div>
 

@@ -428,6 +428,7 @@
                 </nav>
                 <h2 class="fw-bold">{{ $product->name }}</h2>
 
+                @if($reviewCount > 0)
                 <div class="mb-3 d-flex align-items-center gap-2">
                     <div class="rating">
                         @for ($i = 1; $i <= 5; $i++)
@@ -440,6 +441,7 @@
                     </div>
                     <span class="text-muted small">({{ $reviewCount }} Review{{ $reviewCount === 1 ? '' : 's' }})</span>
                 </div>
+                @endif
 
                 <h2 class="text-danger fw-bold d-flex align-items-center gap-2 flex-wrap">
                     ৳{{ number_format($finalPrice, 2) }}
@@ -453,9 +455,7 @@
                     @endif
                 </h2>
 
-                <p class="mt-3 text-muted">
-                    This premium product offers unparalleled quality and value. Designed to elevate your daily routine, it integrates standard features and exceptional design aesthetics.
-                </p>
+
 
                 <hr>
 

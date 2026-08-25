@@ -21,16 +21,8 @@
         <div class="wrap d-flex align-items-center gap-4">
             <a class="d-flex align-items-center gap-2 header-logo-link" href="{{ route('home') }}">
                 @if($companyLogo)
-                    <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 44px; border-radius: 6px;">
-                @else
-                    <div class="header-logo-icon">
-                        <i class="bi bi-bag-fill"></i>
-                    </div>
+                    <img src="{{ asset('storage/' . $companyLogo) }}" alt="{{ $companyName }}" style="max-height: 55px; border-radius: 6px;">
                 @endif
-                <div class="header-brand-text">
-                    <div class="header-brand-name">{{ strtoupper($companyName) }}</div>
-                    <div class="header-brand-sub">Shop Smart, Live Better</div>
-                </div>
             </a>
 
             <form action="{{ route('home') }}" method="GET" class="search-input flex-grow-1 d-flex mb-0 position-relative">
@@ -109,7 +101,7 @@
                 <button class="cat-trigger" onclick="window.location.href='{{ route('home') }}'">
                     <i class="bi bi-grid-3x3-gap-fill"></i> All Categories
                 </button>
-                
+
                 <div class="category-dropdown-menu position-absolute bg-white shadow rounded border" style="top: 100%; left: 0; width: 700px; max-width: 90vw; z-index: 1050; display: none; max-height: 480px; overflow-y: auto;">
                     <div class="p-4">
                     <div class="row g-4">
@@ -147,7 +139,7 @@
                 <li><a href="{{ route('blogs.index') }}" class="{{ request()->routeIs('blogs.*') ? 'active' : '' }}">Blog</a></li>
                 <li><a href="{{ route('contact') }}" class="{{ request()->routeIs('contact') ? 'active' : '' }}">Contact</a></li>
             </ul>
-            
+
         </div>
     </div>
 </div>
@@ -173,15 +165,15 @@
                     <!-- Logo -->
                     <a class="d-flex align-items-center gap-2 ms-1" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
                         @if($companyLogo)
-                            <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 28px; border-radius: 4px;">
-                        @else
+                            <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 40px; border-radius: 4px;">
+                        {{-- @else
                             <div class="header-logo-icon" style="width: 30px; height: 30px; border-radius: 6px; font-size: 15px;">
                                 <i class="bi bi-bag-fill"></i>
                             </div>
                             <div class="header-brand-text">
                                 <div class="header-brand-name" style="font-size: 14px; font-weight: 800; color: #ff5521; letter-spacing: 0.5px;">{{ strtoupper($companyName) }}</div>
                                 <div class="header-brand-sub" style="font-size: 8px; color: #888;">Shop Smart, Live Better</div>
-                            </div>
+                            </div> --}}
                         @endif
                     </a>
                 </div>
