@@ -194,6 +194,45 @@
 
     <hr>
     <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-card-text me-2 text-primary"></i>Description</h5>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+      <div class="card-body p-4">
+        <div id="quill-editor" style="min-height: 200px; border-radius: 8px;">{!! $product->description !!}</div>
+        <input type="hidden" name="description" id="description-input" value="{{ $product->description }}">
+      </div>
+    </div>
+
+    <hr>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="fw-bold mb-0"><i class="bi bi-list-ul me-2 text-primary"></i>Specifications</h5>
+      <button type="button" class="btn btn-sm btn-outline-primary rounded-3" id="addSpecRow">
+        <i class="bi bi-plus-lg me-1"></i> Add Row
+      </button>
+    </div>
+    <div class="card border-0 shadow-sm rounded-4 mb-3">
+      <div class="card-body p-4">
+        <div id="specsContainer">
+          @forelse($product->specifications ?? [] as $si => $spec)
+            <div class="spec-row d-flex gap-2 mb-2">
+              <input type="text" name="specifications[{{ $si }}][label]" class="form-control spec-label" value="{{ $spec['label'] ?? '' }}" placeholder="e.g. Brand, Weight, Material" style="border-color:#a1a1a1!important;">
+              <input type="text" name="specifications[{{ $si }}][value]" class="form-control spec-value" value="{{ $spec['value'] ?? '' }}" placeholder="e.g. Samsung, 1.5kg, Plastic" style="border-color:#a1a1a1!important;">
+              <button type="button" class="btn btn-outline-danger spec-remove-btn px-3"><i class="bi bi-trash"></i></button>
+            </div>
+          @empty
+            <div class="spec-row d-flex gap-2 mb-2">
+              <input type="text" name="specifications[0][label]" class="form-control spec-label" placeholder="e.g. Brand, Weight, Material" style="border-color:#a1a1a1!important;">
+              <input type="text" name="specifications[0][value]" class="form-control spec-value" placeholder="e.g. Samsung, 1.5kg, Plastic" style="border-color:#a1a1a1!important;">
+              <button type="button" class="btn btn-outline-danger spec-remove-btn px-3"><i class="bi bi-trash"></i></button>
+            </div>
+          @endforelse
+        </div>
+        <p class="text-muted small mb-0 mt-2"><i class="bi bi-info-circle me-1"></i>Add technical specs like weight, dimensions, material etc.</p>
+      </div>
+    </div>
+
+    <hr>
+    <div class="d-flex align-items-center justify-content-between mb-3">
       <h5 class="fw-bold mb-0"><i class="bi bi-grid-3x3-gap-fill me-2 text-primary"></i>Product Attributes & Variants</h5>
       <span class="badge bg-primary-subtle text-primary rounded-pill fs-6 px-3" id="variantCountBadge" style="display:none;"></span>
     </div>
@@ -415,7 +454,49 @@
 @endpush
 
 @push('scripts')
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.6/quill.min.js"></script>
 <script>
+  // ── Quill Rich Text Editor ─────────────────────────────────────────
+  const quill = new Quill('#quill-editor', {
+    theme: 'snow',
+    placeholder: 'Write product description here...',
+    modules: {
+      toolbar: [
+        ['bold', 'italic', 'underline'],
+        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+        ['link'],
+        ['clean']
+      ]
+    }
+  });
+  document.querySelector('form').addEventListener('submit', function() {
+    document.getElementById('description-input').value = quill.root.innerHTML;
+  });
+
+  // ── Dynamic Specification Rows ─────────────────────────────────────
+  let specIndex = {{ max(count($product->specifications ?? []), 1) }};
+  document.getElementById('addSpecRow').addEventListener('click', function() {
+    const container = document.getElementById('specsContainer');
+    const row = document.createElement('div');
+    row.className = 'spec-row d-flex gap-2 mb-2';
+    row.innerHTML = `
+      <input type="text" name="specifications[${specIndex}][label]" class="form-control spec-label" placeholder="e.g. Brand, Weight, Material" style="border-color:#a1a1a1!important;">
+      <input type="text" name="specifications[${specIndex}][value]" class="form-control spec-value" placeholder="e.g. Samsung, 1.5kg, Plastic" style="border-color:#a1a1a1!important;">
+      <button type="button" class="btn btn-outline-danger spec-remove-btn px-3"><i class="bi bi-trash"></i></button>
+    `;
+    container.appendChild(row);
+    specIndex++;
+  });
+  document.getElementById('specsContainer').addEventListener('click', function(e) {
+    if (e.target.closest('.spec-remove-btn')) {
+      const rows = document.querySelectorAll('.spec-row');
+      if (rows.length > 1) {
+        e.target.closest('.spec-row').remove();
+      }
+    }
+  });
+
   // ─── Dynamic Subcategories Filtering ───────────────────────────────
   const subCategoriesData = @json($subCategories);
   const categorySelect = document.getElementById('categorySelect');

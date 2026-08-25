@@ -13,6 +13,7 @@ class Product extends Model
         'discount_type', 'discount_value', 'discount_start_date', 'discount_expiry_date',
         'stock', 'sales_count', 'slug', 'variants', 'image', 'images',
         'is_active', 'is_featured', 'is_new_arrival',
+        'description', 'specifications',
     ];
 
     protected function casts(): array
@@ -20,6 +21,7 @@ class Product extends Model
         return [
             'variants' => 'array',
             'images' => 'array',
+            'specifications' => 'array',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'is_new_arrival' => 'boolean',

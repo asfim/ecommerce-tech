@@ -100,6 +100,10 @@ class ProductController extends Controller implements HasMiddleware
             'is_new_arrival' => 'boolean',
             'is_new_arrival' => 'boolean',
             'variants' => 'nullable|array',
+            'description' => 'nullable|string',
+            'specifications' => 'nullable|array',
+            'specifications.*.label' => 'nullable|string|max:255',
+            'specifications.*.value' => 'nullable|string|max:500',
         ]);
 
         $variants = [];
@@ -132,6 +136,8 @@ class ProductController extends Controller implements HasMiddleware
             }
         }
         $validated['images'] = $images ?: null;
+        $validated['description'] = $request->input('description');
+        $validated['specifications'] = $request->input('specifications') ? array_values(array_filter($request->input('specifications'), fn ($s) => ! empty($s['label']))) : null;
 
         Product::create($validated);
 
@@ -173,6 +179,10 @@ class ProductController extends Controller implements HasMiddleware
             'is_new_arrival' => 'boolean',
             'is_new_arrival' => 'boolean',
             'variants' => 'nullable|array',
+            'description' => 'nullable|string',
+            'specifications' => 'nullable|array',
+            'specifications.*.label' => 'nullable|string|max:255',
+            'specifications.*.value' => 'nullable|string|max:500',
         ]);
 
         $variants = [];
@@ -196,7 +206,7 @@ class ProductController extends Controller implements HasMiddleware
                 if ($request->hasFile("variants.$index.image")) {
                     $imagePath = $request->file("variants.$index.image")->store('products/variants', 'public');
                 }
-                
+
                 $vData['image'] = $imagePath;
                 $vData['active'] = isset($vData['active']) ? (bool) $vData['active'] : true;
                 $variants[] = $vData;
@@ -247,6 +257,9 @@ class ProductController extends Controller implements HasMiddleware
         } else {
             unset($validated['images']);
         }
+
+        $validated['description'] = $request->input('description');
+        $validated['specifications'] = $request->input('specifications') ? array_values(array_filter($request->input('specifications'), fn ($s) => ! empty($s['label']))) : null;
 
         $product->update($validated);
 

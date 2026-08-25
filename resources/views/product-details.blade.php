@@ -515,9 +515,13 @@
     <!-- Tab 0: Description -->
     <div class="tab-content-panel active">
         <h5 class="fw-bold mb-3">Description</h5>
-        <p class="text-muted" style="line-height: 1.6;">
-            Premium build quality utilizing durable and sleek materials. Features high fidelity acoustic balance, advanced modern tech integrations, fast USB-C power delivery capabilities, and ultra-comfortable skin-friendly cushion padding. Excellent option for users seeking robust styling combined with everyday utility.
-        </p>
+        @if($product->description)
+            <div class="product-description-content" style="line-height: 1.8; color: #444;">
+                {!! $product->description !!}
+            </div>
+        @else
+            <p class="text-muted fst-italic">No description available for this product.</p>
+        @endif
     </div>
 
     <!-- Tab 1: Specifications -->
@@ -525,11 +529,17 @@
         <h5 class="fw-bold mb-3">Specifications</h5>
         <table class="table table-striped table-sm text-muted" style="border-color: #a1a1a1 !important;">
             <tbody>
-                <tr><td><strong>Category</strong></td><td>{{ $product->category->name ?? '-' }}</td></tr>
-                <tr><td><strong>Sub Category</strong></td><td>{{ $product->subCategory->name ?? '-' }}</td></tr>
-                <tr><td><strong>Brand</strong></td><td>{{ $product->brand->name ?? '-' }}</td></tr>
-                <tr><td><strong>Stock</strong></td><td>{{ $product->stock }} units</td></tr>
-                <tr><td><strong>Sales</strong></td><td>{{ $product->sales_count }} units</td></tr>
+                <tr><td style="width:40%;"><strong>Category</strong></td><td>{{ optional($product->category)->name ?? '-' }}</td></tr>
+                @if(optional($product->subCategory)->name)
+                <tr><td><strong>Sub Category</strong></td><td>{{ $product->subCategory->name }}</td></tr>
+                @endif
+                <tr><td><strong>Brand</strong></td><td>{{ optional($product->brand)->name ?? '-' }}</td></tr>
+                <tr><td><strong>Stock</strong></td><td>{{ $product->stock > 0 ? $product->stock . ' units available' : 'Out of Stock' }}</td></tr>
+                @foreach($product->specifications ?? [] as $spec)
+                    @if(!empty($spec['label']))
+                        <tr><td><strong>{{ $spec['label'] }}</strong></td><td>{{ $spec['value'] ?? '-' }}</td></tr>
+                    @endif
+                @endforeach
             </tbody>
         </table>
     </div>
@@ -617,37 +627,63 @@
 
 <!-- ================= RELATED PRODUCTS ================= -->
 @if ($relatedProducts->count() > 0)
-<section class="container pb-5">
-    <h4 class="fw-bold mb-4">Related Products</h4>
-    <div class="row g-4">
-        @foreach($relatedProducts as $rp)
-            @php
-                $rpHasDiscount = $rp->discount_type && $rp->discount_value > 0;
-                $rpFinalPrice = $rp->price;
-                if ($rpHasDiscount) {
-                    if ($rp->discount_type === 'percent') {
-                        $rpFinalPrice = $rp->price - ($rp->price * $rp->discount_value) / 100;
-                    } elseif ($rp->discount_type === 'fixed') {
-                        $rpFinalPrice = $rp->price - $rp->discount_value;
+<section class="related-products-section py-5">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-4">
+            <div class="related-section-bar"></div>
+            <h4 class="fw-bold mb-0">Related Products</h4>
+        </div>
+        <div class="row g-4">
+            @foreach($relatedProducts as $rp)
+                @php
+                    $rpHasDiscount = $rp->discount_type && $rp->discount_value > 0;
+                    $rpFinalPrice = $rp->price;
+                    if ($rpHasDiscount) {
+                        if ($rp->discount_type === 'percent') {
+                            $rpFinalPrice = $rp->price - ($rp->price * $rp->discount_value) / 100;
+                        } elseif ($rp->discount_type === 'fixed') {
+                            $rpFinalPrice = $rp->price - $rp->discount_value;
+                        }
                     }
-                }
-            @endphp
-            <div class="col-6 col-md-3">
-                <a href="{{ route('product.details', $rp->slug) }}" class="text-decoration-none">
-                    <div class="card related-card">
-                        @if ($rp->image)
-                            <img src="{{ asset('storage/' . $rp->image) }}" class="card-img-top p-2">
-                        @else
-                            <img src="https://placehold.co/150x150/eee/aaa?text={{ urlencode(Str::limit($rp->name, 8, '')) }}" class="card-img-top p-2">
-                        @endif
-                        <div class="card-body p-2">
-                            <h6 class="text-dark fw-bold text-truncate mb-1">{{ $rp->name }}</h6>
-                            <h5 class="text-danger fw-bold mb-0">৳{{ number_format($rpFinalPrice, 2) }}</h5>
+                    $rpImage = $rp->image;
+                    if (!$rpImage && !empty($rp->variants)) {
+                        foreach ($rp->variants as $v) {
+                            if (isset($v['combo']) && !empty($v['image'])) {
+                                $rpImage = $v['image'];
+                                break;
+                            }
+                        }
+                    }
+                @endphp
+                <div class="col-6 col-md-3">
+                    <a href="{{ route('product.details', $rp->slug) }}" class="text-decoration-none">
+                        <div class="related-card">
+                            <div class="related-card-img-wrap">
+                                @if ($rpImage)
+                                    <img src="{{ asset('storage/' . $rpImage) }}" alt="{{ $rp->name }}" class="related-card-img">
+                                @else
+                                    <div class="related-card-no-img">
+                                        <i class="bi bi-image text-muted" style="font-size:2rem;"></i>
+                                    </div>
+                                @endif
+                                @if ($rpHasDiscount && $rp->discount_type === 'percent')
+                                    <span class="related-card-badge">{{ round($rp->discount_value) }}% OFF</span>
+                                @endif
+                            </div>
+                            <div class="related-card-body">
+                                <h6 class="related-card-name">{{ $rp->name }}</h6>
+                                <div class="related-card-pricing">
+                                    <span class="related-card-price">৳{{ number_format($rpFinalPrice, 0) }}</span>
+                                    @if ($rpHasDiscount)
+                                        <span class="related-card-original">৳{{ number_format($rp->price, 0) }}</span>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            </div>
-        @endforeach
+                    </a>
+                </div>
+            @endforeach
+        </div>
     </div>
 </section>
 @endif

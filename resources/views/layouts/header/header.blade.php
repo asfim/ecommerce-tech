@@ -105,23 +105,32 @@
     <div class="navbar2">
         <div class="wrap inner d-flex align-items-center">
             <!-- Category mega menu trigger -->
-            <div class="cat-dd">
-                <button class="cat-trigger">
-                    <i class="bi bi-grid-3x3-gap-fill"></i> All Categories <i class="bi bi-chevron-down small"></i>
+            <div class="cat-dd position-relative category-dropdown-container">
+                <button class="cat-trigger" onclick="window.location.href='{{ route('home') }}'">
+                    <i class="bi bi-grid-3x3-gap-fill"></i> All Categories
                 </button>
-
-                <div class="mega-panel">
-                    <div class="row g-3">
+                
+                <div class="category-dropdown-menu position-absolute bg-white shadow rounded border p-4" style="top: 100%; left: 0; width: 700px; max-width: 90vw; z-index: 1050; display: none;">
+                    <div class="row g-4">
                         @foreach($categories as $category)
                             <div class="col-4">
-                                <div class="mega-col-title">
-                                    <a href="{{ route('category.products', $category->id) }}" class="text-decoration-none text-dark hover-blue">{{ $category->name }}</a>
-                                </div>
-                                <div class="mega-list">
-                                    @foreach($category->subCategories as $subCategory)
-                                        <a href="{{ route('category.products', [$category->id, 'subcategory' => $subCategory->id]) }}"><i class="bi bi-dot"></i> {{ $subCategory->name }}</a>
-                                    @endforeach
-                                </div>
+                                <a href="{{ route('category.products', $category->id) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center pb-2 mb-2" style="font-size: 15px; border-bottom: 2px solid #f0f0f0;">
+                                    @if($category->image)
+                                        <img src="{{ asset('storage/' . $category->image) }}" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-right: 8px;">
+                                    @endif
+                                    <span class="hover-color-primary">{{ $category->name }}</span>
+                                </a>
+                                @if($category->subCategories->isNotEmpty())
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach($category->subCategories as $subCategory)
+                                            <li class="py-1">
+                                                <a href="{{ route('category.products', [$category->id, 'subcategory' => $subCategory->id]) }}" class="text-decoration-none text-muted small hover-color-primary d-inline-block w-100">
+                                                    {{ $subCategory->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -349,6 +358,17 @@
 </script>
 
 <style>
+    /* Category Mega Menu Hover Styles */
+    .category-dropdown-container:hover .category-dropdown-menu {
+        display: block !important;
+    }
+    .hover-color-primary {
+        transition: color 0.2s ease;
+    }
+    .hover-color-primary:hover, a:hover > .hover-color-primary {
+        color: #E0471B !important;
+    }
+
     .search-results-dropdown {
         border-radius: 8px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

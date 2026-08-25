@@ -208,7 +208,7 @@
                 color: #2b2b2b;
                 margin-bottom: 0.3rem;
                 line-height: 1.3;
-                height: 2.5rem;
+                height: 2.8rem;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
@@ -616,7 +616,7 @@
             @forelse($homeCategories as $category)
                 @if($category->products->isNotEmpty())
                     <div class="col-12 mt-4 mb-3">
-                        <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;font-size: 30px; font-weight: 700;">
+                        <h4 class="mb-0 fw-bold category-grid-title" style="color: #2b2b2b; position: relative; padding-left: 15px;">
                             <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
                             {{ $category->name }}
                         </h4>
@@ -643,6 +643,16 @@
 
     @push('styles')
         <style>
+            .category-grid-title {
+                font-size: 30px;
+                font-weight: 700;
+            }
+            @media (max-width: 768px) {
+                .category-grid-title {
+                    font-size: 20px;
+                }
+            }
+
             /* Hero Slider Styling */
             .hero-carousel {
                 position: relative;
