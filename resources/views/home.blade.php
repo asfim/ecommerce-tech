@@ -9,11 +9,11 @@
             <div class="row g-4 d-none d-lg-flex">
 
                 <!-- LEFT: Category Sidebar -->
-                <div class="col-lg-3">
-                    <div class="hero-cat-sidebar">
+                <div class="col-lg-3" style="z-index: 10;">
+                    <div class="hero-cat-sidebar" style="overflow: visible !important;">
                     <ul class="hero-cat-list">
                         @foreach($categories as $cat)
-                        <li>
+                        <li class="position-relative hero-cat-item">
                             <a href="{{ route('category.products', $cat->id) }}">
                                 @if($cat->image)
                                     <img src="{{ asset('storage/' . $cat->image) }}" alt="{{ $cat->name }}" class="hero-cat-icon">
@@ -21,8 +21,24 @@
                                     <i class="bi bi-grid hero-cat-icon-bi"></i>
                                 @endif
                                 <span>{{ $cat->name }}</span>
-                                <i class="bi bi-chevron-right ms-auto cat-arrow"></i>
+                                @if($cat->subCategories->isNotEmpty())
+                                    <i class="bi bi-chevron-right ms-auto cat-arrow"></i>
+                                @endif
                             </a>
+                            @if($cat->subCategories->isNotEmpty())
+                                <div class="hero-cat-submenu position-absolute bg-white" style="left: 100%; top: 0; min-width: 250px; z-index: 9999; border-radius: 0 12px 12px 0; box-shadow: 10px 10px 30px rgba(0,0,0,0.08); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);">
+                                    <div class="text-uppercase fw-bold text-muted mb-2 px-3" style="font-size: 11px; letter-spacing: 1px;">{{ $cat->name }}</div>
+                                    <ul class="list-unstyled mb-0">
+                                        @foreach($cat->subCategories as $subCat)
+                                            <li class="mb-1">
+                                                <a href="{{ route('category.products', [$cat->id, 'subcategory' => $subCat->id]) }}" class="d-flex align-items-center px-3 py-2 text-decoration-none text-dark rounded smart-submenu-link" style="font-size: 14px; font-weight: 500;">
+                                                    {{ $subCat->name }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                         </li>
                         @endforeach
                         <li class="view-all-cats">
@@ -643,6 +659,26 @@
 
     @push('styles')
         <style>
+            /* Hero Category Hover Submenu (Premium Design) */
+            .hero-cat-item:hover .hero-cat-submenu {
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: translateX(0) !important;
+            }
+            .smart-submenu-link {
+                transition: all 0.2s ease;
+            }
+            .smart-submenu-link:hover {
+                background-color: #fff4f1;
+                color: #E0471B !important;
+                transform: translateX(4px);
+            }
+            /* Fix carousel arrow appearing over submenu */
+            .carousel-control-prev,
+            .carousel-control-next {
+                z-index: 5 !important;
+            }
+
             .category-grid-title {
                 font-size: 30px;
                 font-weight: 700;
