@@ -267,6 +267,18 @@
             updateCartDropdown();
         })();
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Global override for native alert
+        window.nativeAlert = window.alert;
+        window.alert = function(message) {
+            Swal.fire({
+                text: message,
+                icon: 'warning',
+                confirmButtonColor: '#1a73e8'
+            });
+        };
+    </script>
     @stack('scripts')
 </body>
 </html>
