@@ -112,9 +112,17 @@
                                 <span>{{ $product->name }}</span>
                                 @php
                                     $isVariantProduct = false;
+                                    $totalStock = $product->stock;
                                     if(!empty($product->variants)) {
+                                        $variantStock = 0;
                                         foreach($product->variants as $v) {
-                                            if(isset($v['combo'])) { $isVariantProduct = true; break; }
+                                            if(isset($v['combo'])) { 
+                                                $isVariantProduct = true;
+                                                $variantStock += (int)($v['stock'] ?? 0);
+                                            }
+                                        }
+                                        if($isVariantProduct) {
+                                            $totalStock = $variantStock;
                                         }
                                     }
                                 @endphp
@@ -127,7 +135,7 @@
                         <td>{{ $product->brand->name ?? '-' }}</td>
                         <td>{{ $product->buy_price ? '৳' . number_format($product->buy_price, 2) : '-' }}</td>
                         <td>৳{{ number_format($product->price, 2) }}</td>
-                        <td>{{ $product->stock }}</td>
+                        <td>{{ $totalStock }}</td>
                         <td>
                             <div class="form-check form-switch">
                                 <input class="form-check-input active-toggle" type="checkbox" data-id="{{ $product->id }}"
