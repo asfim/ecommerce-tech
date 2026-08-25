@@ -527,8 +527,9 @@
   document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
     chk.addEventListener('change', function() {
       const attr = this.dataset.attrName;
+      const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
       
-      if (this.checked) {
+      if (this.checked && isVariant) {
         // Enforce single selection per attribute
         document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]`).forEach(otherChk => {
           if (otherChk !== this) {
@@ -545,7 +546,7 @@
       updateSelectedAttrs();
 
       // Prevent selecting if the combination already exists
-      if (this.checked) {
+      if (this.checked && isVariant) {
          const combos = generateCombinations(selectedAttrs);
          if (combos.length > 0) {
             const combo = combos[0];

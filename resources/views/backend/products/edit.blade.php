@@ -594,8 +594,44 @@
   document.querySelectorAll('.attribute-value-checkbox').forEach(chk => {
     chk.addEventListener('change', function() {
       const attr = this.dataset.attrName;
-      const checked = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]:checked`)].map(c => c.value);
-      if (checked.length > 0) { selectedAttrs[attr] = checked; } else { delete selectedAttrs[attr]; }
+      const isVariant = document.getElementById('typeVariant') && document.getElementById('typeVariant').checked;
+      
+      if (this.checked && isVariant) {
+        // Enforce single selection per attribute
+        document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]`).forEach(otherChk => {
+          if (otherChk !== this) {
+            otherChk.checked = false;
+          }
+        });
+      }
+
+      const updateSelectedAttrs = () => {
+        const checked = [...document.querySelectorAll(`.attribute-value-checkbox[data-attr-name="${attr}"]:checked`)].map(c => c.value);
+        if (checked.length > 0) { selectedAttrs[attr] = checked; } else { delete selectedAttrs[attr]; }
+      };
+
+      updateSelectedAttrs();
+
+      // Prevent selecting if the combination already exists
+      if (this.checked && isVariant) {
+         const combos = generateCombinations(selectedAttrs);
+         if (combos.length > 0) {
+            const combo = combos[0];
+            const key = Object.entries(combo).map(([k,v]) => `${k}:${v}`).join('|');
+            
+            // Check if this exact combination exists in variantState
+            const exists = variantState.find(p => {
+               const pKey = Object.entries(p.combo).map(([k,v]) => `${k}:${v}`).join('|');
+               return pKey === key && Object.keys(combo).length === Object.keys(p.combo).length;
+            });
+            
+            if (exists) {
+                alert("This attribute combination has already been used to create a variant!");
+                this.checked = false;
+                updateSelectedAttrs();
+            }
+         }
+      }
     });
   });
 
@@ -665,6 +701,13 @@
             msg.style.display = 'inline-block';
             setTimeout(() => msg.style.display = 'none', 3000);
         }
+
+        // Reset selected attributes after generation
+        document.querySelectorAll('.attribute-value-checkbox:checked').forEach(c => {
+           c.checked = false;
+        });
+        selectedAttrs = {};
+
       } else {
         alert("All selected combinations have already been generated.");
       }
