@@ -22,12 +22,12 @@
     //   'icon' => 'bi-stars',
     //   'recommendation' => 'Recommended size: 394 x 220 px (Aspect ratio ~ 16:9)'
     // ],
-    'discounted_products_banner' => [
-      'label' => 'Discounted Products',
-      'max' => 1,
-      'icon' => 'bi-lightning',
-      'recommendation' => 'Recommended size: 285 x 200 px (Aspect ratio ~ 4:3 / 3:2)'
-    ],
+    // 'discounted_products_banner' => [
+    //   'label' => 'Discounted Products',
+    //   'max' => 1,
+    //   'icon' => 'bi-lightning',
+    //   'recommendation' => 'Recommended size: 285 x 200 px (Aspect ratio ~ 4:3 / 3:2)'
+    // ],
   ];
 @endphp
 
