@@ -891,6 +891,7 @@
         const selections = getSelectedVariants();
         
         let activePrice = baseProductPrice;
+        let originalPriceForVariant = null;
         let activeImage = baseProductImage;
         let priceOverridden = false;
         let imageOverridden = false;
@@ -914,7 +915,24 @@
                 });
                 if (exactComboMatch) {
                     if (exactComboMatch.price !== null && exactComboMatch.price !== undefined && exactComboMatch.price !== '') {
-                        activePrice = parseFloat(exactComboMatch.price);
+                        let p = parseFloat(exactComboMatch.price);
+                        let dPrice = null;
+                        if (exactComboMatch.discount_type && exactComboMatch.discount > 0) {
+                            const dVal = parseFloat(exactComboMatch.discount);
+                            if (exactComboMatch.discount_type === 'percent') {
+                                dPrice = p - (p * (dVal / 100));
+                            } else if (exactComboMatch.discount_type === 'fixed') {
+                                dPrice = p - dVal;
+                            }
+                        }
+                        
+                        if (dPrice !== null && dPrice >= 0) {
+                            activePrice = dPrice;
+                            originalPriceForVariant = p;
+                        } else {
+                            activePrice = p;
+                        }
+                        
                         priceOverridden = true;
                     }
                     if (exactComboMatch.image) {
@@ -932,7 +950,23 @@
 
                 if (match) {
                     if (match.price !== null && match.price !== undefined && match.price !== '') {
-                        activePrice = parseFloat(match.price);
+                        let p = parseFloat(match.price);
+                        let dPrice = null;
+                        if (match.discount_type && match.discount > 0) {
+                            const dVal = parseFloat(match.discount);
+                            if (match.discount_type === 'percent') {
+                                dPrice = p - (p * (dVal / 100));
+                            } else if (match.discount_type === 'fixed') {
+                                dPrice = p - dVal;
+                            }
+                        }
+                        
+                        if (dPrice !== null && dPrice >= 0) {
+                            activePrice = dPrice;
+                            originalPriceForVariant = p;
+                        } else {
+                            activePrice = p;
+                        }
                         priceOverridden = true;
                     }
                     if (match.image) {
@@ -946,7 +980,11 @@
         const priceContainer = document.querySelector('.text-danger.fw-bold');
         if (priceContainer) {
             if (priceOverridden) {
-                priceContainer.innerHTML = `৳${activePrice.toFixed(2)}`;
+                if (originalPriceForVariant !== null) {
+                    priceContainer.innerHTML = `৳${activePrice.toFixed(2)} <del class="text-muted fs-5 ms-2">৳${originalPriceForVariant.toFixed(2)}</del>`;
+                } else {
+                    priceContainer.innerHTML = `৳${activePrice.toFixed(2)}`;
+                }
             } else {
                 if (hasDiscount) {
                     priceContainer.innerHTML = `৳${baseProductPrice.toFixed(2)} <del class="text-muted fs-5 ms-2">৳${baseProductOriginalPrice.toFixed(2)}</del>`;

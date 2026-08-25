@@ -747,6 +747,16 @@
     }).join('');
   }
 
+  function calculateVariantDiscountedPrice(price, discountType, discountValue) {
+    const p = parseFloat(price) || 0;
+    const dVal = parseFloat(discountValue) || 0;
+    if (p <= 0 || !discountType || dVal <= 0) return null;
+    let dPrice = p;
+    if (discountType === 'percent') dPrice = p - (p * (dVal / 100));
+    else if (discountType === 'fixed') dPrice = p - dVal;
+    return dPrice < 0 ? 0 : dPrice;
+  }
+
   function renderVariants() {
     const tbody = document.getElementById('variantTableBody');
     if (!tbody) return;
@@ -755,6 +765,14 @@
     variantState.forEach((v, idx) => {
       const row = document.createElement('tr');
       if (!v.active) row.classList.add('opacity-50');
+      
+      let discountedPriceHtml = '';
+      const dPrice = calculateVariantDiscountedPrice(v.price, v.discount_type, v.discount);
+      if (dPrice !== null) {
+          discountedPriceHtml = `<div class="form-text text-success fw-bold mt-1" id="vt-discount-text-${idx}" style="font-size: 11px;">After Discount: ৳${dPrice.toFixed(2)}</div>`;
+      } else {
+          discountedPriceHtml = `<div class="form-text text-success fw-bold mt-1" id="vt-discount-text-${idx}" style="font-size: 11px; display:none;"></div>`;
+      }
       
       let imageHtml = `
             <img src="${v.imagePreview || ''}" class="vt-img-preview" id="vt-preview-${idx}" style="${v.imagePreview ? '' : 'display:none;'}" title="Click to change image">
@@ -776,6 +794,7 @@
         </td>
         <td>
           <input type="number" class="form-control form-control-sm vt-bind" data-idx="${idx}" data-field="price" value="${v.price}" step="0.01" placeholder="0.00">
+          ${discountedPriceHtml}
         </td>
         <td>
           <select class="form-select form-select-sm vt-bind" data-idx="${idx}" data-field="discount_type">
@@ -819,6 +838,22 @@
     document.querySelectorAll('.vt-bind').forEach(el => {
       el.addEventListener('input', function() {
         variantState[this.dataset.idx][this.dataset.field] = this.value;
+        
+        if (['price', 'discount', 'discount_type'].includes(this.dataset.field)) {
+            const idx = this.dataset.idx;
+            const v = variantState[idx];
+            const dPrice = calculateVariantDiscountedPrice(v.price, v.discount_type, v.discount);
+            const textEl = document.getElementById(`vt-discount-text-${idx}`);
+            if (textEl) {
+                if (dPrice !== null) {
+                    textEl.textContent = `After Discount: ৳${dPrice.toFixed(2)}`;
+                    textEl.style.display = 'block';
+                } else {
+                    textEl.style.display = 'none';
+                }
+            }
+        }
+
         if (this.classList.contains('vt-date-input')) {
            if (this.value) this.classList.add('has-value');
            else this.classList.remove('has-value');

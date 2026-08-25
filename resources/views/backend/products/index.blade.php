@@ -113,16 +113,25 @@
                                 @php
                                     $isVariantProduct = false;
                                     $totalStock = $product->stock;
+                                    $displayBuyPrice = (float)$product->buy_price;
+                                    $displaySellPrice = (float)$product->price;
+
                                     if(!empty($product->variants)) {
                                         $variantStock = 0;
+                                        $variantBuyPriceSum = 0;
+                                        $variantSellPriceSum = 0;
                                         foreach($product->variants as $v) {
                                             if(isset($v['combo'])) { 
                                                 $isVariantProduct = true;
                                                 $variantStock += (int)($v['stock'] ?? 0);
+                                                $variantBuyPriceSum += (float)($v['buy_price'] ?? 0);
+                                                $variantSellPriceSum += (float)($v['price'] ?? 0);
                                             }
                                         }
                                         if($isVariantProduct) {
                                             $totalStock = $variantStock;
+                                            $displayBuyPrice = $variantBuyPriceSum;
+                                            $displaySellPrice = $variantSellPriceSum;
                                         }
                                     }
                                 @endphp
@@ -133,8 +142,8 @@
                         </td>
                         <td>{{ $product->category->name ?? '-' }}</td>
                         <td>{{ $product->brand->name ?? '-' }}</td>
-                        <td>{{ $product->buy_price ? '৳' . number_format($product->buy_price, 2) : '-' }}</td>
-                        <td>৳{{ number_format($product->price, 2) }}</td>
+                        <td>{{ $displayBuyPrice ? '৳' . number_format($displayBuyPrice, 2) : '-' }}</td>
+                        <td>৳{{ number_format($displaySellPrice, 2) }}</td>
                         <td>{{ $totalStock }}</td>
                         <td>
                             <div class="form-check form-switch">
@@ -144,7 +153,7 @@
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-2">
-                                <a href="{{ route('product.details', $product->slug) }}" target="_blank" class="btn btn-sm btn-info text-white" title="View Product"><i
+                                <a href="{{ route('admin.products.show', $product) }}" class="btn btn-sm btn-info text-white" title="View Product"><i
                                         class="bi bi-eye"></i></a>
                                 <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-sm btn-warning" title="Edit Product"><i
                                         class="bi bi-pencil"></i></a>

@@ -49,6 +49,37 @@ class Product extends Model
         return true;
     }
 
+    public function getHasAnyDiscountAttribute(): bool
+    {
+        if ($this->has_active_discount) {
+            return true;
+        }
+
+        if (is_array($this->variants)) {
+            $now = now();
+            foreach ($this->variants as $variant) {
+                if (isset($variant['combo']) && !empty($variant['discount_type']) && (float)($variant['discount'] ?? 0) > 0) {
+                    $startDate = !empty($variant['discount_start']) ? \Carbon\Carbon::parse($variant['discount_start']) : null;
+                    $endDate = !empty($variant['discount_end']) ? \Carbon\Carbon::parse($variant['discount_end']) : null;
+                    
+                    $isActive = true;
+                    if ($startDate && $startDate->gt($now)) {
+                        $isActive = false;
+                    }
+                    if ($endDate && $endDate->lt($now)) {
+                        $isActive = false;
+                    }
+                    
+                    if ($isActive) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function scopeFrontendActive($query)
     {
         return $query->where('is_active', true)

@@ -1,6 +1,9 @@
 @php
     $hasDiscount = $product->has_active_discount;
     $discountedPrice = $product->price;
+    $displayDiscountType = $product->discount_type;
+    $displayDiscountValue = $product->discount_value;
+    
     if ($hasDiscount) {
         if ($product->discount_type === 'percent') {
             $discountedPrice = $product->price - ($product->price * $product->discount_value) / 100;
@@ -13,16 +16,58 @@
     $isVariant = false;
     $minPrice = $product->price;
     $maxPrice = $product->price;
+    $originalMinPrice = $product->price;
+    $originalMaxPrice = $product->price;
     $hasMultiplePrices = false;
+    $hasMultipleOriginalPrices = false;
+    $hasVariantDiscount = false;
     
     if (!empty($product->variants) && is_array($product->variants)) {
         $prices = [];
+        $originalPrices = [];
         $firstVariantImage = null;
+        $now = now();
         foreach ($product->variants as $v) {
             if (isset($v['combo'])) {
                 $isVariant = true;
                 if (isset($v['price']) && $v['price'] > 0) {
-                    $prices[] = $v['price'];
+                    $originalP = (float) $v['price'];
+                    $p = $originalP;
+                    
+                    // Check for variant discount
+                    if (!empty($v['discount_type']) && isset($v['discount']) && $v['discount'] > 0) {
+                        $isActive = true;
+                        $startDate = !empty($v['discount_start']) ? \Carbon\Carbon::parse($v['discount_start']) : null;
+                        $endDate = !empty($v['discount_end']) ? \Carbon\Carbon::parse($v['discount_end']) : null;
+                        if ($startDate && $startDate->gt($now)) $isActive = false;
+                        if ($endDate && $endDate->lt($now)) $isActive = false;
+                        
+                        if ($isActive) {
+                            $hasVariantDiscount = true;
+                            if ($v['discount_type'] === 'percent') {
+                                $p = $p - ($p * $v['discount'] / 100);
+                            } else {
+                                $p = $p - $v['discount'];
+                            }
+                            
+                            // For badge display, if the main product doesn't have a discount, we show the highest variant discount
+                            if (!$hasDiscount) {
+                                if ($v['discount_type'] === 'percent') {
+                                    if ($displayDiscountType !== 'percent' || $v['discount'] > $displayDiscountValue) {
+                                        $displayDiscountType = 'percent';
+                                        $displayDiscountValue = $v['discount'];
+                                    }
+                                } else if ($displayDiscountType !== 'percent') { // Prefer percent over fixed for badge, or max fixed
+                                    if ($v['discount'] > $displayDiscountValue) {
+                                        $displayDiscountType = 'fixed';
+                                        $displayDiscountValue = $v['discount'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    $prices[] = $p;
+                    $originalPrices[] = $originalP;
                 }
                 if (!$firstVariantImage && isset($v['image']) && !empty($v['image'])) {
                     $firstVariantImage = $v['image'];
@@ -30,6 +75,10 @@
             }
         }
         
+        if ($hasVariantDiscount && !$hasDiscount) {
+            $hasDiscount = true;
+        }
+
         if ($firstVariantImage) {
             $displayImage = $firstVariantImage;
         }
@@ -37,12 +86,19 @@
         if (count($prices) > 0) {
             $minPrice = min($prices);
             $maxPrice = max($prices);
+            $originalMinPrice = min($originalPrices);
+            $originalMaxPrice = max($originalPrices);
+
             if ($minPrice != $maxPrice) {
                 $hasMultiplePrices = true;
             } else {
-                // If all variations have the same price, just show that price.
                 $minPrice = $prices[0];
-                $discountedPrice = $minPrice; // Ignore simple product discount calculation for variant if prices are overwritten, or we could apply discount to minPrice
+                $discountedPrice = $minPrice;
+                $originalMinPrice = $originalPrices[0];
+            }
+
+            if ($originalMinPrice != $originalMaxPrice) {
+                $hasMultipleOriginalPrices = true;
             }
         }
     }
@@ -51,11 +107,11 @@
     <div class="prod-card">
         <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
             <div class="prod-img-wrap">
-                @if ($hasDiscount)
-                    @if ($product->discount_type === 'percent')
-                        <span class="badge-new-arrival">{{ round($product->discount_value) }}% OFF</span>
+                @if ($hasDiscount && $displayDiscountValue > 0)
+                    @if ($displayDiscountType === 'percent')
+                        <span class="badge-new-arrival">{{ round($displayDiscountValue) }}% OFF</span>
                     @else
-                        <span class="badge-new-arrival">৳{{ round($product->discount_value) }} OFF</span>
+                        <span class="badge-new-arrival">৳{{ round($displayDiscountValue) }} OFF</span>
                     @endif
                 @endif
 
@@ -87,11 +143,16 @@
                 </a>
                 <div class="p">
                     @if ($hasMultiplePrices)
-                        <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
+                        @if ($hasDiscount)
+                            <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
+                            <span class="old"><span style="font-size: 1.2em;">৳</span> {{ number_format($originalMinPrice, 0) }} - {{ number_format($originalMaxPrice, 0) }}</span>
+                        @else
+                            <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
+                        @endif
                     @else
                         @if ($hasDiscount)
                             <span style="font-size: 1.2em;">৳</span> {{ number_format($discountedPrice, 0) }}
-                            <span class="old"><span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }}</span>
+                            <span class="old"><span style="font-size: 1.2em;">৳</span> {{ number_format($isVariant ? $originalMinPrice : $product->price, 0) }}</span>
                         @else
                             <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }}
                         @endif

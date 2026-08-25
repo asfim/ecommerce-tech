@@ -146,6 +146,12 @@ class ProductController extends Controller implements HasMiddleware
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
     }
 
+    public function show(Product $product)
+    {
+        $product->load(['category', 'subCategory', 'brand']);
+        return view('backend.products.show', compact('product'));
+    }
+
     public function edit(Product $product)
     {
         $categories = Category::all();
