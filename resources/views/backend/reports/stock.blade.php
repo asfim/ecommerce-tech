@@ -159,24 +159,23 @@
         <tbody>
           @foreach($paginatedProducts as $product)
             @php
-              $prodBuyPrice = $product->buy_price ?? 0.00;
-              $prodRetailPrice = $product->price ?? 0.00;
-              $itemCostVal = $prodBuyPrice * $product->stock;
-              $itemRetailVal = $prodRetailPrice * $product->stock;
+              $itemCostVal = $product->computed_cost ?? 0;
+              $itemRetailVal = $product->computed_retail ?? 0;
+              $actualStock = $product->computed_stock ?? 0;
             @endphp
             <tr>
               <td class="ps-3 text-muted">{{ $product->id }}</td>
               <td class="fw-medium">{{ $product->name }}</td>
               <td>{{ $product->category->name ?? '-' }}</td>
-              <td class="text-end text-muted">৳{{ number_format($prodBuyPrice, 2) }}</td>
-              <td class="text-end">৳{{ number_format($prodRetailPrice, 2) }}</td>
-              <td class="text-center fw-bold">{{ $product->stock }}</td>
+              <td class="text-end text-muted">-</td>
+              <td class="text-end">-</td>
+              <td class="text-center fw-bold">{{ $actualStock }}</td>
               <td class="text-end text-muted">৳{{ number_format($itemCostVal, 2) }}</td>
               <td class="text-end fw-semibold">৳{{ number_format($itemRetailVal, 2) }}</td>
               <td class="text-center pe-3">
-                @if($product->stock === 0)
+                @if($actualStock === 0)
                   <span class="badge bg-danger bg-opacity-10 text-danger border border-danger-subtle px-2 py-1 rounded">Out of Stock</span>
-                @elseif($product->stock <= 5)
+                @elseif($actualStock <= 5)
                   <span class="badge bg-warning bg-opacity-10 text-warning-emphasis border border-warning-subtle px-2 py-1 rounded">Low Stock</span>
                 @else
                   <span class="badge bg-success bg-opacity-10 text-success border border-success-subtle px-2 py-1 rounded">In Stock</span>

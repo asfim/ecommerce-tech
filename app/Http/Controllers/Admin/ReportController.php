@@ -130,18 +130,24 @@ class ReportController extends Controller
     /**
      * Display the stock report.
      */
-    public function stock(): View
+    public function stock(Request $request): View
     {
         $products = Product::with('category')->get();
 
         $totalProducts = $products->count();
-        $totalStockQty = $products->sum('stock');
-
+        $totalStockQty = 0;
         $stockValueCost = 0.00;
         $stockValueRetail = 0.00;
+        $outOfStockCount = 0;
+        $lowStockCount = 0;
+
+        $categoryStockArray = [];
 
         foreach ($products as $product) {
             $hasVariants = false;
+            $pTotalStock = 0;
+            $pTotalCost = 0.00;
+            $pTotalRetail = 0.00;
             
             if (!empty($product->variants)) {
                 $isNewStructure = false;
@@ -160,8 +166,9 @@ class ReportController extends Controller
                             $vSalePrice = isset($v['price']) && is_numeric($v['price']) ? (float) $v['price'] : (float) ($product->price ?? 0);
                             $vStock = isset($v['stock']) ? (int) $v['stock'] : 0;
                             
-                            $stockValueCost += ($vBuyPrice * $vStock);
-                            $stockValueRetail += ($vSalePrice * $vStock);
+                            $pTotalStock += $vStock;
+                            $pTotalCost += ($vBuyPrice * $vStock);
+                            $pTotalRetail += ($vSalePrice * $vStock);
                         }
                     }
                 }
@@ -170,31 +177,62 @@ class ReportController extends Controller
             if (!$hasVariants) {
                 $buyPrice = $product->buy_price ?? 0.00;
                 $salePrice = $product->price ?? 0.00;
+                $pStock = (int) $product->stock;
 
-                $stockValueCost += ($buyPrice * $product->stock);
-                $stockValueRetail += ($salePrice * $product->stock);
+                $pTotalStock = $pStock;
+                $pTotalCost = ($buyPrice * $pStock);
+                $pTotalRetail = ($salePrice * $pStock);
             }
+
+            // Bind computed values to product for table display and sorting
+            $product->computed_stock = $pTotalStock;
+            $product->computed_cost = $pTotalCost;
+            $product->computed_retail = $pTotalRetail;
+            
+            // Add to totals
+            $totalStockQty += $pTotalStock;
+            $stockValueCost += $pTotalCost;
+            $stockValueRetail += $pTotalRetail;
+
+            if ($pTotalStock === 0) {
+                $outOfStockCount++;
+            } elseif ($pTotalStock <= 5) {
+                $lowStockCount++;
+            }
+
+            // Category aggregation
+            $catId = $product->category_id;
+            $catName = $product->category->name ?? 'Uncategorized';
+            if (!isset($categoryStockArray[$catId])) {
+                $categoryStockArray[$catId] = [
+                    'category_name' => $catName,
+                    'total_stock' => 0,
+                    'retail_value' => 0.00
+                ];
+            }
+            $categoryStockArray[$catId]['total_stock'] += $pTotalStock;
+            $categoryStockArray[$catId]['retail_value'] += $pTotalRetail;
         }
 
         $potentialProfit = $stockValueRetail - $stockValueCost;
 
-        $outOfStockCount = $products->where('stock', 0)->count();
-        $lowStockCount = $products->where('stock', '>', 0)->where('stock', '<=', 5)->count();
+        // Sort collection by computed stock ascending
+        $sortedProducts = $products->sortBy('computed_stock')->values();
 
-        $paginatedProducts = Product::with('category')
-            ->orderBy('stock', 'asc')
-            ->paginate(15);
+        // Manual pagination
+        $currentPage = \Illuminate\Pagination\Paginator::resolveCurrentPage();
+        $perPage = 15;
+        $currentPageItems = $sortedProducts->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        $paginatedProducts = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentPageItems,
+            $sortedProducts->count(),
+            $perPage,
+            $currentPage,
+            ['path' => \Illuminate\Pagination\Paginator::resolveCurrentPath()]
+        );
 
-        $categoryStock = Product::query()
-            ->join('categories', 'products.category_id', '=', 'categories.id')
-            ->select(
-                'categories.name as category_name',
-                DB::raw('SUM(products.stock) as total_stock'),
-                DB::raw('SUM(products.stock * products.price) as retail_value')
-            )
-            ->groupBy('categories.id', 'categories.name')
-            ->orderBy('retail_value', 'desc')
-            ->get();
+        // Prepare category stock for chart
+        $categoryStock = collect($categoryStockArray)->sortByDesc('retail_value')->values()->all();
 
         return view('backend.reports.stock', compact(
             'totalProducts',

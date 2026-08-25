@@ -220,10 +220,19 @@ class HomeController extends Controller
 
         // Sort
         $sort = $request->query('sort', '');
+        
+        $priceExpression = "
+            CASE 
+                WHEN discount_type = 'percent' AND discount_value > 0 THEN price - (price * (discount_value / 100))
+                WHEN discount_type = 'flat' AND discount_value > 0 THEN price - discount_value
+                ELSE price 
+            END
+        ";
+
         if ($sort === 'price_asc') {
-            $query->orderBy('price', 'asc');
+            $query->orderByRaw("($priceExpression) ASC");
         } elseif ($sort === 'price_desc') {
-            $query->orderBy('price', 'desc');
+            $query->orderByRaw("($priceExpression) DESC");
         } else {
             $query->latest();
         }
