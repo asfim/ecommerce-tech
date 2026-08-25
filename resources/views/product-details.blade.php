@@ -236,6 +236,17 @@
     border-color: #155cb0 !important;
 }
 
+.variant-btn.variant-disabled,
+.variant-btn:disabled {
+    opacity: 0.35 !important;
+    cursor: not-allowed !important;
+    background-color: #f5f5f5 !important;
+    color: #aaa !important;
+    border-color: #ddd !important;
+    text-decoration: line-through !important;
+    pointer-events: none !important;
+}
+
 .tab-content-panel {
     display: none;
     padding: 20px;
@@ -959,7 +970,7 @@
         const addToCartBtn = document.querySelector('.add-to-cart-detail');
         const buyNowBtn = document.querySelector('.buy-now-detail');
         if (addToCartBtn) {
-            addToCartBtn.dataset.price = activePrice;
+                            addToCartBtn.dataset.price = activePrice;
             addToCartBtn.dataset.image = imageOverridden ? activeImage : mainImage.src;
         }
         if (buyNowBtn) {
@@ -968,18 +979,19 @@
         }
     }
 
+    const hasVariantImages = productVariants.some(v => v.image);
+
     // Variant buttons selection toggling
     document.querySelectorAll('.variant-group').forEach(group => {
         const buttons = group.querySelectorAll('.variant-btn');
-        
-        // Select the first button by default
-        if (buttons.length > 0) {
-            buttons[0].classList.add('active');
-        }
 
         buttons.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
+                // If product has variant images, attributes act as read-only indicators
+                if (hasVariantImages) {
+                    return;
+                }
                 buttons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 updateVariantDisplay();
@@ -988,7 +1000,20 @@
     });
 
     // Run once on load
-    updateVariantDisplay();
+    if (thumbs.length > 0) {
+        // Trigger click on first thumb to select its variants
+        thumbs[0].click();
+    } else {
+        // Fallback: Select first button in each group
+        document.querySelectorAll('.variant-group').forEach(group => {
+            const buttons = group.querySelectorAll('.variant-btn');
+            if (buttons.length > 0) {
+                buttons[0].classList.add('active');
+            }
+        });
+        updateVariantDisplay();
+    }
+
 
     tabBtns.forEach((btn, index) => {
         btn.addEventListener('click', () => {

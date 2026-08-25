@@ -110,7 +110,8 @@
                     <i class="bi bi-grid-3x3-gap-fill"></i> All Categories
                 </button>
                 
-                <div class="category-dropdown-menu position-absolute bg-white shadow rounded border p-4" style="top: 100%; left: 0; width: 700px; max-width: 90vw; z-index: 1050; display: none;">
+                <div class="category-dropdown-menu position-absolute bg-white shadow rounded border" style="top: 100%; left: 0; width: 700px; max-width: 90vw; z-index: 1050; display: none; max-height: 480px; overflow-y: auto;">
+                    <div class="p-4">
                     <div class="row g-4">
                         @foreach($categories as $category)
                             <div class="col-4">
@@ -134,6 +135,7 @@
                             </div>
                         @endforeach
                     </div>
+                    </div>{{-- close p-4 --}}
                 </div>
             </div>
 
