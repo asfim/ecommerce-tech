@@ -97,38 +97,10 @@
     <div class="navbar2">
         <div class="wrap inner d-flex align-items-center">
             <!-- Category mega menu trigger -->
-            <div class="cat-dd position-relative category-dropdown-container">
+            <div class="cat-dd position-relative">
                 <button class="cat-trigger" onclick="window.location.href='{{ route('home') }}'">
                     <i class="bi bi-grid-3x3-gap-fill"></i> All Categories
                 </button>
-
-                <div class="category-dropdown-menu position-absolute bg-white shadow rounded border" style="top: 100%; left: 0; width: 700px; max-width: 90vw; z-index: 1050; display: none; max-height: 480px; overflow-y: auto;">
-                    <div class="p-4">
-                    <div class="row g-4">
-                        @foreach($categories as $category)
-                            <div class="col-4">
-                                <a href="{{ route('category.products', $category->id) }}" class="text-decoration-none text-dark fw-bold d-flex align-items-center pb-2 mb-2" style="font-size: 15px; border-bottom: 2px solid #f0f0f0;">
-                                    @if($category->image)
-                                        <img src="{{ asset('storage/' . $category->image) }}" alt="" style="width: 20px; height: 20px; object-fit: contain; margin-right: 8px;">
-                                    @endif
-                                    <span class="hover-color-primary">{{ $category->name }}</span>
-                                </a>
-                                @if($category->subCategories->isNotEmpty())
-                                    <ul class="list-unstyled mb-0">
-                                        @foreach($category->subCategories as $subCategory)
-                                            <li class="py-1">
-                                                <a href="{{ route('category.products', [$category->id, 'subcategory' => $subCategory->id]) }}" class="text-decoration-none text-muted small hover-color-primary d-inline-block w-100">
-                                                    {{ $subCategory->name }}
-                                                </a>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
-                    </div>{{-- close p-4 --}}
-                </div>
             </div>
 
             <!-- Main nav links -->
@@ -146,95 +118,96 @@
 
 <!-- ============ MOBILE & TABLET HEADER (Below 992px) ============ -->
 <div class="d-block d-lg-none">
-    <div class="header-row py-2">
-        <div class="wrap">
-            <!-- Top Row: Toggles, Logo, Cart & Profile -->
-            <div class="d-flex justify-content-between align-items-center gap-2">
-                <!-- Left side: Toggles & Logo -->
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Nav Icon (Menu Drawer Trigger) -->
-                    <button type="button" class="icon-btn btn btn-link text-dark p-0" id="menuToggleBtn" style="text-decoration: none;">
-                        <i class="bi bi-list" style="font-size: 24px;"></i>
-                    </button>
-
-                    <!-- Category Icon (Category Drawer Trigger) -->
-                    <button type="button" class="icon-btn btn btn-link text-dark p-0" id="categoryToggleBtn" style="text-decoration: none;" title="Categories">
-                        <i class="bi bi-grid-3x3-gap-fill" style="font-size: 18px;"></i>
-                    </button>
-
-                    <!-- Logo -->
-                    <a class="d-flex align-items-center gap-2 ms-1" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
-                        @if($companyLogo)
-                            <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 40px; border-radius: 4px;">
-                        {{-- @else
-                            <div class="header-logo-icon" style="width: 30px; height: 30px; border-radius: 6px; font-size: 15px;">
-                                <i class="bi bi-bag-fill"></i>
-                            </div>
-                            <div class="header-brand-text">
-                                <div class="header-brand-name" style="font-size: 14px; font-weight: 800; color: #ff5521; letter-spacing: 0.5px;">{{ strtoupper($companyName) }}</div>
-                                <div class="header-brand-sub" style="font-size: 8px; color: #888;">Shop Smart, Live Better</div>
-                            </div> --}}
-                        @endif
-                    </a>
-                </div>
-
-                <!-- Right side: Cart & Profile -->
-                <div class="d-flex align-items-center gap-2">
-                    <!-- Add to Cart Icon (Bag Icon) -->
-                    <div class="dropdown">
-                        <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownMobile" style="text-decoration:none;">
-                            <i class="bi bi-bag" style="font-size: 20px;"></i><span class="badge-num" style="width: 14px; height: 14px; font-size: 8px;">0</span>
+    <!-- Placeholder to prevent layout shift when top row becomes fixed -->
+    <div id="mobileHeaderPlaceholder" style="display: none; height: 57px;"></div>
+    
+    <div id="mobileStickyTopRow" class="bg-white" style="z-index: 1040; border-bottom: 1px solid #eaeaea; transition: box-shadow 0.3s ease;">
+        <div class="header-row py-2">
+            <div class="wrap">
+                <!-- Top Row: Toggles, Logo, Cart & Profile -->
+                <div class="d-flex justify-content-between align-items-center gap-2">
+                    <!-- Left side: Toggles & Logo -->
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Nav Icon (Menu Drawer Trigger) -->
+                        <button type="button" class="icon-btn btn btn-link text-dark p-0" id="menuToggleBtn" style="text-decoration: none;">
+                            <i class="bi bi-list" style="font-size: 24px;"></i>
+                        </button>
+    
+                        <!-- Category Icon (Category Drawer Trigger) -->
+                        <button type="button" class="icon-btn btn btn-link text-dark p-0" id="categoryToggleBtn" style="text-decoration: none;" title="Categories">
+                            <i class="bi bi-grid-3x3-gap-fill" style="font-size: 18px;"></i>
+                        </button>
+    
+                        <!-- Logo -->
+                        <a class="d-flex align-items-center gap-2 ms-1" href="{{ route('home') }}" style="text-decoration:none; color:inherit;">
+                            @if($companyLogo)
+                                <img src="{{ asset('storage/' . $companyLogo) }}" alt="" style="max-height: 40px; border-radius: 4px;">
+                            @endif
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end p-3 cart-dropdown-menu" aria-labelledby="cartDropdownMobile" style="width: 290px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
-                            <!-- Dynamically rendered cart items -->
-                        </ul>
                     </div>
-
-                    <!-- Auth Icon with Dropdown -->
-                    <div class="dropdown">
-                        <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="authDropdownBtn" style="text-decoration: none;">
-                            @if (auth()->guard('admin')->check())
-                                <img src="https://placehold.co/26x26/ff5521/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}"
-                                    class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
-                            @elseif(auth()->guard('web')->check())
-                                <img src="https://placehold.co/26x26/ff5521/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"
-                                    class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
-                            @else
-                                <i class="bi bi-person" style="font-size: 22px;"></i>
-                            @endif
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end mt-2">
-                            @if (auth()->guard('admin')->check())
-                                <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->guard('admin')->user()->email }}</h6></li>
-                                <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('admin.logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                    </form>
-                                </li>
-                            @elseif(auth()->guard('web')->check())
-                                <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->user()->name }}</h6></li>
-                                <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="POST" action="{{ route('user.logout') }}">
-                                        @csrf
-                                        <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
-                                    </form>
-                                </li>
-                            @else
-                                <li><a class="dropdown-item" href="{{ route('user.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
-                                <li><a class="dropdown-item" href="{{ route('user.register') }}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
-                            @endif
-                        </ul>
+    
+                    <!-- Right side: Cart & Profile -->
+                    <div class="d-flex align-items-center gap-2">
+                        <!-- Add to Cart Icon (Bag Icon) -->
+                        <div class="dropdown">
+                            <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="cartDropdownMobile" style="text-decoration:none;">
+                                <i class="bi bi-bag" style="font-size: 20px;"></i><span class="badge-num" style="width: 14px; height: 14px; font-size: 8px;">0</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end p-3 cart-dropdown-menu" aria-labelledby="cartDropdownMobile" style="width: 290px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.08);">
+                                <!-- Dynamically rendered cart items -->
+                            </ul>
+                        </div>
+    
+                        <!-- Auth Icon with Dropdown -->
+                        <div class="dropdown">
+                            <a href="#" class="icon-btn dropdown-toggle no-arrow" data-bs-toggle="dropdown" id="authDropdownBtn" style="text-decoration: none;">
+                                @if (auth()->guard('admin')->check())
+                                    <img src="https://placehold.co/26x26/ff5521/fff?text={{ strtoupper(substr(auth()->guard('admin')->user()->email, 0, 1)) }}"
+                                        class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
+                                @elseif(auth()->guard('web')->check())
+                                    <img src="https://placehold.co/26x26/ff5521/fff?text={{ strtoupper(substr(auth()->user()->name, 0, 1)) }}"
+                                        class="rounded-circle" style="width: 26px; height: 26px; object-fit: cover;">
+                                @else
+                                    <i class="bi bi-person" style="font-size: 22px;"></i>
+                                @endif
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end mt-2">
+                                @if (auth()->guard('admin')->check())
+                                    <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->guard('admin')->user()->email }}</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('admin.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('admin.logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                        </form>
+                                    </li>
+                                @elseif(auth()->guard('web')->check())
+                                    <li><h6 class="dropdown-header text-dark fw-bold">{{ auth()->user()->name }}</h6></li>
+                                    <li><a class="dropdown-item" href="{{ route('user.dashboard') }}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="POST" action="{{ route('user.logout') }}">
+                                            @csrf
+                                            <button type="submit" class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Logout</button>
+                                        </form>
+                                    </li>
+                                @else
+                                    <li><a class="dropdown-item" href="{{ route('user.login') }}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('user.register') }}"><i class="bi bi-person-plus me-2"></i>Register</a></li>
+                                @endif
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
 
+    <div class="header-row bg-white pb-2 pt-1">
+        <div class="wrap">
             <!-- Second Row: Centered Search Bar -->
-            <div class="mt-2 pt-2 border-top d-flex justify-content-center">
+            <div class="d-flex justify-content-center">
                 <form action="{{ route('home') }}" method="GET" class="search-input d-flex m-0 position-relative w-100" style="max-width: 320px;">
                     <div class="search-input-wrap w-100 d-flex" style="height: 38px;">
                         <input type="text" name="search" class="form-control search-input-field" placeholder="I am shopping for..." value="{{ request()->query('search') }}" autocomplete="off" style="font-size: 13px; height: 100%; border: none !important;">
@@ -437,5 +410,29 @@
                 }
             });
         });
+    });
+
+    // Mobile sticky header logic
+    document.addEventListener('DOMContentLoaded', function() {
+        const topRow = document.getElementById('mobileStickyTopRow');
+        const placeholder = document.getElementById('mobileHeaderPlaceholder');
+        
+        if (topRow && placeholder) {
+            window.addEventListener('scroll', function() {
+                // Determine when to make it sticky (when scrolled past its initial position)
+                // For a header usually near the top, scrolling past 30px is a good threshold if there's a topline
+                if (window.scrollY > 30) {
+                    topRow.classList.add('position-fixed', 'w-100');
+                    topRow.style.top = '0';
+                    topRow.style.left = '0';
+                    placeholder.style.display = 'block';
+                } else {
+                    topRow.classList.remove('position-fixed', 'w-100');
+                    topRow.style.top = '';
+                    topRow.style.left = '';
+                    placeholder.style.display = 'none';
+                }
+            });
+        }
     });
 </script>

@@ -149,7 +149,7 @@
                 return true;
             }
 
-            function addToCart(productId, productName, productPrice, productImage, quantity = 1, variants = null) {
+            function addToCart(productId, productName, productPrice, productImage, quantity = 1, variants = null, originalPrice = null) {
                 if (!requireLogin()) {
                     return;
                 }
@@ -166,6 +166,7 @@
                         id: productId,
                         name: productName,
                         price: parseFloat(productPrice),
+                        original_price: originalPrice ? parseFloat(originalPrice) : parseFloat(productPrice),
                         image: productImage,
                         quantity: quantity,
                         variants: variants || {}
@@ -193,8 +194,9 @@
                     const id = btn.dataset.id;
                     const name = btn.dataset.name;
                     const price = btn.dataset.price;
+                    const originalPrice = btn.dataset.originalPrice || price;
                     const image = btn.dataset.image;
-                    addToCart(id, name, price, image, 1, null);
+                    addToCart(id, name, price, image, 1, null, originalPrice);
                 }
             });
 
@@ -215,11 +217,12 @@
                 }
             });
 
-            function checkoutSingleItem(productId, productName, productPrice, productImage, quantity = 1, variants = null) {
+            function checkoutSingleItem(productId, productName, productPrice, productImage, quantity = 1, variants = null, originalPrice = null) {
                 const item = {
                     id: productId,
                     name: productName,
                     price: parseFloat(productPrice),
+                    original_price: originalPrice ? parseFloat(originalPrice) : parseFloat(productPrice),
                     image: productImage,
                     quantity: quantity,
                     variants: variants || {}
@@ -255,9 +258,10 @@
                     const id = btn.dataset.id;
                     const name = btn.dataset.name;
                     const price = btn.dataset.price;
+                    const originalPrice = btn.dataset.originalPrice || price;
                     const image = btn.dataset.image;
                     if (id && name && price) {
-                        checkoutSingleItem(id, name, price, image, 1, null);
+                        checkoutSingleItem(id, name, price, image, 1, null, originalPrice);
                     }
                 }
             });

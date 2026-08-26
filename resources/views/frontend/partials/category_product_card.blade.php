@@ -157,7 +157,12 @@
 
     {{-- Footer button --}}
     <div class="rcat-footer">
-        <a href="{{ route('product.details', $product->slug) }}" class="rcat-btn-cart">
+        <a href="#" class="rcat-btn-cart add-to-cart-btn"
+           data-id="{{ $product->id }}" 
+           data-name="{{ $product->name }}" 
+           data-price="{{ $hasDiscount ? $discountedPrice : $minPrice }}" 
+           data-original-price="{{ $hasDiscount ? $originalMinPrice : $product->price }}"
+           data-image="{{ $displayImage }}">
             <i class="bi bi-cart-plus-fill me-1"></i> Add to Cart
         </a>
     </div>

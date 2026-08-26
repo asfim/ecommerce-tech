@@ -40,6 +40,7 @@ class OrderController extends Controller
             'items.*.product_name' => 'required|string|max:255',
             'items.*.product_image' => 'nullable|string',
             'items.*.price' => 'required|numeric|min:0',
+            'items.*.original_price' => 'nullable|numeric|min:0',
             'items.*.quantity' => 'required|integer|min:1',
             'items.*.variants' => 'nullable|array',
         ]);
@@ -88,6 +89,7 @@ class OrderController extends Controller
                     'product_name' => $item['product_name'],
                     'product_image' => $item['product_image'] ?? null,
                     'price' => $item['price'],
+                    'original_price' => $item['original_price'] ?? $item['price'],
                     'quantity' => $item['quantity'],
                     'variants' => $item['variants'] ?? null,
                     'line_total' => $item['price'] * $item['quantity'],

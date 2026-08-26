@@ -18,7 +18,7 @@
   }
 
   .invoice-header {
-    background: linear-gradient(135deg, #111b16, #1a2f22);
+    background: #111826;
     color: #fff;
     padding: 32px 36px;
     display: flex;
@@ -250,10 +250,13 @@
     .btn-actions,
     nav,
     footer,
+    .main-header,
+    .drawer-backdrop,
+    .mobile-drawer,
     .topbar { display: none !important; }
 
-    .invoice-wrap { margin: 0; padding: 0; }
-    .invoice-card { border: none; box-shadow: none; }
+    .invoice-wrap { margin: 0; padding: 0; max-width: 100%; }
+    .invoice-card { border: none; box-shadow: none; border-radius: 0; }
   }
 
   @media (max-width: 600px) {
@@ -342,7 +345,17 @@
             <tr>
               <td>
                 @if($item->product_image)
-                  <img src="{{ str_starts_with($item->product_image, 'http') ? $item->product_image : asset('storage/' . $item->product_image) }}" class="item-img" alt="{{ $item->product_name }}">
+                  @php
+                      $imgPath = $item->product_image;
+                      if (str_starts_with($imgPath, 'http')) {
+                          $imgSrc = $imgPath;
+                      } elseif (str_starts_with($imgPath, '/storage/')) {
+                          $imgSrc = asset(ltrim($imgPath, '/'));
+                      } else {
+                          $imgSrc = asset('storage/' . $imgPath);
+                      }
+                  @endphp
+                  <img src="{{ $imgSrc }}" class="item-img" alt="{{ $item->product_name }}">
                 @endif
                 <span class="item-name">{{ $item->product_name }}</span>
                 @if(is_array($item->variants) && count($item->variants) > 0)
@@ -353,7 +366,12 @@
                 @endif
               </td>
               <td>{{ $item->quantity }}</td>
-              <td>৳{{ number_format($item->price, 2) }}</td>
+              <td>
+                @if($item->original_price && $item->original_price > $item->price)
+                  <del class="text-muted" style="font-size: 0.85em; color: #6c757d;">৳{{ number_format($item->original_price, 2) }}</del><br>
+                @endif
+                ৳{{ number_format($item->price, 2) }}
+              </td>
               <td>৳{{ number_format($item->line_total, 2) }}</td>
             </tr>
           @endforeach

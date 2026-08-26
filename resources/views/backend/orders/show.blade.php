@@ -77,8 +77,18 @@
                             <tr>
                                 <td>
                                     @if ($item->product_image)
-                                        <img src="{{ str_starts_with($item->product_image, 'http') ? $item->product_image : asset('storage/' . $item->product_image) }}"
-                                            style="width:48px;height:48px;object-fit:contain;border-radius:6px;border:1px solid #eee;">
+                                        @php
+                                            $imgPath = $item->product_image;
+                                            if (str_starts_with($imgPath, 'http')) {
+                                                $imgSrc = $imgPath;
+                                            } elseif (str_starts_with($imgPath, '/storage/')) {
+                                                $imgSrc = asset(ltrim($imgPath, '/'));
+                                            } else {
+                                                $imgSrc = asset('storage/' . $imgPath);
+                                            }
+                                        @endphp
+                                        <img src="{{ $imgSrc }}"
+                                            alt="Product Image" style="width: 48px; height: 48px; object-fit: contain; border-radius: 6px; border: 1px solid #eee;">
                                     @else
                                         <div
                                             style="width:48px;height:48px;background:#f0f0f0;border-radius:6px;display:flex;align-items:center;justify-content:center;">
@@ -95,7 +105,12 @@
                                     @endif
                                 </td>
                                 <td class="text-center">{{ $item->quantity }}</td>
-                                <td>৳{{ number_format($item->price, 2) }}</td>
+                                <td>
+                                    @if($item->original_price && $item->original_price > $item->price)
+                                        <del class="text-muted" style="font-size: 0.85em; color: #6c757d;">৳{{ number_format($item->original_price, 2) }}</del><br>
+                                    @endif
+                                    ৳{{ number_format($item->price, 2) }}
+                                </td>
                                 <td class="fw-bold">৳{{ number_format($item->line_total, 2) }}</td>
                             </tr>
                         @endforeach

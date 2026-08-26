@@ -489,6 +489,7 @@
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"
+                        data-original-price="{{ $product->price }}"
                         data-image="{{ $allImages[0] }}"
                         style="font-size: 15px; font-weight: 600; border-radius: 8px;"
                         title="Add to Cart">
@@ -498,6 +499,7 @@
                         data-id="{{ $product->id }}"
                         data-name="{{ $product->name }}"
                         data-price="{{ $finalPrice }}"
+                        data-original-price="{{ $product->price }}"
                         data-image="{{ $allImages[0] }}"
                         style="font-size: 15px; font-weight: 600; border-radius: 8px;"
                         title="Buy Now">
@@ -936,7 +938,7 @@
                         priceOverridden = true;
                     }
                     if (exactComboMatch.image) {
-                        activeImage = '/storage/' + exactComboMatch.image;
+                        activeImage = "{{ asset('storage') }}/" + exactComboMatch.image;
                         imageOverridden = true;
                     }
                 }
@@ -970,7 +972,7 @@
                         priceOverridden = true;
                     }
                     if (match.image) {
-                        activeImage = '/storage/' + match.image;
+                        activeImage = "{{ asset('storage') }}/" + match.image;
                         imageOverridden = true;
                     }
                 }
@@ -1007,12 +1009,16 @@
 
         const addToCartBtn = document.querySelector('.add-to-cart-detail');
         const buyNowBtn = document.querySelector('.buy-now-detail');
+        const originalPriceAttr = priceOverridden ? (originalPriceForVariant !== null ? originalPriceForVariant : activePrice) : baseProductOriginalPrice;
+        
         if (addToCartBtn) {
-                            addToCartBtn.dataset.price = activePrice;
+            addToCartBtn.dataset.price = activePrice;
+            addToCartBtn.dataset.originalPrice = originalPriceAttr;
             addToCartBtn.dataset.image = imageOverridden ? activeImage : mainImage.src;
         }
         if (buyNowBtn) {
             buyNowBtn.dataset.price = activePrice;
+            buyNowBtn.dataset.originalPrice = originalPriceAttr;
             buyNowBtn.dataset.image = imageOverridden ? activeImage : mainImage.src;
         }
     }
@@ -1121,12 +1127,13 @@
             const id = this.dataset.id;
             const name = this.dataset.name;
             const price = this.dataset.price;
+            const originalPrice = this.dataset.originalPrice || price;
             const image = this.dataset.image;
             const qty = parseInt(qtyInput.value) || 1;
             const variants = getSelectedVariants();
 
             if (window.addToCartGlobal) {
-                window.addToCartGlobal(id, name, price, image, qty, variants);
+                window.addToCartGlobal(id, name, price, image, qty, variants, originalPrice);
             }
         });
     }
@@ -1139,12 +1146,13 @@
             const id = this.dataset.id;
             const name = this.dataset.name;
             const price = this.dataset.price;
+            const originalPrice = this.dataset.originalPrice || price;
             const image = this.dataset.image;
             const qty = parseInt(qtyInput.value) || 1;
             const variants = getSelectedVariants();
 
             if (window.checkoutSingleItemGlobal) {
-                window.checkoutSingleItemGlobal(id, name, price, image, qty, variants);
+                window.checkoutSingleItemGlobal(id, name, price, image, qty, variants, originalPrice);
             }
         });
     }

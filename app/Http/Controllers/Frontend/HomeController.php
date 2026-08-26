@@ -47,10 +47,39 @@ class HomeController extends Controller
         $heroBanners = HomepageSetting::get('hero_banners', []);
         $bestSellingBanners = HomepageSetting::get('best_selling_banners', []);
         $discountedProductsBanner = HomepageSetting::get('discounted_products_banner', []);
-        $maxDiscountPercent = Product::where('discount_type', 'percent')
-            ->where('discount_value', '>', 0)
-            ->frontendActive()
-            ->max('discount_value') ?? 0;
+        $maxDiscountPercent = 0;
+        $activeProducts = Product::frontendActive()->get(['id', 'price', 'discount_type', 'discount_value', 'discount_start_date', 'discount_expiry_date', 'variants']);
+        foreach ($activeProducts as $p) {
+            $pMax = 0;
+            if ($p->has_active_discount) {
+                if ($p->discount_type === 'percent') {
+                    $pMax = (float) $p->discount_value;
+                } elseif ($p->discount_type === 'fixed' && $p->price > 0) {
+                    $pMax = ((float) $p->discount_value / (float) $p->price) * 100;
+                }
+            }
+            if (is_array($p->variants)) {
+                $now = now();
+                foreach ($p->variants as $v) {
+                    if (isset($v['combo']) && !empty($v['discount_type']) && (float)($v['discount'] ?? 0) > 0) {
+                        $start = !empty($v['discount_start']) ? \Carbon\Carbon::parse($v['discount_start']) : null;
+                        $end = !empty($v['discount_end']) ? \Carbon\Carbon::parse($v['discount_end']) : null;
+                        $isActive = true;
+                        if ($start && $start->gt($now)) $isActive = false;
+                        if ($end && $end->lt($now)) $isActive = false;
+                        
+                        if ($isActive) {
+                            if ($v['discount_type'] === 'percent') {
+                                $pMax = max($pMax, (float) $v['discount']);
+                            } elseif ($v['discount_type'] === 'fixed' && !empty($v['price']) && (float) $v['price'] > 0) {
+                                $pMax = max($pMax, ((float) $v['discount'] / (float) $v['price']) * 100);
+                            }
+                        }
+                    }
+                }
+            }
+            $maxDiscountPercent = max($maxDiscountPercent, $pMax);
+        }
         $maxDiscountPercent = round($maxDiscountPercent);
 
         $hotCategories = Category::where('is_active', true)->take(8)->get();

@@ -214,13 +214,13 @@
         <h2><span class="idx">03</span> Payment</h2>
         <div class="hint">All transactions are encrypted and secure.</div>
         <div class="pay-tabs">
-          <div class="pay-tab active" data-method="sslcommerz"><i class="bi bi-wallet2"></i> Online Payment</div>
-          <div class="pay-tab" data-method="cod"><i class="bi bi-cash-stack"></i> Cash on Delivery</div>
+          <div class="pay-tab" data-method="sslcommerz"><i class="bi bi-wallet2"></i> Online Payment</div>
+          <div class="pay-tab active" data-method="cod"><i class="bi bi-cash-stack"></i> Cash on Delivery</div>
         </div>
 
-        <input type="hidden" id="paymentMethod" value="sslcommerz">
+        <input type="hidden" id="paymentMethod" value="cod">
 
-        <div id="sslcommerzInfo" class="p-3 border rounded" style="background:#f8f9fa; font-size:13.5px;">
+        <div id="sslcommerzInfo" class="p-3 border rounded" style="display:none; background:#f8f9fa; font-size:13.5px;">
           <div class="d-flex align-items-center gap-2 mb-2">
             <i class="bi bi-shield-lock-fill text-primary" style="font-size: 20px;"></i>
             <span class="fw-bold">SSL Commerz Secure Payment Gateway</span>
@@ -228,7 +228,7 @@
           <p class="text-muted mb-0">You will be redirected to the secure SSL Commerz gateway to pay using Cards, Mobile Banking (bKash, Nagad, Rocket) or Net Banking.</p>
         </div>
 
-        <div id="codInfo" class="p-3 border rounded" style="display:none; background:#f0fdf4; border-color:var(--moss) !important; font-size:13.5px; color:var(--moss);">
+        <div id="codInfo" class="p-3 border rounded" style="display:block; background:#f0fdf4; border-color:var(--moss) !important; font-size:13.5px; color:var(--moss);">
           <div class="d-flex align-items-center gap-2 mb-2">
             <i class="bi bi-info-circle-fill text-success" style="font-size: 20px;"></i>
             <span class="fw-bold">Cash on Delivery Payment</span>
@@ -338,6 +338,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 variantsText = Object.entries(item.variants).map(([k, v]) => `${k}: ${v}`).join(' · ');
             }
 
+            let priceHtml = `৳${itemTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            if (item.original_price && parseFloat(item.original_price) > price) {
+                const origTotal = parseFloat(item.original_price) * qty;
+                priceHtml = `<del class="text-muted small d-block">৳${origTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</del>` + priceHtml;
+            }
+
             itemsHtml += `
                 <div class="item-row">
                     <img src="${item.image}" alt="${item.name}">
@@ -345,7 +351,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div class="name text-truncate" title="${item.name}">${item.name}</div>
                         <div class="meta">${variantsText ? variantsText + ' · ' : ''}Qty ${qty}</div>
                     </div>
-                    <div class="price">৳${itemTotal.toLocaleString('en-US', {minimumFractionDigits: 2})}</div>
+                    <div class="price text-end">${priceHtml}</div>
                 </div>
             `;
         });
@@ -501,6 +507,7 @@ document.addEventListener('DOMContentLoaded', function() {
             product_name: item.name,
             product_image: item.image || null,
             price: parseFloat(item.price),
+            original_price: item.original_price ? parseFloat(item.original_price) : parseFloat(item.price),
             quantity: parseInt(item.quantity) || 1,
             variants: item.variants || {}
         }));
