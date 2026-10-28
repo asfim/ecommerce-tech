@@ -139,7 +139,7 @@
         <div class="prod-info">
             <div>
                 <a href="{{ route('product.details', $product->slug) }}" class="text-decoration-none">
-                    <div class="t text-dark hover-blue">{{ Str::limit($product->name, 35) }}</div>
+                    <div class="t hover-orange">{{ Str::limit($product->name, 35) }}</div>
                 </a>
                 <div class="p">
                     @if ($hasMultiplePrices)

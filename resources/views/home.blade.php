@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('body_class', 'homepage-light')
+
 @section('content')
     <!-- Hero section -->
     <div class="hero-sec">
@@ -27,12 +29,12 @@
                                 @endif
                             </a>
                             @if($cat->subCategories->isNotEmpty())
-                                <div class="hero-cat-submenu hero-cat-sidebar-inner position-absolute bg-white" style="left: 100%; top: 0; min-width: 250px; height: 100%; overflow-y: auto; z-index: 9999; border-radius: 0 12px 12px 0; box-shadow: 10px 10px 30px rgba(0,0,0,0.08); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);">
-                                    <div class="text-uppercase fw-bold text-muted mb-2 px-3" style="font-size: 11px; letter-spacing: 1px;">{{ $cat->name }}</div>
+                                <div class="hero-cat-submenu hero-cat-sidebar-inner position-absolute" style="left: 100%; top: 0; min-width: 250px; height: 100%; overflow-y: auto; z-index: 9999; border-radius: 0 14px 14px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); background: #ffffff; border: 1px solid #e2e8f0;">
+                                    <div class="text-uppercase fw-bold mb-2 px-3" style="font-size: 11px; letter-spacing: 1.2px; color: #E0471B;">{{ $cat->name }}</div>
                                     <ul class="list-unstyled mb-0">
                                         @foreach($cat->subCategories as $subCat)
                                             <li class="mb-1">
-                                                <a href="{{ route('category.products', [$cat->id, 'subcategory' => $subCat->id]) }}" class="d-flex align-items-center px-3 py-2 text-decoration-none text-dark rounded smart-submenu-link" style="font-size: 14px; font-weight: 500;">
+                                                <a href="{{ route('category.products', [$cat->id, 'subcategory' => $subCat->id]) }}" class="d-flex align-items-center px-3 py-2 text-decoration-none rounded smart-submenu-link" style="font-size: 13.5px; font-weight: 500; color: #334155;">
                                                     {{ $subCat->name }}
                                                 </a>
                                             </li>
@@ -165,11 +167,18 @@
 
         @push('styles')
         <style>
+            /* Homepage Core Theme - Modern Light Mode */
+            body.homepage-light {
+                background-color: #f8fafc !important;
+                color: #1e293b !important;
+            }
+
+            /* Latest Products Slider */
             .latest-products-slider {
                 display: flex;
                 overflow-x: auto;
                 gap: 1.25rem;
-                padding: 1rem 1rem 1.5rem 1rem;
+                padding: 0.75rem 0.5rem 1.5rem 0.5rem;
                 scroll-snap-type: x mandatory;
                 scrollbar-width: none;
             }
@@ -178,99 +187,118 @@
             }
             .latest-products-slider .slider-card {
                 flex: 0 0 auto;
-                width: 220px;
+                width: 230px;
                 scroll-snap-align: start;
-                background: #ffeee9;
-                border: 1px solid #ffd6ca;
-                border-radius: 12px;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.06);
-                transition: transform 0.3s ease, box-shadow 0.3s ease;
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 16px;
+                box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+                transition: all 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 display: flex;
                 flex-direction: column;
                 position: relative;
                 overflow: hidden;
             }
             .latest-products-slider .slider-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+                transform: translateY(-6px);
+                box-shadow: 0 16px 32px rgba(224, 71, 27, 0.12), 0 4px 12px rgba(0, 0, 0, 0.04);
+                border-color: #fdba74;
             }
             .latest-products-slider .slider-img-wrap {
-                width: 100%;
-                height: 210px;
+                width: calc(100% - 16px);
+                height: 190px;
+                margin: 8px auto 0;
                 overflow: hidden;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                background: #f8f9fa;
-                border-radius: 10px 10px 0 0;
+                background: #f8fafc;
+                border-radius: 12px;
+                box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.02);
             }
             .latest-products-slider .slider-img-wrap img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                object-position: top center;
-                transition: transform 0.3s ease;
+                max-width: 88%;
+                max-height: 88%;
+                object-fit: contain;
+                transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             }
             .latest-products-slider .slider-card:hover .slider-img-wrap img {
-                transform: scale(1.05);
+                transform: scale(1.06);
             }
             .latest-products-slider .slider-card-body {
-                padding: 1rem 1rem 0 1rem;
+                padding: 0.9rem 0.9rem 1rem;
                 display: flex;
                 flex-direction: column;
                 flex-grow: 1;
             }
             .latest-products-slider .product-title {
-                font-size: 0.95rem;
+                font-size: 0.92rem;
                 font-weight: 600;
-                color: #2b2b2b;
+                color: #1e293b;
                 margin-bottom: 0.3rem;
-                line-height: 1.3;
-                height: 2.8rem;
+                line-height: 1.35;
+                height: 2.5rem;
                 display: -webkit-box;
                 -webkit-line-clamp: 2;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
+                transition: color 0.2s ease;
+            }
+            .latest-products-slider .slider-card:hover .product-title {
+                color: #E0471B;
             }
             .latest-products-slider .product-code {
                 font-size: 0.75rem;
-                color: #777;
+                color: #94a3b8;
                 margin-bottom: 0.5rem;
             }
             .latest-products-slider .product-price {
-                font-size: 1.1rem;
+                font-size: 1.15rem;
                 font-weight: 700;
                 color: #E0471B;
-                margin-bottom: 1rem;
+                margin-bottom: 0.85rem;
                 margin-top: auto;
+                display: flex;
+                align-items: baseline;
+                gap: 6px;
             }
             .latest-products-slider .btn-add-to-cart {
-                background: #2b2b2b;
+                background: linear-gradient(135deg, #E0471B, #ff6b3d);
                 color: #fff;
                 border: none;
-                border-radius: 8px;
-                padding: 0.6rem;
+                border-radius: 10px;
+                padding: 0.65rem;
                 font-size: 0.85rem;
                 font-weight: 600;
-                transition: background 0.2s ease;
+                letter-spacing: 0.3px;
+                box-shadow: 0 4px 15px rgba(224, 71, 27, 0.25);
+                transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                width: 100%;
             }
             .latest-products-slider .btn-add-to-cart:hover {
-                background: #E0471B;
+                background: linear-gradient(135deg, #ff6b3d, #E0471B);
+                box-shadow: 0 8px 25px rgba(224, 71, 27, 0.4);
+                transform: translateY(-2px);
                 color: #fff;
             }
             .new-badge {
                 position: absolute;
-                top: 10px;
-                left: 10px;
-                background: #E0471B;
+                top: 14px;
+                left: 14px;
+                background: linear-gradient(135deg, #ff5521, #ff8c50);
                 color: #fff;
-                font-size: 0.7rem;
+                font-size: 0.68rem;
                 font-weight: 700;
                 padding: 3px 8px;
-                border-radius: 4px;
-                z-index: 2;
+                border-radius: 20px;
+                z-index: 5;
                 text-transform: uppercase;
                 letter-spacing: 0.5px;
+                box-shadow: 0 4px 10px rgba(255, 85, 33, 0.3);
             }
             .latest-slider-wrapper {
                 position: relative;
@@ -278,30 +306,104 @@
             .latest-slider-btn {
                 position: absolute;
                 top: 50%;
-
+                transform: translateY(-50%);
                 z-index: 10;
-                width: 30px;
-                height: 30px;
+                width: 38px;
+                height: 38px;
                 border-radius: 50%;
-                background: #fff;
-                border: 1px solid #e0e0e0;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 cursor: pointer;
-                color: #2b2b2b;
-                font-size: 1rem;
+                color: #1e293b;
+                font-size: 1.1rem;
+                transition: all 0.25s ease;
+            }
+            .latest-slider-btn:hover {
+                background: #E0471B;
+                border-color: #E0471B;
+                color: #fff;
+                transform: translateY(-50%) scale(1.1);
+                box-shadow: 0 6px 18px rgba(224, 71, 27, 0.35);
             }
             .latest-slider-btn.prev-btn {
-                left: -18px;
+                left: -16px;
             }
             .latest-slider-btn.next-btn {
-                right: -18px;
+                right: -16px;
             }
             @media (max-width: 576px) {
                 .latest-slider-btn.prev-btn { left: 4px; }
                 .latest-slider-btn.next-btn { right: 4px; }
+            }
+
+            /* Section Title Styling with Vibrant Indicator */
+            .section-title-wrap {
+                position: relative;
+            }
+            .section-title-indicator {
+                display: inline-block;
+                width: 4px;
+                height: 22px;
+                background: linear-gradient(180deg, #ff6b3d 0%, #E0471B 100%);
+                border-radius: 3px;
+                box-shadow: 0 0 10px rgba(224, 71, 27, 0.4);
+            }
+            .section-title-indicator.flash-indicator {
+                background: linear-gradient(180deg, #ffc107 0%, #E0471B 100%);
+                box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+            }
+            .section-heading-text {
+                color: #0f172a !important;
+                letter-spacing: -0.3px;
+                font-weight: 700;
+            }
+            .section-badge {
+                background: #fff1ee;
+                color: #E0471B;
+                border: 1px solid #fed7cc;
+                font-size: 11px;
+                padding: 4px 10px;
+                font-weight: 600;
+            }
+            .category-count-pill {
+                background: #f1f5f9;
+                color: #475569;
+                border: 1px solid #e2e8f0;
+                font-size: 11px;
+                padding: 3px 10px;
+                font-weight: 500;
+            }
+            .view-category-link {
+                color: #E0471B;
+                font-size: 13px;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                padding: 4px 12px;
+                border-radius: 20px;
+                background: #fff1ee;
+                border: 1px solid #fed7cc;
+            }
+            .view-category-link:hover {
+                background: #E0471B;
+                color: #ffffff !important;
+                transform: translateX(3px);
+                box-shadow: 0 4px 12px rgba(224, 71, 27, 0.3);
+            }
+
+            @keyframes pulseGlow {
+                0%, 100% {
+                    opacity: 1;
+                    box-shadow: 0 0 0 0 rgba(224, 71, 27, 0.7);
+                }
+                50% {
+                    opacity: 0.6;
+                    box-shadow: 0 0 0 6px rgba(224, 71, 27, 0);
+                }
             }
         </style>
         @endpush
@@ -310,10 +412,11 @@
             <div class="col-12">
                 <div class="bestselling-panel h-100" style="background: transparent; border: none; box-shadow: none;">
                     <div class="d-flex justify-content-between align-items-center mb-3 px-2 mt-4">
-                        <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;">
-                            <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
-                            Latest Products
-                        </h4>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="section-title-indicator"></span>
+                            <h4 class="mb-0 fw-bold section-heading-text">Latest Products</h4>
+                            <span class="badge rounded-pill section-badge ms-2">Hot Deals</span>
+                        </div>
                     </div>
                     <div class="latest-slider-wrapper">
                         <button class="latest-slider-btn prev-btn" id="latestPrev" type="button" aria-label="Previous">
@@ -574,13 +677,18 @@
         <!-- Flash Sale -->
         <div class="preorder-panel my-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-3 gap-2">
-                <h4 class="mb-0 fw-bold" style="color: #2b2b2b; position: relative; padding-left: 15px;">
-                    <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
-                    <i class="bi bi-lightning-fill me-1" style="color:#E0471B; font-size:1rem;"></i> Flash Sale
-                </h4>
-                <div class="d-flex gap-1 align-items-center discounted-controls">
-                    <span class="arrow d-inline-flex" id="discountedPrev" title="Previous"><i class="bi bi-chevron-left"></i></span>
-                    <span class="arrow d-inline-flex" id="discountedNext" title="Next"><i class="bi bi-chevron-right"></i></span>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="section-title-indicator flash-indicator"></span>
+                    <h4 class="mb-0 fw-bold section-heading-text d-flex align-items-center gap-2">
+                        <i class="bi bi-lightning-charge-fill text-warning"></i> Flash Sale
+                    </h4>
+                    <span class="badge rounded-pill section-badge ms-2">
+                        <span class="d-inline-block rounded-circle me-1" style="width: 6px; height: 6px; background: #ff5521; animation: pulseGlow 1.5s infinite;"></span> LIVE NOW
+                    </span>
+                </div>
+                <div class="d-flex gap-2 align-items-center discounted-controls">
+                    <span class="latest-slider-btn position-static" id="discountedPrev" title="Previous"><i class="bi bi-chevron-left"></i></span>
+                    <span class="latest-slider-btn position-static" id="discountedNext" title="Next"><i class="bi bi-chevron-right"></i></span>
                 </div>
             </div>
             <div class="row g-3">
@@ -740,11 +848,11 @@
                                                 @endif
                                             @endif
                                         </div>
-                                        <div class="t text-dark hover-blue px-2 pt-2">{{ Str::limit($dp->name, 35) }}</div>
+                                        <div class="t hover-orange px-2 pt-2">{{ Str::limit($dp->name, 35) }}</div>
                                     </a>
                                     <div class="px-2">
                                         <div class="code">Code: {{ $dp->id < 100 ? 'P' . $dp->id : $dp->id }}</div>
-                                        <div class="mt-2 text-center">
+                                        <div class="p mt-2 text-center">
                                             @if ($hasMultiplePrices)
                                                 @if ($hasDiscount)
                                                     <span style="font-size: 1.2em;">৳</span> {{ number_format($minPrice, 0) }} - {{ number_format($maxPrice, 0) }}
@@ -794,11 +902,18 @@
         <div id="products-grid" class="mb-3">
             @forelse($homeCategories as $category)
                 @if($category->products->isNotEmpty())
-                    <div class="col-12 mt-4 mb-3">
-                        <h4 class="mb-0 fw-bold category-grid-title" style="color: #2b2b2b; position: relative; padding-left: 15px;">
-                            <span style="position: absolute; left: 0; top: 10%; height: 80%; width: 4px; background: #E0471B; border-radius: 2px;"></span>
-                            {{ $category->name }}
-                        </h4>
+                    <div class="col-12 mt-5 mb-3">
+                        <div class="d-flex justify-content-between align-items-center section-title-wrap">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="section-title-indicator"></span>
+                                <h4 class="mb-0 fw-bold category-grid-title section-heading-text">{{ $category->name }}</h4>
+                                <span class="badge rounded-pill category-count-pill ms-2">{{ $category->products_count ?? $category->products->count() }} Products</span>
+                            </div>
+                            <a href="{{ route('category.products', $category->id) }}" class="view-category-link d-flex align-items-center gap-1">
+                                <span>View All</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </a>
+                        </div>
                     </div>
                     <div id="category-products-{{ $category->id }}" class="row g-3">
                         @foreach($category->products as $product)
@@ -806,10 +921,10 @@
                         @endforeach
                     </div>
                     @if($category->products_count > 8)
-                        <div class="text-center mb-4 mt-4">
-                            <button class="btn btn-outline-dark px-5 load-more-category-btn" data-category-id="{{ $category->id }}" data-page="2">
+                        <div class="text-center mb-5 mt-4">
+                            <button class="btn load-more-category-btn" data-category-id="{{ $category->id }}" data-page="2">
                                 <span class="spinner-border spinner-border-sm d-none me-1" role="status" aria-hidden="true"></span>
-                                Load more
+                                Load More Products
                             </button>
                         </div>
                     @endif

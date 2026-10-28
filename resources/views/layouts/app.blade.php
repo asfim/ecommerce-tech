@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{{ asset('css/responsive.css') }}?v={{ time() }}">
     @stack('styles')
 </head>
-<body>
+<body class="@yield('body_class')">
 
     @include('layouts.header.header')
 
