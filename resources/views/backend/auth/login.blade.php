@@ -123,6 +123,120 @@
             font-size: 13px; margin-bottom: 20px;
         }
 
+        /* Demo Box Styling */
+        .demo-box {
+            margin-top: 22px;
+            padding: 14px 16px;
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px dashed rgba(96, 165, 250, 0.4);
+            border-radius: 14px;
+            position: relative;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .demo-box:hover {
+            border-color: rgba(96, 165, 250, 0.65);
+            background: rgba(59, 130, 246, 0.12);
+        }
+        .demo-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        .demo-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: #93c5fd;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.3px;
+        }
+        .demo-role-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            background: rgba(34, 197, 94, 0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+        .demo-cred-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 12px;
+            background: rgba(0, 0, 0, 0.25);
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .demo-cred-row code {
+            color: #93c5fd;
+            font-weight: 600;
+            font-family: inherit;
+        }
+        .demo-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-demo-autofill {
+            flex: 1;
+            padding: 8px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.08);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-demo-autofill:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+        .btn-demo-login {
+            flex: 1.3;
+            padding: 8px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        .btn-demo-login:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+            transform: translateY(-1px);
+        }
+        @keyframes fieldHighlight {
+            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.6); border-color: #3b82f6; }
+            50% { box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.4); border-color: #60a5fa; }
+            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); border-color: rgba(255,255,255,0.1); }
+        }
+        .input-highlight {
+            animation: fieldHighlight 1.2s ease-out;
+        }
+
         @media (max-width: 480px) {
             .admin-card { padding: 32px 24px; }
         }
@@ -144,13 +258,13 @@
             <div class="alert-custom"><i class="bi bi-exclamation-triangle-fill me-2"></i>{{ $errors->first() }}</div>
         @endif
 
-        <form method="POST" action="{{ route('admin.login.submit') }}">
+        <form id="adminLoginForm" method="POST" action="{{ route('admin.login.submit') }}">
             @csrf
             <div>
                 <label class="form-label">Admin Email</label>
                 <div class="input-group-custom">
                     <i class="bi bi-envelope input-icon"></i>
-                    <input type="email" name="email" class="form-control-custom" value="{{ old('email') }}" placeholder="admin@ecommercetech.com" required autofocus>
+                    <input type="email" name="email" id="adminEmail" class="form-control-custom" value="{{ old('email') }}" placeholder="admin@example.com" required autofocus>
                 </div>
             </div>
             <div>
@@ -163,11 +277,37 @@
             </div>
             <div class="form-row">
                 <label class="remember-label">
-                    <input type="checkbox" name="remember"> Keep me signed in
+                    <input type="checkbox" name="remember" id="rememberMe"> Keep me signed in
                 </label>
             </div>
             <button type="submit" class="btn-admin-login"><i class="bi bi-shield-lock me-2"></i>Secure Login</button>
         </form>
+
+        <!-- Demo Credentials Box -->
+        <div class="demo-box">
+            <div class="demo-header">
+                <span class="demo-title">
+                    <i class="bi bi-shield-check"></i> Demo Admin Access
+                </span>
+                <span class="demo-role-badge">Super Admin</span>
+            </div>
+            <div class="demo-cred-row">
+                <div>
+                    <span style="opacity: 0.6; font-size: 11px;">Email:</span> <code>admin@example.com</code>
+                </div>
+                <div class="text-end">
+                    <span style="opacity: 0.6; font-size: 11px;">Pass:</span> <code>password</code>
+                </div>
+            </div>
+            <div class="demo-actions">
+                <button type="button" id="btnFillDemo" class="btn-demo-autofill" title="Fill credentials into input fields">
+                    <i class="bi bi-magic"></i> Auto Fill
+                </button>
+                <button type="button" id="btn1ClickLogin" class="btn-demo-login" title="Fill and login instantly">
+                    <i class="bi bi-box-arrow-in-right"></i> 1-Click Login
+                </button>
+            </div>
+        </div>
 
         <div class="security-note">
             <i class="bi bi-lock-fill"></i> 256-bit SSL encrypted connection
@@ -177,11 +317,50 @@
     <script>
         const toggle = document.getElementById('toggleAdminPwd');
         const pwd = document.getElementById('adminPwd');
+        const email = document.getElementById('adminEmail');
+        const form = document.getElementById('adminLoginForm');
+        const btnFillDemo = document.getElementById('btnFillDemo');
+        const btn1ClickLogin = document.getElementById('btn1ClickLogin');
+
         toggle.addEventListener('click', () => {
             pwd.type = pwd.type === 'password' ? 'text' : 'password';
             toggle.className = pwd.type === 'password' ? 'bi bi-eye-slash' : 'bi bi-eye';
             toggle.style.cssText = 'position:absolute;top:50%;right:14px;transform:translateY(-50%);cursor:pointer;color:rgba(255,255,255,0.3);font-size:16px;';
         });
+
+        function fillDemoCredentials() {
+            email.value = 'admin@example.com';
+            pwd.value = 'password';
+            email.classList.add('input-highlight');
+            pwd.classList.add('input-highlight');
+            setTimeout(() => {
+                email.classList.remove('input-highlight');
+                pwd.classList.remove('input-highlight');
+            }, 1200);
+        }
+
+        if (btnFillDemo) {
+            btnFillDemo.addEventListener('click', () => {
+                fillDemoCredentials();
+                const originalText = btnFillDemo.innerHTML;
+                btnFillDemo.innerHTML = '<i class="bi bi-check-lg text-success"></i> Filled!';
+                setTimeout(() => {
+                    btnFillDemo.innerHTML = originalText;
+                }, 1500);
+            });
+        }
+
+        if (btn1ClickLogin) {
+            btn1ClickLogin.addEventListener('click', () => {
+                fillDemoCredentials();
+                btn1ClickLogin.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" style="width: 12px; height: 12px;"></span> Logging in...';
+                btn1ClickLogin.disabled = true;
+                if (btnFillDemo) btnFillDemo.disabled = true;
+                setTimeout(() => {
+                    form.submit();
+                }, 200);
+            });
+        }
     </script>
 </body>
 </html>
