@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlockedIp;
 use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\BulkSmsService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -16,11 +18,20 @@ use Raziul\Sslcommerz\Facades\Sslcommerz;
 
 class OrderController extends Controller
 {
-    public function store(Request $request): JsonResponse|\Illuminate\Http\RedirectResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
-        // if (! auth()->check()) {
-        //     return redirect()->route('user.login');
-        // }
+        $clientIp = $request->ip();
+
+        if (BlockedIp::isBlocked($clientIp)) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Your IP address has been blocked due to suspected fraudulent activity. Please contact support.',
+                ], 403);
+            }
+
+            return back()->with('error', 'Your IP address has been blocked due to suspected fraudulent activity. Please contact support.');
+        }
 
         $sms = new BulkSmsService;
 
@@ -62,10 +73,24 @@ class OrderController extends Controller
         $tax = (float) $validated['tax'];
         $total = max(0, $subtotal - $discountAmount + $shippingCost + $tax);
 
+        // Auto fraud detection: check past bad orders from this phone
+        $suspiciousPastOrders = Order::where('customer_phone', $validated['customer_phone'])
+            ->where(function ($q) {
+                $q->where('is_fraud', true)
+                    ->orWhereIn('order_status', ['cancelled', 'returned']);
+            })
+            ->count();
+
+        $isFraud = $suspiciousPastOrders >= 2;
+        $fraudReason = $isFraud ? 'Auto-detected: Customer phone has '.$suspiciousPastOrders.' previous cancelled/returned/fraudulent orders' : null;
+
         // Create order in transaction
-        $order = DB::transaction(function () use ($validated, $couponCode, $discountAmount, $tax, $total) {
+        $order = DB::transaction(function () use ($validated, $couponCode, $discountAmount, $tax, $total, $clientIp, $isFraud, $fraudReason) {
             $order = Order::create([
                 'user_id' => auth()->id(),
+                'ip_address' => $clientIp,
+                'is_fraud' => $isFraud,
+                'fraud_reason' => $fraudReason,
                 'invoice_no' => Order::generateInvoiceNo(),
                 'customer_name' => $validated['customer_name'],
                 'customer_phone' => $validated['customer_phone'],

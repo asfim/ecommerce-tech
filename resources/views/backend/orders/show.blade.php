@@ -35,11 +35,131 @@
     @if (session('success'))
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
+    @if (session('error'))
+        <div class="alert alert-danger">{{ session('error') }}</div>
+    @endif
 
-    <div class="row g-4">
-        <!-- Order Info Card -->
-        <div class="col-md-12">
-            <div class="stat-card mb-4">
+    @php
+        $isFraud = $order->isFlaggedAsFraud();
+        $isIpBlocked = $order->isIpBlocked();
+    @endphp
+
+    {{-- Prominent Red Warning Banner for Fraud Orders --}}
+    @if ($isFraud)
+        <div class="alert alert-danger p-3 mb-4 rounded-3 d-flex flex-wrap justify-content-between align-items-center"
+            style="background-color: #fee2e2 !important; border: 2px solid #ef4444 !important; color: #991b1b !important;">
+            <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-shield-x-fill text-danger fs-1"></i>
+                <div>
+                    <h5 class="mb-1 fw-bold text-danger text-uppercase">
+                        <i class="bi bi-exclamation-octagon-fill me-1"></i> FRAUD ORDER FLAGGED
+                    </h5>
+                    <p class="mb-0 text-danger fw-semibold">{{ $order->fraud_reason ?: 'This order has been marked as fraudulent.' }}</p>
+                    @if ($isIpBlocked)
+                        <span class="badge bg-dark mt-1"><i class="bi bi-slash-circle me-1"></i> Customer IP is Blocked: {{ $order->ip_address }}</span>
+                    @endif
+                </div>
+            </div>
+            <div class="d-flex gap-2 mt-2 mt-md-0">
+                <form method="POST" action="{{ route('admin.orders.toggle-fraud', $order) }}" class="d-inline">
+                    @csrf
+                    @method('PATCH')
+                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-shield-check me-1"></i> Remove Fraud Flag
+                    </button>
+                </form>
+                @if ($order->ip_address)
+                    @if ($isIpBlocked)
+                        <form method="POST" action="{{ route('admin.orders.unblock-ip', $order) }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-outline-dark btn-sm">
+                                <i class="bi bi-unlock me-1"></i> Unblock IP
+                            </button>
+                        </form>
+                    @else
+                        <form method="POST" action="{{ route('admin.orders.block-ip', $order) }}" class="d-inline">
+                            @csrf
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="bi bi-slash-circle me-1"></i> Block Customer IP
+                            </button>
+                        </form>
+                    @endif
+                @endif
+            </div>
+        </div>
+    @endif
+
+    <div class="row g-4 mb-4">
+        <!-- Customer & Security Details -->
+        <div class="col-md-5">
+            <div class="stat-card h-100 {{ $isFraud ? 'border-danger' : '' }}" style="{{ $isFraud ? 'background-color: #fef2f2 !important; border: 1.5px solid #ef4444;' : '' }}">
+                <h6 class="fw-bold mb-3 d-flex align-items-center justify-content-between">
+                    <span><i class="bi bi-person-circle me-1"></i> Customer & Security</span>
+                    @if ($isFraud)
+                        <span class="badge bg-danger"><i class="bi bi-shield-x-fill me-1"></i> Fraud</span>
+                    @endif
+                </h6>
+                <div class="mb-2">
+                    <span class="text-muted small d-block">Customer Name:</span>
+                    <strong>{{ $order->customer_name }}</strong>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small d-block">Phone:</span>
+                    <strong>{{ $order->customer_phone }}</strong>
+                </div>
+                <div class="mb-2">
+                    <span class="text-muted small d-block">Address:</span>
+                    <span>{{ $order->customer_address }}</span>
+                </div>
+                <div class="mb-3">
+                    <span class="text-muted small d-block">IP Address:</span>
+                    @if ($order->ip_address)
+                        <code>{{ $order->ip_address }}</code>
+                        @if ($isIpBlocked)
+                            <span class="badge bg-danger ms-1">BLOCKED</span>
+                        @else
+                            <span class="badge bg-success ms-1">ACTIVE</span>
+                        @endif
+                    @else
+                        <span class="text-muted small">Not recorded</span>
+                    @endif
+                </div>
+
+                <div class="pt-2 border-top d-flex gap-2 flex-wrap">
+                    @if (! $isFraud)
+                        <form method="POST" action="{{ route('admin.orders.toggle-fraud', $order) }}" class="d-inline">
+                            @csrf
+                            @method('PATCH')
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-shield-x me-1"></i> Mark as Fraud
+                            </button>
+                        </form>
+                    @endif
+
+                    @if ($order->ip_address)
+                        @if ($isIpBlocked)
+                            <form method="POST" action="{{ route('admin.orders.unblock-ip', $order) }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-outline-dark">
+                                    <i class="bi bi-unlock me-1"></i> Unblock IP
+                                </button>
+                            </form>
+                        @else
+                            <form method="POST" action="{{ route('admin.orders.block-ip', $order) }}" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-slash-circle me-1"></i> Block IP
+                                </button>
+                            </form>
+                        @endif
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Summary Card -->
+        <div class="col-md-7">
+            <div class="stat-card h-100 {{ $isFraud ? 'border-danger' : '' }}" style="{{ $isFraud ? 'background-color: #fef2f2 !important; border: 1.5px solid #ef4444;' : '' }}">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div>
                         <h5 class="mb-1 fw-bold">{{ $order->invoice_no }}</h5>
@@ -60,6 +180,33 @@
                         @endif
                     </div>
                 </div>
+                <div class="row g-2 mb-2 small">
+                    <div class="col-6">
+                        <span class="text-muted">Payment Method:</span>
+                        <strong>{{ strtoupper($order->payment_method) }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted">Payment Status:</span>
+                        <strong class="{{ $order->payment_status === 'paid' ? 'text-success' : 'text-warning' }}">{{ ucfirst($order->payment_status) }}</strong>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted">Shipping Method:</span>
+                        <span>{{ $order->shipping_method === 'inside_dhaka' ? 'Inside Dhaka' : 'Outside Dhaka' }}</span>
+                    </div>
+                    <div class="col-6">
+                        <span class="text-muted">Total Amount:</span>
+                        <strong class="text-danger fs-6">৳{{ number_format($order->total, 2) }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Order Items Card -->
+        <div class="col-md-12">
+            <div class="stat-card mb-4 {{ $isFraud ? 'border-danger' : '' }}" style="{{ $isFraud ? 'background-color: #fff5f5 !important; border: 1.5px solid #fca5a5;' : '' }}">
+                <h6 class="fw-bold mb-3"><i class="bi bi-box-seam me-1"></i> Order Items</h6>
 
                 <!-- Order Items -->
                 <table class="table table-bordered align-middle mb-0" style="border-color: #a1a1a1 !important;">

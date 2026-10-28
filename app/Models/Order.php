@@ -82,6 +82,9 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'ip_address',
+        'is_fraud',
+        'fraud_reason',
         'invoice_no',
         'customer_name',
         'customer_phone',
@@ -97,6 +100,27 @@ class Order extends Model
         'tax',
         'total',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'is_fraud' => 'boolean',
+        ];
+    }
+
+    public function isIpBlocked(): bool
+    {
+        if (empty($this->ip_address)) {
+            return false;
+        }
+
+        return BlockedIp::isBlocked($this->ip_address);
+    }
+
+    public function isFlaggedAsFraud(): bool
+    {
+        return (bool) $this->is_fraud || $this->isIpBlocked();
+    }
 
     /**
      * @return BelongsTo<User, $this>

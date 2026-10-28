@@ -35,6 +35,7 @@ use App\Http\Controllers\Frontend\PageController as FrontendPageController;
 use App\Http\Controllers\Frontend\ReviewController;
 use App\Http\Controllers\Frontend\SslcommerzController;
 use App\Http\Middleware\AdminMiddleware;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -136,6 +137,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::post('orders/send-steadfast', [AdminOrderController::class, 'sendToSteadfast'])->name('orders.send-steadfast');
             Route::get('orders/{order}', [AdminOrderController::class, 'show'])->name('orders.show');
             Route::patch('orders/{order}/status', [AdminOrderController::class, 'updateStatus'])->name('orders.update-status');
+            Route::patch('orders/{order}/toggle-fraud', [AdminOrderController::class, 'toggleFraud'])->name('orders.toggle-fraud');
+            Route::post('orders/{order}/block-ip', [AdminOrderController::class, 'blockIp'])->name('orders.block-ip');
+            Route::post('orders/{order}/unblock-ip', [AdminOrderController::class, 'unblockIp'])->name('orders.unblock-ip');
+            Route::get('orders/{order}/fraud-check', [AdminOrderController::class, 'fraudCheck'])->name('orders.fraud-check');
+            Route::get('orders-check-phone', [AdminOrderController::class, 'checkPhoneRisk'])->name('orders.check-phone');
             Route::delete('orders/{order}', [AdminOrderController::class, 'destroy'])->name('orders.destroy');
         });
 
@@ -200,11 +206,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Clear cache route for live server
-Route::get('/clear-cache', function() {
-    \Illuminate\Support\Facades\Artisan::call('cache:clear');
-    \Illuminate\Support\Facades\Artisan::call('route:clear');
-    \Illuminate\Support\Facades\Artisan::call('config:clear');
-    \Illuminate\Support\Facades\Artisan::call('view:clear');
-    \Illuminate\Support\Facades\Artisan::call('optimize:clear');
-    return "All cache cleared successfully!";
+Route::get('/clear-cache', function () {
+    Artisan::call('cache:clear');
+    Artisan::call('route:clear');
+    Artisan::call('config:clear');
+    Artisan::call('view:clear');
+    Artisan::call('optimize:clear');
+
+    return 'All cache cleared successfully!';
 });
