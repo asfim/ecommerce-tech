@@ -169,15 +169,15 @@
 
             <div class="mt-2 d-flex gap-2 justify-content-center align-items-center product-card-actions">
                 <a href="#"
-                    class="btn btn-buy-now w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1 btn-bid"
+                    class="btn btn-buy-now w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1 btn-bid text-white"
                     data-id="{{ $product->id }}" 
                     data-name="{{ $product->name }}" 
                     data-price="{{ $hasDiscount ? $discountedPrice : $minPrice }}" 
                     data-original-price="{{ $hasDiscount ? $originalMinPrice : $product->price }}"
                     data-image="{{ $displayImage }}"
-                    style="font-size: 11px; font-weight: 600; border-radius: 6px;"
+                    style="font-size: 11px; font-weight: 600; border-radius: 6px; color: #ffffff !important;"
                     title="Buy Now">
-                    <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
+                    <i class="bi bi-lightning-fill text-white"></i><span class="text-white"> Buy Now</span>
                 </a>
             </div>
         </div>

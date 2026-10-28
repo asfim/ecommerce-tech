@@ -29,12 +29,12 @@
                                 @endif
                             </a>
                             @if($cat->subCategories->isNotEmpty())
-                                <div class="hero-cat-submenu hero-cat-sidebar-inner position-absolute" style="left: 100%; top: 0; min-width: 250px; height: 100%; overflow-y: auto; z-index: 9999; border-radius: 0 14px 14px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.08); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); background: #ffffff; border: 1px solid #e2e8f0;">
+                                <div class="hero-cat-submenu hero-cat-sidebar-inner position-absolute" style="left: 100%; top: 0; min-width: 250px; height: 100%; overflow-y: auto; z-index: 9999; border-radius: 0 14px 14px 0; box-shadow: 0 16px 40px rgba(0,0,0,0.45); padding: 16px 12px; border-left: 3px solid #E0471B; opacity: 0; visibility: hidden; transform: translateX(10px); transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1); background: #0f172a; border: 1px solid rgba(255, 255, 255, 0.1);">
                                     <div class="text-uppercase fw-bold mb-2 px-3" style="font-size: 11px; letter-spacing: 1.2px; color: #E0471B;">{{ $cat->name }}</div>
                                     <ul class="list-unstyled mb-0">
                                         @foreach($cat->subCategories as $subCat)
                                             <li class="mb-1">
-                                                <a href="{{ route('category.products', [$cat->id, 'subcategory' => $subCat->id]) }}" class="d-flex align-items-center px-3 py-2 text-decoration-none rounded smart-submenu-link" style="font-size: 13.5px; font-weight: 500; color: #334155;">
+                                                <a href="{{ route('category.products', [$cat->id, 'subcategory' => $subCat->id]) }}" class="d-flex align-items-center px-3 py-2 text-decoration-none rounded smart-submenu-link" style="font-size: 13.5px; font-weight: 500; color: #cbd5e1;">
                                                     {{ $subCat->name }}
                                                 </a>
                                             </li>
@@ -284,6 +284,15 @@
                 box-shadow: 0 8px 25px rgba(224, 71, 27, 0.4);
                 transform: translateY(-2px);
                 color: #fff;
+            }
+            /* White text for buttons in Latest Products and Flash Sale */
+            .latest-products-slider .btn-buy-now,
+            .latest-products-slider .btn-buy-now *,
+            .discounted-slider .btn-buy-now,
+            .discounted-slider .btn-buy-now *,
+            .preorder-panel .btn-buy-now,
+            .preorder-panel .btn-buy-now * {
+                color: #ffffff !important;
             }
             .new-badge {
                 position: absolute;
@@ -570,9 +579,9 @@
                                     </a>
                                     <div class="px-3 pb-3 mt-auto">
                                         <a href="{{ route('product.details', $bp->slug) }}"
-                                            class="btn btn-buy-now w-100 d-inline-flex align-items-center justify-content-center gap-2"
+                                            class="btn btn-buy-now w-100 d-inline-flex align-items-center justify-content-center gap-2 text-white"
                                             title="Buy Now">
-                                            <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
+                                            <i class="bi bi-lightning-fill text-white"></i><span class="text-white"> Buy Now</span>
                                         </a>
                                     </div>
                                 </div>
@@ -872,10 +881,10 @@
                                     </div>
                                     <div class="px-2 pb-2 mt-1 d-flex gap-2 justify-content-center align-items-center product-card-actions">
                                         <a href="{{ route('product.details', $dp->slug) }}"
-                                            class="btn btn-buy-now w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1"
+                                            class="btn btn-buy-now w-100 py-2 d-inline-flex align-items-center justify-content-center gap-1 text-white"
                                             style="font-size: 11px; font-weight: 600; border-radius: 6px;"
                                             title="Buy Now">
-                                            <i class="bi bi-lightning-fill"></i><span> Buy Now</span>
+                                            <i class="bi bi-lightning-fill text-white"></i><span class="text-white"> Buy Now</span>
                                         </a>
                                     </div>
                                 </div>

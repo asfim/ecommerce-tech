@@ -1897,12 +1897,24 @@ a {
     background: linear-gradient(135deg, #E0471B, #ff6b3d) !important;
     box-shadow: 0 4px 15px rgba(224, 71, 27, 0.3) !important;
     letter-spacing: 0.5px !important;
+    color: #ffffff !important;
+}
+
+.btn-buy-now,
+.btn-buy-now:visited,
+.btn-buy-now:hover,
+.btn-buy-now:active,
+.btn-buy-now:focus,
+.btn-buy-now i,
+.btn-buy-now span {
+    color: #ffffff !important;
 }
 
 .btn-buy-now:hover {
     background: linear-gradient(135deg, #ff6b3d, #E0471B) !important;
     box-shadow: 0 8px 25px rgba(224, 71, 27, 0.5) !important;
     transform: translateY(-2px) !important;
+    color: #ffffff !important;
 }
 
 .disc-badge {
@@ -2571,68 +2583,114 @@ body.homepage-light {
     color: #1e293b !important;
 }
 
+/* Homepage Hero Section - Modern Sleek Dark Background */
 body.homepage-light .hero-sec {
-    background: linear-gradient(180deg, #f1f5f9 0%, #f8fafc 100%) !important;
+    background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #0a0f1d 100%) !important;
     padding: 24px 0 !important;
-    border-bottom: 1px solid #e2e8f0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+body.homepage-light .hero-sec::before {
+    content: '';
+    position: absolute;
+    top: -40%;
+    right: -15%;
+    width: 550px;
+    height: 550px;
+    background: radial-gradient(circle, rgba(224, 71, 27, 0.12) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+body.homepage-light .hero-sec::after {
+    content: '';
+    position: absolute;
+    bottom: -30%;
+    left: -10%;
+    width: 450px;
+    height: 450px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
 }
 
 body.homepage-light .hero-cat-sidebar {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+    background: rgba(15, 23, 42, 0.88) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.09) !important;
     border-radius: 16px !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35) !important;
+}
+
+body.homepage-light .hero-cat-sidebar::-webkit-scrollbar-thumb,
+body.homepage-light .hero-cat-sidebar-inner::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15) !important;
 }
 
 body.homepage-light .hero-cat-list li a {
-    color: #334155 !important;
-    border-bottom: 1px solid #f8fafc !important;
+    color: #e2e8f0 !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
     transition: all 0.25s ease !important;
 }
 
 body.homepage-light .hero-cat-list li a:hover,
 body.homepage-light .hero-cat-item:hover > a {
-    background: #fff6f3 !important;
-    color: #E0471B !important;
+    background: rgba(224, 71, 27, 0.15) !important;
+    color: #ff6b3d !important;
     padding-left: 20px !important;
 }
 
 body.homepage-light .hero-cat-list li a:hover .cat-arrow,
 body.homepage-light .hero-cat-item:hover > a .cat-arrow {
-    color: #E0471B !important;
+    color: #ff6b3d !important;
     transform: translateX(3px);
 }
 
 body.homepage-light .hero-cat-icon {
-    background: rgba(224, 71, 27, 0.06) !important;
-    border: 1px solid rgba(224, 71, 27, 0.1) !important;
+    background: rgba(255, 255, 255, 0.06) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 6px !important;
     padding: 2px !important;
 }
 
+body.homepage-light .hero-cat-icon-bi {
+    color: #94a3b8 !important;
+}
+
+body.homepage-light .hero-cat-list li.view-all-cats a {
+    color: #ff6b3d !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+body.homepage-light .hero-cat-list li.view-all-cats a:hover {
+    background: rgba(224, 71, 27, 0.15) !important;
+}
+
 body.homepage-light .hero-cat-submenu {
-    background: #ffffff !important;
-    border: 1px solid #e2e8f0 !important;
+    background: #0f172a !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-left: 3px solid #E0471B !important;
     border-radius: 0 14px 14px 0 !important;
-    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45) !important;
 }
 
 body.homepage-light .smart-submenu-link {
-    color: #334155 !important;
+    color: #cbd5e1 !important;
     transition: all 0.2s ease !important;
 }
 
 body.homepage-light .smart-submenu-link:hover {
-    background: #fff5f2 !important;
-    color: #E0471B !important;
+    background: rgba(224, 71, 27, 0.15) !important;
+    color: #ff6b3d !important;
     transform: translateX(6px) !important;
 }
 
 body.homepage-light .hero-carousel {
-    border: 1px solid #e2e8f0 !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 16px !important;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35) !important;
 }
 
 /* Homepage Light Product Cards */
