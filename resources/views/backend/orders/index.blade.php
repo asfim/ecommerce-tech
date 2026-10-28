@@ -230,8 +230,11 @@
                         $stat = $phoneStats[$order->customer_phone] ?? null;
                         $isIpBlocked = ! empty($order->ip_address) && isset($blockedIps[$order->ip_address]);
                         $hasFraudPast = $stat && $stat->fraud_count > 0;
-                        $hasCancelPast = $stat && ($stat->cancelled + $stat->returned) >= 1;
-                        $isSuspiciousPhone = $hasFraudPast || ($hasCancelPast && $stat->delivered == 0 && $stat->total > 1);
+                        $totalCancels = $stat ? ($stat->cancelled + $stat->returned) : 0;
+                        $cThreshold = $cancelThreshold ?? 2;
+                        $isCancelFraud = $totalCancels >= $cThreshold;
+                        $hasCancelPast = $totalCancels >= 1;
+                        $isSuspiciousPhone = $hasFraudPast || $isCancelFraud || ($totalCancels >= 1 && $stat->delivered == 0 && $stat->total > 1);
                         $isFraudRow = (bool) $order->is_fraud || $isIpBlocked || $isSuspiciousPhone;
                         $isFraud = $isFraudRow;
                     @endphp
@@ -267,9 +270,13 @@
                                     <div class="small text-danger fw-bold mt-1" style="font-size: 11px;">
                                         <i class="bi bi-exclamation-octagon me-1"></i> Phone has past fraud records
                                     </div>
+                                @elseif ($isCancelFraud)
+                                    <div class="small text-danger fw-bold mt-1" style="font-size: 11px;">
+                                        <i class="bi bi-exclamation-octagon-fill me-1"></i> High cancellations: {{ $totalCancels }} cancelled/returned orders
+                                    </div>
                                 @elseif ($hasCancelPast)
                                     <div class="small text-danger fw-bold mt-1" style="font-size: 11px;">
-                                        <i class="bi bi-exclamation-octagon me-1"></i> {{ $stat->cancelled + $stat->returned }} past cancelled/returned orders
+                                        <i class="bi bi-exclamation-octagon me-1"></i> {{ $totalCancels }} past cancelled/returned orders
                                     </div>
                                 @endif
                             @endif
@@ -291,10 +298,15 @@
                                     <span class="badge bg-danger text-white" style="font-size: 10px;">
                                         <i class="bi bi-exclamation-octagon-fill me-1"></i> Prev. Fraud
                                     </span>
+                                @elseif ($isCancelFraud)
+                                    <span class="badge bg-danger text-white" style="font-size: 10px;"
+                                        title="{{ $stat->cancelled }} cancelled, {{ $stat->returned }} returned">
+                                        <i class="bi bi-exclamation-octagon-fill me-1"></i> {{ $totalCancels }} Cancelled (FRAUD)
+                                    </span>
                                 @elseif ($hasCancelPast)
                                     <span class="badge bg-warning text-dark" style="font-size: 10px;"
                                         title="{{ $stat->cancelled }} cancelled, {{ $stat->returned }} returned">
-                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ $stat->cancelled + $stat->returned }} Cancelled
+                                        <i class="bi bi-exclamation-triangle-fill me-1"></i> {{ $totalCancels }} Cancelled
                                     </span>
                                 @elseif ($stat && $stat->delivered > 0)
                                     <span class="badge bg-success text-white" style="font-size: 10px;">
@@ -557,6 +569,65 @@
                 // Fraud Check & Risk System
                 const adminOrderBaseUrl = "{{ url('admin/orders') }}";
 
+                function renderMultiCourierBox(data) {
+                    if (!data.couriers) {
+                        if (data.courier_data) {
+                            return `
+                                <div class="card p-2 mb-3 text-start bg-white border-primary" style="font-size: 12px;">
+                                    <div class="fw-bold text-primary mb-1"><i class="bi bi-truck me-1"></i> Courier Data:</div>
+                                    <div class="row g-2 text-center">
+                                        <div class="col-4"><div class="fw-bold fs-6">${data.courier_data.total}</div><div class="text-muted" style="font-size:10px;">Total Parcels</div></div>
+                                        <div class="col-4"><div class="fw-bold fs-6 text-success">${data.courier_data.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
+                                        <div class="col-4"><div class="fw-bold fs-6 text-danger">${data.courier_data.cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        return '';
+                    }
+
+                    let courierCards = '';
+                    for (const [key, c] of Object.entries(data.couriers)) {
+                        const isBypassed = c.status === 'bypassed';
+                        courierCards += `
+                            <div class="col-6 mb-2">
+                                <div class="p-2 border rounded bg-white shadow-sm" style="font-size:11px;">
+                                    <div class="fw-bold text-dark d-flex align-items-center justify-content-between mb-1">
+                                        <span><i class="bi bi-${c.icon || 'box'} me-1 text-primary"></i> ${c.name}</span>
+                                        ${isBypassed ? '<span class="badge bg-light text-muted border" style="font-size:9px;">Bypassed</span>' : '<span class="badge bg-success-subtle text-success border border-success" style="font-size:9px;">Active</span>'}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <span class="text-success"><i class="bi bi-check2"></i> ${c.delivered} Del</span>
+                                        <span class="${c.cancelled > 0 ? 'text-danger fw-bold' : 'text-muted'}"><i class="bi bi-x-circle"></i> ${c.cancelled} Can</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    const cancelBadgeClass = data.total_cancelled >= 2 ? 'badge bg-danger text-white' : (data.total_cancelled === 1 ? 'badge bg-warning text-dark' : 'badge bg-success text-white');
+
+                    return `
+                        <div class="card p-2 mb-3 text-start bg-light border-primary shadow-sm" style="font-size: 12px;">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <strong class="text-primary"><i class="bi bi-truck me-1"></i> Multi-Courier Verification (সকল কুরিয়ার তথ্য):</strong>
+                                <span class="${cancelBadgeClass}">${data.total_cancelled} Cancelled</span>
+                            </div>
+                            <div class="row g-2 mb-2 text-center bg-white py-1 rounded border mx-0">
+                                <div class="col-4"><div class="fw-bold fs-6">${data.total_parcels}</div><div class="text-muted" style="font-size:10px;">Total Parcels</div></div>
+                                <div class="col-4"><div class="fw-bold fs-6 text-success">${data.total_delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
+                                <div class="col-4"><div class="fw-bold fs-6 text-danger">${data.total_cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
+                            </div>
+                            <div class="mb-2 text-center text-muted" style="font-size: 11px;">
+                                Cancellation Rate: <strong class="${data.cancel_rate >= 40 ? 'text-danger' : 'text-dark'}">${data.cancel_rate}%</strong> | Delivery Success: <strong class="text-success">${data.success_rate}%</strong>
+                            </div>
+                            <div class="row g-1">
+                                ${courierCards}
+                            </div>
+                        </div>
+                    `;
+                }
+
                 document.querySelectorAll('.btn-fraud-check').forEach(btn => {
                     btn.addEventListener('click', function(e) {
                         e.preventDefault();
@@ -602,19 +673,17 @@
                                 ? `<button type="button" class="btn btn-sm w-100 swal-toggle-fraud-btn" data-id="${orderId}" style="background-color:#4b5563 !important; border-color:#4b5563 !important; color:#fff !important;"><i class="bi bi-shield-check me-1"></i> Remove Fraud Flag</button>`
                                 : `<button type="button" class="btn btn-sm w-100 swal-toggle-fraud-btn" data-id="${orderId}" style="background-color:#f59e0b !important; border-color:#f59e0b !important; color:#000 !important; font-weight:bold;"><i class="bi bi-shield-x me-1"></i> Flag as Fraud Order (Turn Row Red)</button>`;
 
-                            let courierHtml = '';
-                            if (data.courier_data) {
-                                courierHtml = `
-                                    <div class="card p-2 mb-3 text-start bg-white border-primary" style="font-size: 12px;">
-                                        <div class="fw-bold text-primary mb-1"><i class="bi bi-truck me-1"></i> Steadfast Nationwide Courier Data:</div>
-                                        <div class="row g-2 text-center">
-                                            <div class="col-4"><div class="fw-bold fs-6">${data.courier_data.total}</div><div class="text-muted" style="font-size:10px;">Total Parcels</div></div>
-                                            <div class="col-4"><div class="fw-bold fs-6 text-success">${data.courier_data.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
-                                            <div class="col-4"><div class="fw-bold fs-6 text-danger">${data.courier_data.cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
-                                        </div>
+                            let fraudBannerHtml = '';
+                            if (data.is_fraud) {
+                                fraudBannerHtml = `
+                                    <div class="alert alert-danger text-start p-2 mb-3" style="font-size: 12px; background-color: #fee2e2; border: 1px solid #dc2626; color: #991b1b;">
+                                        <strong class="d-block mb-1"><i class="bi bi-shield-x-fill text-danger me-1"></i> 🚨 FRAUD DETECTED (অর্ডার ফ্রড চিহ্নিত):</strong>
+                                        <div>কুরিয়ারে পার্সেল বাতিল (ক্যান্সেলেশন) বা ফ্রড রেকর্ড থাকায় এই অর্ডার ফ্রড চিহ্নিত হয়েছে (রো-টি লাল রঙে প্রদর্শিত)।</div>
                                     </div>
                                 `;
                             }
+
+                            const multiCourierHtml = renderMultiCourierBox(data);
 
                             Swal.fire({
                                 title: `<span>Fraud Check: ${data.invoice_no}</span>`,
@@ -628,11 +697,12 @@
                                         <div class="mb-2"><strong>IP Address:</strong> <code>${data.ip_address}</code> ${data.is_ip_blocked ? '<span class="badge bg-danger ms-1">BLOCKED</span>' : ''}</div>
                                     </div>
 
+                                    ${fraudBannerHtml}
                                     ${reasonsHtml}
-                                    ${courierHtml}
+                                    ${multiCourierHtml}
 
                                     <div class="card p-2 mb-3 text-start bg-light" style="font-size: 12px;">
-                                        <div class="fw-bold mb-1"><i class="bi bi-clock-history me-1"></i> Phone Order History:</div>
+                                        <div class="fw-bold mb-1"><i class="bi bi-clock-history me-1"></i> Store Order History:</div>
                                         <div class="row g-2 text-center">
                                             <div class="col-3"><div class="fw-bold fs-6">${data.stats.total}</div><div class="text-muted" style="font-size:10px;">Total</div></div>
                                             <div class="col-3"><div class="fw-bold fs-6 text-success">${data.stats.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
@@ -873,19 +943,17 @@
                                 reasonsHtml = '<div class="alert alert-success text-start p-2 mb-3" style="font-size: 12px;"><i class="bi bi-check-circle-fill me-1"></i> No past fraudulent activity detected for this phone number.</div>';
                             }
 
-                            let courierHtml = '';
-                            if (data.courier_data) {
-                                courierHtml = `
-                                    <div class="card p-2 mb-2 text-start bg-white border-primary" style="font-size: 12px;">
-                                        <div class="fw-bold text-primary mb-1"><i class="bi bi-truck me-1"></i> Steadfast Nationwide Courier Data:</div>
-                                        <div class="row g-2 text-center">
-                                            <div class="col-4"><div class="fw-bold">${data.courier_data.total}</div><div class="text-muted" style="font-size:10px;">Total Parcels</div></div>
-                                            <div class="col-4"><div class="fw-bold text-success">${data.courier_data.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
-                                            <div class="col-4"><div class="fw-bold text-danger">${data.courier_data.cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
-                                        </div>
+                            let fraudBannerHtml = '';
+                            if (data.is_fraud) {
+                                fraudBannerHtml = `
+                                    <div class="alert alert-danger text-start p-2 mb-3" style="font-size: 12px; background-color: #fee2e2; border: 1px solid #dc2626; color: #991b1b;">
+                                        <strong class="d-block mb-1"><i class="bi bi-shield-x-fill text-danger me-1"></i> 🚨 FRAUD NUMBER DETECTED:</strong>
+                                        <div>কুরিয়ারে অধিক পার্সেল বাতিল (ক্যান্সেলেশন) অথবা পূর্বে ফ্রড রেকর্ড থাকায় এই নাম্বারকে ফ্রড চিহ্নিত করা হয়েছে।</div>
                                     </div>
                                 `;
                             }
+
+                            const multiCourierHtml = renderMultiCourierBox(data);
 
                             Swal.fire({
                                 title: `<span>Phone Risk: ${data.phone}</span>`,
@@ -897,8 +965,9 @@
                                         </div>
                                     </div>
 
+                                    ${fraudBannerHtml}
                                     ${reasonsHtml}
-                                    ${courierHtml}
+                                    ${multiCourierHtml}
 
                                     <div class="card p-2 mb-3 text-start bg-light" style="font-size: 12px;">
                                         <div class="fw-bold mb-1"><i class="bi bi-clock-history me-1"></i> Store Order History:</div>

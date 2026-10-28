@@ -149,6 +149,7 @@ class ProductController extends Controller implements HasMiddleware
     public function show(Product $product)
     {
         $product->load(['category', 'subCategory', 'brand']);
+
         return view('backend.products.show', compact('product'));
     }
 

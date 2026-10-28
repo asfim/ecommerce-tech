@@ -7,13 +7,13 @@ use App\Models\BlockedIp;
 use App\Models\HomepageSetting;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\MultiCourierFraudService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 use Illuminate\View\View;
 use SabitAhmad\SteadFast\DTO\OrderRequest;
 use SabitAhmad\SteadFast\Facades\SteadFast;
@@ -90,19 +90,26 @@ class OrderController extends Controller implements HasMiddleware
 
         $blockedIps = BlockedIp::pluck('ip_address')->flip();
 
+        $fraudSettings = HomepageSetting::get('courier_fraud_settings', [
+            'cancel_threshold' => 2,
+            'cancel_rate_threshold' => 40,
+        ]);
+        $cancelThreshold = (int) ($fraudSettings['cancel_threshold'] ?? 2);
+
         $pageFraudCount = 0;
         foreach ($orders as $order) {
             $stat = $phoneStats[$order->customer_phone] ?? null;
             $hasBlockedIp = ! empty($order->ip_address) && isset($blockedIps[$order->ip_address]);
             $hasFraudPast = $stat && $stat->fraud_count > 0;
-            $hasHighCancel = $stat && ($stat->cancelled + $stat->returned) >= 1 && ($stat->delivered == 0 && $stat->total > 1);
+            $totalCancels = $stat ? ($stat->cancelled + $stat->returned) : 0;
+            $hasHighCancel = $totalCancels >= $cancelThreshold || ($totalCancels >= 1 && ($stat->delivered == 0 && $stat->total > 1));
 
             if ($order->is_fraud || $hasBlockedIp || $hasFraudPast || $hasHighCancel) {
                 $pageFraudCount++;
             }
         }
 
-        return view('backend.orders.index', compact('orders', 'statusCounts', 'phoneStats', 'blockedIps', 'pageFraudCount'));
+        return view('backend.orders.index', compact('orders', 'statusCounts', 'phoneStats', 'blockedIps', 'pageFraudCount', 'cancelThreshold'));
     }
 
     public function bulkPrint(Request $request): View
@@ -426,114 +433,42 @@ class OrderController extends Controller implements HasMiddleware
 
     public function fraudCheck(Order $order): JsonResponse
     {
-        $phone = $order->customer_phone;
+        $res = MultiCourierFraudService::check($order->customer_phone, $order);
+        $order->refresh();
+
         $ip = $order->ip_address;
-
-        $phoneOrders = Order::where('customer_phone', $phone)->get();
-        $totalOrders = $phoneOrders->count();
-        $deliveredOrders = $phoneOrders->where('order_status', 'delivered')->count();
-        $cancelledOrders = $phoneOrders->where('order_status', 'cancelled')->count();
-        $returnedOrders = $phoneOrders->where('order_status', 'returned')->count();
-        $fraudOrders = $phoneOrders->where('is_fraud', true)->count();
-
         $ipBlocked = ! empty($ip) && BlockedIp::isBlocked($ip);
         $ipOrdersCount = ! empty($ip) ? Order::where('ip_address', $ip)->count() : 0;
 
-        $successRate = $totalOrders > 0 ? round(($deliveredOrders / $totalOrders) * 100, 1) : 0;
-
-        $riskScore = 0;
-        $reasons = [];
-
-        if ($ipBlocked) {
-            $riskScore += 90;
-            $reasons[] = 'Customer IP is currently BLOCKED';
-        }
-
-        if ($fraudOrders > 0) {
-            $riskScore += 60;
-            $reasons[] = "Found {$fraudOrders} previous fraudulent order(s) with this phone number";
-        }
-
-        if ($cancelledOrders + $returnedOrders >= 2) {
-            $riskScore += 40;
-            $reasons[] = "High cancellation/return history ({$cancelledOrders} cancelled, {$returnedOrders} returned)";
-        }
-
-        if ($ipOrdersCount > 5) {
-            $riskScore += 25;
-            $reasons[] = "High order volume ({$ipOrdersCount} orders) placed from the same IP";
-        }
-
-        if ($order->is_fraud) {
-            $riskScore = max($riskScore, 85);
-            $reasons[] = $order->fraud_reason ?: 'Flagged as Fraud by administrator';
-        }
-
-        // Live Courier Check via Steadfast API if configured
-        $courierData = null;
-        $steadfastConfig = HomepageSetting::get('steadfast_settings');
-        if (! empty($steadfastConfig['api_key']) && ! empty($steadfastConfig['secret_key'])) {
-            try {
-                $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-                if (str_starts_with($cleanPhone, '8801') && strlen($cleanPhone) === 13) {
-                    $cleanPhone = substr($cleanPhone, 2);
-                }
-                $baseUrl = rtrim($steadfastConfig['base_url'] ?? 'https://portal.packzy.com/api/v1', '/');
-                $response = Http::withHeaders([
-                    'Api-Key' => $steadfastConfig['api_key'],
-                    'Secret-Key' => $steadfastConfig['secret_key'],
-                    'Content-Type' => 'application/json',
-                ])->timeout(3)->get("{$baseUrl}/fraud_check/{$cleanPhone}");
-
-                if ($response->successful()) {
-                    $json = $response->json();
-                    $courierData = [
-                        'total' => $json['total_parcels'] ?? $json['total'] ?? 0,
-                        'delivered' => $json['total_delivered'] ?? $json['delivered'] ?? 0,
-                        'cancelled' => $json['total_cancelled'] ?? $json['cancelled'] ?? 0,
-                    ];
-                    if (! empty($courierData['cancelled']) && $courierData['cancelled'] >= 2) {
-                        $riskScore = max($riskScore, 80);
-                        $reasons[] = "Steadfast Courier: {$courierData['cancelled']} cancelled parcels nationwide";
-                    }
-                }
-            } catch (\Throwable $e) {
-                // Ignore gracefully if courier credentials fail
-            }
-        }
-
-        $riskLevel = 'Low Risk';
-        $riskColor = 'success';
-        if ($riskScore >= 70) {
-            $riskLevel = 'High Risk (Suspicious)';
-            $riskColor = 'danger';
-        } elseif ($riskScore >= 35) {
-            $riskLevel = 'Medium Risk';
-            $riskColor = 'warning';
-        }
+        $stats = $res['store_stats'];
+        $stats['ip_orders'] = $ipOrdersCount;
 
         return response()->json([
             'order_id' => $order->id,
             'invoice_no' => $order->invoice_no,
             'customer_name' => $order->customer_name,
-            'customer_phone' => $phone,
+            'customer_phone' => $order->customer_phone,
+            'clean_phone' => $res['clean_phone'],
             'ip_address' => $ip ?: 'Not recorded',
             'is_fraud' => (bool) $order->is_fraud,
+            'fraud_reason' => $order->fraud_reason,
             'is_ip_blocked' => $ipBlocked,
-            'risk_score' => min(100, $riskScore),
-            'risk_level' => $riskLevel,
-            'risk_color' => $riskColor,
-            'reasons' => $reasons,
-            'stats' => [
-                'total' => $totalOrders,
-                'delivered' => $deliveredOrders,
-                'cancelled' => $cancelledOrders,
-                'returned' => $returnedOrders,
-                'fraud' => $fraudOrders,
-                'success_rate' => $successRate,
-                'ip_orders' => $ipOrdersCount,
+            'risk_score' => $res['risk_score'],
+            'risk_level' => $res['risk_level'],
+            'risk_color' => $res['risk_color'],
+            'reasons' => $res['reasons'],
+            'total_parcels' => $res['total_parcels'],
+            'total_delivered' => $res['total_delivered'],
+            'total_cancelled' => $res['total_cancelled'],
+            'success_rate' => $res['success_rate'],
+            'cancel_rate' => $res['cancel_rate'],
+            'couriers' => $res['couriers'],
+            'stats' => $stats,
+            'courier_data' => [
+                'total' => $res['total_parcels'],
+                'delivered' => $res['total_delivered'],
+                'cancelled' => $res['total_cancelled'],
             ],
-            'courier_data' => $courierData,
         ]);
     }
 
@@ -544,90 +479,29 @@ class OrderController extends Controller implements HasMiddleware
             return response()->json(['success' => false, 'message' => 'Phone number is required.'], 422);
         }
 
-        $cleanPhone = preg_replace('/[^0-9]/', '', $phone);
-        if (str_starts_with($cleanPhone, '8801') && strlen($cleanPhone) === 13) {
-            $cleanPhone = substr($cleanPhone, 2);
-        }
-
-        $phoneOrders = Order::where('customer_phone', 'like', "%{$cleanPhone}%")->get();
-        $totalOrders = $phoneOrders->count();
-        $deliveredOrders = $phoneOrders->where('order_status', 'delivered')->count();
-        $cancelledOrders = $phoneOrders->where('order_status', 'cancelled')->count();
-        $returnedOrders = $phoneOrders->where('order_status', 'returned')->count();
-        $fraudOrders = $phoneOrders->where('is_fraud', true)->count();
-
-        $successRate = $totalOrders > 0 ? round(($deliveredOrders / $totalOrders) * 100, 1) : 0;
-
-        $riskScore = 0;
-        $reasons = [];
-
-        if ($fraudOrders > 0) {
-            $riskScore += 70;
-            $reasons[] = "Found {$fraudOrders} previous order(s) marked as FRAUD";
-        }
-        if ($cancelledOrders + $returnedOrders >= 2) {
-            $riskScore += 45;
-            $reasons[] = "High cancellation rate ({$cancelledOrders} cancelled, {$returnedOrders} returned)";
-        } elseif ($cancelledOrders + $returnedOrders === 1) {
-            $riskScore += 25;
-            $reasons[] = 'Customer has 1 previous cancelled/returned order';
-        }
-
-        $courierData = null;
-        $steadfastConfig = HomepageSetting::get('steadfast_settings');
-        if (! empty($steadfastConfig['api_key']) && ! empty($steadfastConfig['secret_key'])) {
-            try {
-                $baseUrl = rtrim($steadfastConfig['base_url'] ?? 'https://portal.packzy.com/api/v1', '/');
-                $response = Http::withHeaders([
-                    'Api-Key' => $steadfastConfig['api_key'],
-                    'Secret-Key' => $steadfastConfig['secret_key'],
-                    'Content-Type' => 'application/json',
-                ])->timeout(3)->get("{$baseUrl}/fraud_check/{$cleanPhone}");
-
-                if ($response->successful()) {
-                    $json = $response->json();
-                    $courierData = [
-                        'total' => $json['total_parcels'] ?? $json['total'] ?? 0,
-                        'delivered' => $json['total_delivered'] ?? $json['delivered'] ?? 0,
-                        'cancelled' => $json['total_cancelled'] ?? $json['cancelled'] ?? 0,
-                    ];
-                    if (! empty($courierData['cancelled']) && $courierData['cancelled'] >= 2) {
-                        $riskScore = max($riskScore, 80);
-                        $reasons[] = "Steadfast Courier: {$courierData['cancelled']} cancelled parcels nationwide";
-                    }
-                }
-            } catch (\Throwable $e) {
-                // Ignore gracefully
-            }
-        }
-
-        $riskLevel = 'Low Risk';
-        $riskColor = 'success';
-        if ($riskScore >= 60) {
-            $riskLevel = 'High Risk (Fraud Likely)';
-            $riskColor = 'danger';
-        } elseif ($riskScore >= 30) {
-            $riskLevel = 'Medium Risk';
-            $riskColor = 'warning';
-        }
+        $res = MultiCourierFraudService::check($phone);
 
         return response()->json([
             'success' => true,
             'phone' => $phone,
-            'clean_phone' => $cleanPhone,
-            'risk_score' => min(100, $riskScore),
-            'risk_level' => $riskLevel,
-            'risk_color' => $riskColor,
-            'reasons' => $reasons,
-            'stats' => [
-                'total' => $totalOrders,
-                'delivered' => $deliveredOrders,
-                'cancelled' => $cancelledOrders,
-                'returned' => $returnedOrders,
-                'fraud' => $fraudOrders,
-                'success_rate' => $successRate,
+            'clean_phone' => $res['clean_phone'],
+            'is_fraud' => $res['is_fraud'],
+            'risk_score' => $res['risk_score'],
+            'risk_level' => $res['risk_level'],
+            'risk_color' => $res['risk_color'],
+            'reasons' => $res['reasons'],
+            'total_parcels' => $res['total_parcels'],
+            'total_delivered' => $res['total_delivered'],
+            'total_cancelled' => $res['total_cancelled'],
+            'success_rate' => $res['success_rate'],
+            'cancel_rate' => $res['cancel_rate'],
+            'couriers' => $res['couriers'],
+            'stats' => $res['store_stats'],
+            'courier_data' => [
+                'total' => $res['total_parcels'],
+                'delivered' => $res['total_delivered'],
+                'cancelled' => $res['total_cancelled'],
             ],
-            'courier_data' => $courierData,
         ]);
     }
 }

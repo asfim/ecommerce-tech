@@ -14,7 +14,7 @@ foreach ($products as $product) {
             $parts = explode(':', $variant['combo']);
             if (count($parts) == 2) {
                 $variant['combo'] = [trim($parts[0]) => trim($parts[1])];
-                $variant['sku'] = strtoupper(Str::slug(trim($parts[1])) . '-' . uniqid());
+                $variant['sku'] = strtoupper(Str::slug(trim($parts[1])).'-'.uniqid());
                 $variant['active'] = true;
                 $changed = true;
             }

@@ -2,7 +2,9 @@
 
 use App\Models\Admin;
 use App\Models\BlockedIp;
+use App\Models\HomepageSetting;
 use App\Models\Order;
+use App\Services\MultiCourierFraudService;
 use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 
@@ -158,4 +160,98 @@ test('check-phone endpoint returns phone risk evaluation', function () {
                 'success_rate',
             ],
         ]);
+});
+
+test('high cancellation phone is automatically detected as fraud across couriers', function () {
+    $badPhone = '01799887766';
+
+    // Create 2 cancelled orders in store history
+    Order::create([
+        'invoice_no' => 'INV-TEST-C1',
+        'customer_name' => 'Bad Customer',
+        'customer_phone' => $badPhone,
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'cancelled',
+        'subtotal' => 500,
+        'tax' => 0,
+        'total' => 560,
+    ]);
+
+    Order::create([
+        'invoice_no' => 'INV-TEST-C2',
+        'customer_name' => 'Bad Customer',
+        'customer_phone' => $badPhone,
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'cancelled',
+        'subtotal' => 500,
+        'tax' => 0,
+        'total' => 560,
+    ]);
+
+    $newOrder = Order::create([
+        'invoice_no' => 'INV-TEST-NEW',
+        'customer_name' => 'Bad Customer',
+        'customer_phone' => $badPhone,
+        'customer_address' => 'Dhaka',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'pending',
+        'subtotal' => 800,
+        'tax' => 0,
+        'total' => 860,
+        'ip_address' => '103.20.10.5',
+    ]);
+
+    $response = $this->actingAs($this->admin, 'admin')
+        ->getJson(route('admin.orders.fraud-check', $newOrder));
+
+    $response->assertOk()
+        ->assertJson([
+            'is_fraud' => true,
+        ]);
+
+    $newOrder->refresh();
+    expect($newOrder->is_fraud)->toBeTrue();
+    expect($newOrder->fraud_reason)->toContain('Cancellation');
+});
+
+test('admin can update individual direct courier settings and unconfigured ones are bypassed', function () {
+    $response = $this->actingAs($this->admin, 'admin')
+        ->post(route('admin.settings.courier.update'), [
+            'cancel_threshold' => 3,
+            'cancel_rate_threshold' => 50,
+            'auto_block_ip' => 1,
+            'steadfast_api_key' => 'sf_direct_key',
+            'steadfast_secret_key' => 'sf_direct_secret',
+            'steadfast_base_url' => 'https://portal.packzy.com/api/v1',
+            'pathao_token' => 'pathao_test_token',
+            'redx_access_token' => '', // Left empty to test bypass
+        ]);
+
+    $response->assertRedirect();
+    $fraudSettings = HomepageSetting::get('courier_fraud_settings');
+    $sfSettings = HomepageSetting::get('steadfast_settings');
+    $pathaoSettings = HomepageSetting::get('pathao_settings');
+    $redxSettings = HomepageSetting::get('redx_settings');
+
+    expect($fraudSettings['cancel_threshold'])->toBe(3);
+    expect($fraudSettings['auto_block_ip'])->toBeTrue();
+    expect($sfSettings['api_key'])->toBe('sf_direct_key');
+    expect($pathaoSettings['token'])->toBe('pathao_test_token');
+    expect($redxSettings['access_token'])->toBe('');
+
+    // Check that phone check runs and unconfigured RedX is bypassed gracefully
+    $checkRes = MultiCourierFraudService::check('01700000000');
+    expect($checkRes['couriers']['redx']['status'])->toBe('bypassed');
+    expect($checkRes['couriers']['store']['status'])->toBe('active');
 });

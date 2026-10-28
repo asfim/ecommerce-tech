@@ -1,9 +1,10 @@
 <?php
 
-use App\Models\Category;
-use App\Models\SubCategory;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\SubCategory;
+use Faker\Factory;
 use Illuminate\Support\Str;
 
 $categories = Category::all();
@@ -14,21 +15,21 @@ if (empty($brands)) {
     exit;
 }
 
-$faker = \Faker\Factory::create();
+$faker = Factory::create();
 
 foreach ($categories as $category) {
     $subCategories = SubCategory::where('category_id', $category->id)->pluck('id')->toArray();
-    
+
     for ($i = 1; $i <= 10; $i++) {
-        $subCatId = !empty($subCategories) ? $faker->randomElement($subCategories) : null;
+        $subCatId = ! empty($subCategories) ? $faker->randomElement($subCategories) : null;
         $brandId = $faker->randomElement($brands);
-        
-        $name = $faker->words(3, true) . ' ' . $category->name . ' ' . $i;
-        $slug = Str::slug($name . '-' . uniqid());
-        
+
+        $name = $faker->words(3, true).' '.$category->name.' '.$i;
+        $slug = Str::slug($name.'-'.uniqid());
+
         $buyPrice = $faker->numberBetween(500, 50000);
         $price = $buyPrice + $faker->numberBetween(100, 5000);
-        
+
         // Discount
         $discountType = null;
         $discountValue = 0;
@@ -48,13 +49,13 @@ foreach ($categories as $category) {
                 [
                     'combo' => 'Color: Black',
                     'price' => $price,
-                    'stock' => $faker->numberBetween(0, 50)
+                    'stock' => $faker->numberBetween(0, 50),
                 ],
                 [
                     'combo' => 'Color: White',
                     'price' => $price + 500,
-                    'stock' => $faker->numberBetween(0, 50)
-                ]
+                    'stock' => $faker->numberBetween(0, 50),
+                ],
             ];
         }
 
@@ -73,7 +74,7 @@ foreach ($categories as $category) {
             'is_active' => 1,
             'is_new_arrival' => $faker->boolean(20) ? 1 : 0,
             'is_featured' => $faker->boolean(20) ? 1 : 0,
-            'variants' => $variants
+            'variants' => $variants,
         ]);
     }
 }

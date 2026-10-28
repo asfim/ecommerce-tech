@@ -12,7 +12,7 @@ foreach ($products as $product) {
     $keyword = '';
     if ($product->subCategory) {
         $keyword = urlencode(strtolower($product->subCategory->name));
-    } else if ($product->category) {
+    } elseif ($product->category) {
         $keyword = urlencode(strtolower($product->category->name));
     } else {
         $keyword = 'product';
@@ -24,18 +24,18 @@ foreach ($products as $product) {
     try {
         // Suppress warnings in case of network issues
         $imageContent = @file_get_contents($url);
-        
+
         if ($imageContent) {
-            $filename = 'products/' . uniqid() . '_' . Str::slug($product->name) . '.jpg';
+            $filename = 'products/'.uniqid().'_'.Str::slug($product->name).'.jpg';
             Storage::disk('public')->put($filename, $imageContent);
-            
+
             $product->image = $filename;
             $product->save();
             $count++;
-            
+
             echo "Downloaded image for: {$product->name}\n";
         }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "Failed to download image for: {$product->name}\n";
     }
 }

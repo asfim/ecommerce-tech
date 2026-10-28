@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\Category;
+use App\Models\Admin;
 use App\Models\Brand;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
-use App\Models\Admin;
-use Spatie\Permission\Models\Role;
+use Database\Seeders\RolePermissionSeeder;
 
 beforeEach(function () {
     $this->category1 = Category::create(['name' => 'Electronics', 'is_active' => true]);
@@ -43,7 +43,7 @@ test('admin can search products by name, category, or brand', function () {
     // Assign view-products permission or authenticate as admin guard
     // In web.php, the route has permission:view-products|create-products|...
     // Let's bypass or actAs admin
-    $this->seed(\Database\Seeders\RolePermissionSeeder::class);
+    $this->seed(RolePermissionSeeder::class);
     $admin->assignRole('Super Admin');
     $this->actingAs($admin, 'admin');
 

@@ -8,6 +8,7 @@ use App\Models\Coupon;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Services\BulkSmsService;
+use App\Services\MultiCourierFraudService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -73,16 +74,21 @@ class OrderController extends Controller
         $tax = (float) $validated['tax'];
         $total = max(0, $subtotal - $discountAmount + $shippingCost + $tax);
 
-        // Auto fraud detection: check past bad orders from this phone
-        $suspiciousPastOrders = Order::where('customer_phone', $validated['customer_phone'])
-            ->where(function ($q) {
-                $q->where('is_fraud', true)
-                    ->orWhereIn('order_status', ['cancelled', 'returned']);
-            })
-            ->count();
+        // Auto multi-courier fraud detection
+        $fraudCheck = MultiCourierFraudService::check($validated['customer_phone']);
+        $isFraud = $fraudCheck['is_fraud'];
+        $fraudReason = $isFraud ? (! empty($fraudCheck['reasons']) ? $fraudCheck['reasons'][0] : 'Auto-detected fraud: High courier cancellations') : null;
 
-        $isFraud = $suspiciousPastOrders >= 2;
-        $fraudReason = $isFraud ? 'Auto-detected: Customer phone has '.$suspiciousPastOrders.' previous cancelled/returned/fraudulent orders' : null;
+        // Auto-block IP if fraud detected
+        if ($isFraud && ! empty($clientIp)) {
+            BlockedIp::firstOrCreate(
+                ['ip_address' => $clientIp],
+                [
+                    'reason' => 'Auto-blocked: High courier cancellations ('.$validated['customer_phone'].')',
+                    'blocked_by' => null,
+                ]
+            );
+        }
 
         // Create order in transaction
         $order = DB::transaction(function () use ($validated, $couponCode, $discountAmount, $tax, $total, $clientIp, $isFraud, $fraudReason) {

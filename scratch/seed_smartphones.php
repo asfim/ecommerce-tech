@@ -1,9 +1,8 @@
 <?php
 
-use App\Models\Category;
-use App\Models\SubCategory;
-use App\Models\Product;
 use App\Models\Brand;
+use App\Models\Product;
+use App\Models\SubCategory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -14,7 +13,7 @@ $subcatsData = [
     'Smartphone',
     'Android Phone',
     'iPhone',
-    'Tablet'
+    'Tablet',
 ];
 
 $subCategories = [];
@@ -22,7 +21,7 @@ foreach ($subcatsData as $name) {
     $subCategories[$name] = SubCategory::firstOrCreate([
         'name' => $name,
         'category_id' => $categoryId,
-        'slug' => Str::slug($name)
+        'slug' => Str::slug($name),
     ]);
 }
 
@@ -43,11 +42,11 @@ $productsData = [
     ['name' => 'Lenovo Tab P12 Pro', 'sub' => 'Tablet'],
 ];
 
-echo "Seeding " . count($productsData) . " products in category $categoryId...\n";
+echo 'Seeding '.count($productsData)." products in category $categoryId...\n";
 
 foreach ($productsData as $data) {
     $sub = $subCategories[$data['sub']];
-    
+
     // Create product
     $product = Product::create([
         'name' => $data['name'],
@@ -57,11 +56,11 @@ foreach ($productsData as $data) {
         'brand_id' => $brandId,
         'price' => rand(500, 1500),
         'stock' => rand(10, 100),
-        'description' => 'Premium high quality ' . strtolower($data['name']) . ' with advanced features.',
+        'description' => 'Premium high quality '.strtolower($data['name']).' with advanced features.',
         'status' => 'active',
         'is_featured' => rand(0, 1),
     ]);
-    
+
     // Download real image via picsum
     $url = "https://picsum.photos/seed/{$product->id}/600/600";
     try {
@@ -69,18 +68,18 @@ foreach ($productsData as $data) {
             'http' => [
                 'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n",
                 'timeout' => 10,
-            ]
+            ],
         ]);
-        
+
         $imageContent = @file_get_contents($url, false, $context);
         if ($imageContent) {
-            $filename = 'products/real_' . uniqid() . '_' . Str::slug($product->name) . '.jpg';
+            $filename = 'products/real_'.uniqid().'_'.Str::slug($product->name).'.jpg';
             Storage::disk('public')->put($filename, $imageContent);
             $product->image = $filename;
             $product->save();
             echo "Created product and downloaded image for: {$product->name}\n";
         }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "Failed image for: {$product->name}\n";
     }
 }

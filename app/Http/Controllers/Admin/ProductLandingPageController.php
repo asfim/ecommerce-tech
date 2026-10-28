@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\Product;
 use App\Models\ProductLandingPage;
-use App\Models\ActivityLog;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controllers\HasMiddleware;
 use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
 
 class ProductLandingPageController extends Controller implements HasMiddleware
 {
@@ -97,7 +97,7 @@ class ProductLandingPageController extends Controller implements HasMiddleware
     {
         $landingPage = $product->landingPage;
 
-        if (!$landingPage) {
+        if (! $landingPage) {
             return redirect()->route('admin.products.landing-page.create', $product);
         }
 
@@ -108,7 +108,7 @@ class ProductLandingPageController extends Controller implements HasMiddleware
     {
         $landingPage = $product->landingPage;
 
-        if (!$landingPage) {
+        if (! $landingPage) {
             return redirect()->route('admin.products.landing-page.create', $product);
         }
 

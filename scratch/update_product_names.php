@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Product;
-use App\Models\SubCategory;
+use Faker\Factory;
 use Illuminate\Support\Str;
 
 $realNames = [
@@ -36,26 +36,26 @@ $realNames = [
     'Notebook' => ['Moleskine Classic Notebook', 'Matador Premium Notebook', 'Linc Executive Diary', 'Faber-Castell Sketchbook'],
     'Diary' => ['Letts Classic Diary 2026', 'Moleskine Daily Planner', 'Matador Leather Diary', 'Paperblanks Hardcover Diary'],
     'Planner' => ['Moleskine Weekly Planner', 'Erin Condren LifePlanner', 'Matador Student Planner', 'Faber-Castell Task Planner'],
-    'Gel Pen Set' => ['Pilot G2 Gel Pens (Pack of 5)', 'Uniball Signo Gel Pen Set', 'Linc Pentonic Gel Set', 'Matador Gel Pen Combo']
+    'Gel Pen Set' => ['Pilot G2 Gel Pens (Pack of 5)', 'Uniball Signo Gel Pen Set', 'Linc Pentonic Gel Set', 'Matador Gel Pen Combo'],
 ];
 
 $products = Product::with('subCategory', 'category')->get();
-$faker = \Faker\Factory::create();
+$faker = Factory::create();
 $updatedCount = 0;
 
 foreach ($products as $product) {
     $newName = null;
-    
+
     if ($product->subCategory && isset($realNames[$product->subCategory->name])) {
         $options = $realNames[$product->subCategory->name];
-        $newName = $faker->randomElement($options) . ' ' . $faker->numberBetween(2023, 2026);
-    } else if ($product->category) {
-        $newName = $product->category->name . ' Premium Product ' . $faker->lexify('????');
+        $newName = $faker->randomElement($options).' '.$faker->numberBetween(2023, 2026);
+    } elseif ($product->category) {
+        $newName = $product->category->name.' Premium Product '.$faker->lexify('????');
     }
 
     if ($newName) {
         $product->name = $newName;
-        $product->slug = Str::slug($newName . '-' . uniqid());
+        $product->slug = Str::slug($newName.'-'.uniqid());
         $product->save();
         $updatedCount++;
     }

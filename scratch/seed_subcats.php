@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Category;
 use App\Models\SubCategory;
 use Illuminate\Support\Str;
 
@@ -12,7 +11,7 @@ $data = [
     10 => ['Yoga Mat', 'Resistance Band Set', 'Dumbbell Set', 'Skipping Rope'],
     11 => ['Baby Stroller', 'Baby Feeding Bottle', 'Baby Feeding Set', 'Baby Walker'],
     12 => ['Car Phone Holder', 'Car Charger', 'Car Vacuum Cleaner', 'Car Air Freshener'],
-    13 => ['Notebook', 'Diary', 'Planner', 'Gel Pen Set']
+    13 => ['Notebook', 'Diary', 'Planner', 'Gel Pen Set'],
 ];
 
 foreach ($data as $categoryId => $subCats) {
@@ -20,10 +19,10 @@ foreach ($data as $categoryId => $subCats) {
         SubCategory::updateOrCreate(
             [
                 'category_id' => $categoryId,
-                'name' => $subCatName
+                'name' => $subCatName,
             ],
             [
-                'slug' => Str::slug($subCatName)
+                'slug' => Str::slug($subCatName),
             ]
         );
     }

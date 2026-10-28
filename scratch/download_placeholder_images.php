@@ -14,18 +14,18 @@ foreach ($products as $product) {
 
     try {
         $imageContent = @file_get_contents($url);
-        
+
         if ($imageContent) {
-            $filename = 'products/' . uniqid() . '_' . Str::slug($product->name) . '.png';
+            $filename = 'products/'.uniqid().'_'.Str::slug($product->name).'.png';
             Storage::disk('public')->put($filename, $imageContent);
-            
+
             $product->image = $filename;
             $product->save();
             $count++;
-            
+
             echo "Downloaded placeholder image for: {$product->name}\n";
         }
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "Failed to download placeholder image for: {$product->name}\n";
     }
 }

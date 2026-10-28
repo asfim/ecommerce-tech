@@ -1,9 +1,10 @@
 <?php
 
-use App\Models\Category;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
+use App\Models\Category;
 use App\Models\Product;
+use Faker\Factory;
 use Illuminate\Support\Str;
 
 $categoryAttributes = [
@@ -25,55 +26,60 @@ foreach ($categoryAttributes as $catId => $attrs) {
         foreach ($values as $val) {
             AttributeValue::firstOrCreate([
                 'attribute_id' => $attribute->id,
-                'value' => $val
+                'value' => $val,
             ]);
         }
     }
 }
 
-$faker = \Faker\Factory::create();
+$faker = Factory::create();
 $products = Product::all();
 
 foreach ($products as $product) {
     $catId = $product->category_id;
-    
+
     // If we have defined attributes for this category
     if (isset($categoryAttributes[$catId])) {
         $attrs = $categoryAttributes[$catId];
-        
+
         if ($faker->boolean(60)) { // 60% chance to have variants
             $attrNames = array_keys($attrs);
             // Pick a random attribute to create variants for (or two)
             $selectedAttr = $faker->randomElement($attrNames);
             $values = $attrs[$selectedAttr];
-            
+
             $variants = [];
             // Pick 2 random values from that attribute
             $selectedValues = $faker->randomElements($values, min(2, count($values)));
-            
+
             foreach ($selectedValues as $val) {
                 $combo = [$selectedAttr => $val];
                 // Maybe add a second attribute
                 if (count($attrNames) > 1 && $faker->boolean(50)) {
                     $secondAttr = null;
                     foreach ($attrNames as $a) {
-                        if ($a !== $selectedAttr) { $secondAttr = $a; break; }
+                        if ($a !== $selectedAttr) {
+                            $secondAttr = $a;
+                            break;
+                        }
                     }
                     if ($secondAttr) {
                         $secondVal = $faker->randomElement($attrs[$secondAttr]);
                         $combo[$secondAttr] = $secondVal;
                     }
                 }
-                
-                $skuSuffix = collect($combo)->values()->map(function($v) { return strtoupper(Str::slug($v)); })->implode('-');
-                $sku = strtoupper(Str::slug($product->name)) . '-' . $skuSuffix;
-                
+
+                $skuSuffix = collect($combo)->values()->map(function ($v) {
+                    return strtoupper(Str::slug($v));
+                })->implode('-');
+                $sku = strtoupper(Str::slug($product->name)).'-'.$skuSuffix;
+
                 $variants[] = [
                     'combo' => $combo,
                     'sku' => $sku,
                     'price' => $product->price + $faker->numberBetween(0, 1000),
                     'stock' => $faker->numberBetween(10, 100),
-                    'active' => true
+                    'active' => true,
                 ];
             }
             $product->variants = $variants;

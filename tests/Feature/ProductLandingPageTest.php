@@ -3,13 +3,14 @@
 use App\Models\Admin;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\ProductLandingPage;
-use App\Models\Order;
 use Database\Seeders\RolePermissionSeeder;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 
 beforeEach(function () {
-    $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+    $this->withoutMiddleware(ValidateCsrfToken::class);
     $this->seed(RolePermissionSeeder::class);
 
     $this->category = Category::create([
@@ -202,7 +203,7 @@ test('guest can place order successfully from landing page', function () {
                 'price' => 2999.00,
                 'quantity' => 1,
                 'variants' => ['size' => 'M'],
-            ]
+            ],
         ],
     ];
 
@@ -228,4 +229,3 @@ test('guest can place order successfully from landing page', function () {
         'quantity' => 1,
     ]);
 });
-

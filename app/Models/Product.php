@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -58,10 +59,10 @@ class Product extends Model
         if (is_array($this->variants)) {
             $now = now();
             foreach ($this->variants as $variant) {
-                if (isset($variant['combo']) && !empty($variant['discount_type']) && (float)($variant['discount'] ?? 0) > 0) {
-                    $startDate = !empty($variant['discount_start']) ? \Carbon\Carbon::parse($variant['discount_start']) : null;
-                    $endDate = !empty($variant['discount_end']) ? \Carbon\Carbon::parse($variant['discount_end']) : null;
-                    
+                if (isset($variant['combo']) && ! empty($variant['discount_type']) && (float) ($variant['discount'] ?? 0) > 0) {
+                    $startDate = ! empty($variant['discount_start']) ? Carbon::parse($variant['discount_start']) : null;
+                    $endDate = ! empty($variant['discount_end']) ? Carbon::parse($variant['discount_end']) : null;
+
                     $isActive = true;
                     if ($startDate && $startDate->gt($now)) {
                         $isActive = false;
@@ -69,7 +70,7 @@ class Product extends Model
                     if ($endDate && $endDate->lt($now)) {
                         $isActive = false;
                     }
-                    
+
                     if ($isActive) {
                         return true;
                     }
