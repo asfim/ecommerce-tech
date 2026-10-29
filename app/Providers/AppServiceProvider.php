@@ -39,13 +39,6 @@ class AppServiceProvider extends ServiceProvider
 
         if (! app()->runningInConsole() || app()->bound('db')) {
             try {
-                $settings = HomepageSetting::get('steadfast_settings', []);
-                config([
-                    'steadfast.api_key' => $settings['api_key'] ?? '',
-                    'steadfast.secret_key' => $settings['secret_key'] ?? '',
-                    'steadfast.base_url' => $settings['base_url'] ?? 'https://portal.packzy.com/api/v1',
-                ]);
-
                 $sslSettings = HomepageSetting::get('sslcommerz_settings', []);
                 if (! empty($sslSettings)) {
                     config([

@@ -225,33 +225,87 @@ test('high cancellation phone is automatically detected as fraud across couriers
     expect($newOrder->fraud_reason)->toContain('Cancellation');
 });
 
-test('admin can update individual direct courier settings and unconfigured ones are bypassed', function () {
+test('admin can update order fraud cancellation settings without external apis', function () {
     $response = $this->actingAs($this->admin, 'admin')
         ->post(route('admin.settings.courier.update'), [
             'cancel_threshold' => 3,
             'cancel_rate_threshold' => 50,
             'auto_block_ip' => 1,
-            'steadfast_api_key' => 'sf_direct_key',
-            'steadfast_secret_key' => 'sf_direct_secret',
-            'steadfast_base_url' => 'https://portal.packzy.com/api/v1',
-            'pathao_token' => 'pathao_test_token',
-            'redx_access_token' => '', // Left empty to test bypass
         ]);
 
     $response->assertRedirect();
     $fraudSettings = HomepageSetting::get('courier_fraud_settings');
-    $sfSettings = HomepageSetting::get('steadfast_settings');
-    $pathaoSettings = HomepageSetting::get('pathao_settings');
-    $redxSettings = HomepageSetting::get('redx_settings');
 
     expect($fraudSettings['cancel_threshold'])->toBe(3);
+    expect((float) $fraudSettings['cancel_rate_threshold'])->toBe(50.0);
     expect($fraudSettings['auto_block_ip'])->toBeTrue();
-    expect($sfSettings['api_key'])->toBe('sf_direct_key');
-    expect($pathaoSettings['token'])->toBe('pathao_test_token');
-    expect($redxSettings['access_token'])->toBe('');
 
-    // Check that phone check runs and unconfigured RedX is bypassed gracefully
+    // Verify phone check uses store cancellation history
     $checkRes = MultiCourierFraudService::check('01700000000');
-    expect($checkRes['couriers']['redx']['status'])->toBe('bypassed');
-    expect($checkRes['couriers']['store']['status'])->toBe('active');
+    expect($checkRes['is_fraud'])->toBeFalse();
+    expect($checkRes['total_cancelled'])->toBe(0);
+});
+
+test('customer with past cancellations is auto flagged as fraud when placing order', function () {
+    $fraudCustomerPhone = '01811223344';
+
+    // Seed 2 cancelled orders
+    Order::create([
+        'invoice_no' => 'INV-PREV-C1',
+        'customer_name' => 'Repeat Canceller',
+        'customer_phone' => $fraudCustomerPhone,
+        'customer_address' => 'Chittagong',
+        'shipping_method' => 'outside_dhaka',
+        'shipping_cost' => 120,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'cancelled',
+        'subtotal' => 600,
+        'tax' => 0,
+        'total' => 720,
+    ]);
+
+    Order::create([
+        'invoice_no' => 'INV-PREV-C2',
+        'customer_name' => 'Repeat Canceller',
+        'customer_phone' => $fraudCustomerPhone,
+        'customer_address' => 'Chittagong',
+        'shipping_method' => 'outside_dhaka',
+        'shipping_cost' => 120,
+        'payment_method' => 'cod',
+        'payment_status' => 'pending',
+        'order_status' => 'returned',
+        'subtotal' => 600,
+        'tax' => 0,
+        'total' => 720,
+    ]);
+
+    $postData = [
+        'customer_name' => 'Repeat Canceller',
+        'customer_phone' => $fraudCustomerPhone,
+        'customer_address' => 'Test Location',
+        'shipping_method' => 'inside_dhaka',
+        'shipping_cost' => 60,
+        'payment_method' => 'cod',
+        'subtotal' => 1000,
+        'tax' => 0,
+        'total' => 1060,
+        'items' => [
+            [
+                'product_name' => 'Test Item',
+                'price' => 1000,
+                'quantity' => 1,
+            ],
+        ],
+    ];
+
+    $response = $this->post(route('order.store'), $postData);
+
+    $placedOrder = Order::where('customer_phone', $fraudCustomerPhone)
+        ->where('order_status', 'pending')
+        ->first();
+
+    expect($placedOrder)->not->toBeNull();
+    expect($placedOrder->is_fraud)->toBeTrue();
+    expect($placedOrder->fraud_reason)->toContain('Cancellation');
 });

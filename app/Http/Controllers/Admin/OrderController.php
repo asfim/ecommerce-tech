@@ -457,18 +457,14 @@ class OrderController extends Controller implements HasMiddleware
             'risk_level' => $res['risk_level'],
             'risk_color' => $res['risk_color'],
             'reasons' => $res['reasons'],
-            'total_parcels' => $res['total_parcels'],
+            'total_orders' => $res['total_orders'],
             'total_delivered' => $res['total_delivered'],
             'total_cancelled' => $res['total_cancelled'],
+            'total_returned' => $res['total_returned'],
+            'total_parcels' => $res['total_orders'],
             'success_rate' => $res['success_rate'],
             'cancel_rate' => $res['cancel_rate'],
-            'couriers' => $res['couriers'],
             'stats' => $stats,
-            'courier_data' => [
-                'total' => $res['total_parcels'],
-                'delivered' => $res['total_delivered'],
-                'cancelled' => $res['total_cancelled'],
-            ],
         ]);
     }
 
@@ -490,18 +486,14 @@ class OrderController extends Controller implements HasMiddleware
             'risk_level' => $res['risk_level'],
             'risk_color' => $res['risk_color'],
             'reasons' => $res['reasons'],
-            'total_parcels' => $res['total_parcels'],
+            'total_orders' => $res['total_orders'],
             'total_delivered' => $res['total_delivered'],
             'total_cancelled' => $res['total_cancelled'],
+            'total_returned' => $res['total_returned'],
+            'total_parcels' => $res['total_orders'],
             'success_rate' => $res['success_rate'],
             'cancel_rate' => $res['cancel_rate'],
-            'couriers' => $res['couriers'],
             'stats' => $res['store_stats'],
-            'courier_data' => [
-                'total' => $res['total_parcels'],
-                'delivered' => $res['total_delivered'],
-                'cancelled' => $res['total_cancelled'],
-            ],
         ]);
     }
 }

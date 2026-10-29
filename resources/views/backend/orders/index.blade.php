@@ -111,10 +111,6 @@
                 style="display: none; background-color: #0dcaf0 !important; border-color: #0dcaf0 !important;">
                 <i class="bi bi-printer me-1"></i> Print Selected Invoices (<span id="selectedCount">0</span>)
             </button>
-            <button type="button" id="bulkSendSteadfastBtn" class="btn btn-sm btn-warning text-dark fw-bold"
-                style="display: none; background-color: #ffc107 !important; border-color: #ffc107 !important;">
-                <i class="bi bi-truck me-1"></i> Send Selected to Steadfast (<span id="selectedCountSteadfast">0</span>)
-            </button>
         </div>
     </div>
 
@@ -147,7 +143,7 @@
             <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-telephone-inbound-fill text-primary"></i>
                 <span class="small fw-bold text-dark">Instant Phone Fraud Check:</span>
-                <span class="small text-muted d-none d-md-inline">Auto-check any phone number across database history & Steadfast courier</span>
+                <span class="small text-muted d-none d-md-inline">Check customer order cancellation history & fraud risk in database</span>
             </div>
             <form id="quickPhoneCheckerForm" class="d-flex gap-2 align-items-center">
                 <input type="text" id="quickCheckPhoneInput" class="form-control form-control-sm"
@@ -393,13 +389,7 @@
                                     @endif
                                 @endif
 
-                                @if ($order->order_status === 'pending' || $order->order_status === 'confirmed')
-                                    <button type="button"
-                                        class="btn btn-sm btn-warning text-dark send-single-steadfast-btn"
-                                        data-id="{{ $order->id }}" title="Send to Steadfast">
-                                        <i class="bi bi-truck"></i>
-                                    </button>
-                                @endif
+
                                 <form action="{{ route('admin.orders.destroy', $order) }}" method="POST"
                                     class="d-inline"
                                     onsubmit="return confirm('Are you sure you want to delete this order?')">
@@ -444,12 +434,9 @@
 
                     if (count > 0) {
                         bulkPrintBtn.style.display = 'inline-block';
-                        bulkSendSteadfastBtn.style.display = 'inline-block';
                         selectedCountSpan.textContent = count;
-                        selectedCountSteadfastSpan.textContent = count;
                     } else {
                         bulkPrintBtn.style.display = 'none';
-                        bulkSendSteadfastBtn.style.display = 'none';
                     }
                 }
 
@@ -486,143 +473,42 @@
                     });
                 }
 
-                function sendOrdersToSteadfast(ids) {
-                    Swal.fire({
-                        title: 'Are you sure?',
-                        text: "Do you want to send this order(s) to Steadfast Courier?",
-                        icon: 'question',
-                        showCancelButton: true,
-                        confirmButtonColor: '#1a73e8',
-                        cancelButtonColor: '#d33',
-                        confirmButtonText: 'Yes, send!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            Swal.fire({
-                                title: 'Sending to Steadfast...',
-                                text: 'Please wait while we process the request.',
-                                allowOutsideClick: false,
-                                didOpen: () => {
-                                    Swal.showLoading();
-                                }
-                            });
-
-                            fetch("{{ route('admin.orders.send-steadfast') }}", {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                                        'Accept': 'application/json'
-                                    },
-                                    body: JSON.stringify({
-                                        ids: ids
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        Swal.fire({
-                                            title: 'Success!',
-                                            text: data.message,
-                                            icon: 'success',
-                                            confirmButtonColor: '#1a73e8'
-                                        }).then(() => {
-                                            window.location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            title: 'Error!',
-                                            text: data.message,
-                                            icon: 'error',
-                                            confirmButtonColor: '#1a73e8'
-                                        });
-                                    }
-                                })
-                                .catch(error => {
-                                    Swal.fire({
-                                        title: 'Error!',
-                                        text: 'An error occurred. Please try again.',
-                                        icon: 'error',
-                                        confirmButtonColor: '#1a73e8'
-                                    });
-                                });
-                        }
-                    });
-                }
-
-                if (bulkSendSteadfastBtn) {
-                    bulkSendSteadfastBtn.addEventListener('click', function() {
-                        const checkedBoxes = document.querySelectorAll('.order-checkbox:checked');
-                        const ids = Array.from(checkedBoxes).map(cb => cb.value);
-                        if (ids.length > 0) {
-                            sendOrdersToSteadfast(ids);
-                        }
-                    });
-                }
-
-                document.querySelectorAll('.send-single-steadfast-btn').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const id = this.getAttribute('data-id');
-                        sendOrdersToSteadfast([id]);
-                    });
-                });
-
-                // Fraud Check & Risk System
+                // Fraud Check & Cancellation Risk System
                 const adminOrderBaseUrl = "{{ url('admin/orders') }}";
 
-                function renderMultiCourierBox(data) {
-                    if (!data.couriers) {
-                        if (data.courier_data) {
-                            return `
-                                <div class="card p-2 mb-3 text-start bg-white border-primary" style="font-size: 12px;">
-                                    <div class="fw-bold text-primary mb-1"><i class="bi bi-truck me-1"></i> Courier Data:</div>
-                                    <div class="row g-2 text-center">
-                                        <div class="col-4"><div class="fw-bold fs-6">${data.courier_data.total}</div><div class="text-muted" style="font-size:10px;">Total Parcels</div></div>
-                                        <div class="col-4"><div class="fw-bold fs-6 text-success">${data.courier_data.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
-                                        <div class="col-4"><div class="fw-bold fs-6 text-danger">${data.courier_data.cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
-                                    </div>
-                                </div>
-                            `;
-                        }
-                        return '';
-                    }
+                function renderOrderCancellationBox(data) {
+                    const stats = data.stats || {};
+                    const total = stats.total || 0;
+                    const delivered = stats.delivered || 0;
+                    const cancelled = (stats.cancelled || 0) + (stats.returned || 0);
+                    const cancelRate = data.cancel_rate || 0;
+                    const successRate = data.success_rate || 0;
 
-                    let courierCards = '';
-                    for (const [key, c] of Object.entries(data.couriers)) {
-                        const isBypassed = c.status === 'bypassed';
-                        courierCards += `
-                            <div class="col-6 mb-2">
-                                <div class="p-2 border rounded bg-white shadow-sm" style="font-size:11px;">
-                                    <div class="fw-bold text-dark d-flex align-items-center justify-content-between mb-1">
-                                        <span><i class="bi bi-${c.icon || 'box'} me-1 text-primary"></i> ${c.name}</span>
-                                        ${isBypassed ? '<span class="badge bg-light text-muted border" style="font-size:9px;">Bypassed</span>' : '<span class="badge bg-success-subtle text-success border border-success" style="font-size:9px;">Active</span>'}
-                                    </div>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <span class="text-success"><i class="bi bi-check2"></i> ${c.delivered} Del</span>
-                                        <span class="${c.cancelled > 0 ? 'text-danger fw-bold' : 'text-muted'}"><i class="bi bi-x-circle"></i> ${c.cancelled} Can</span>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }
-
-                    const cancelBadgeClass = data.total_cancelled >= 2 ? 'badge bg-danger text-white' : (data.total_cancelled === 1 ? 'badge bg-warning text-dark' : 'badge bg-success text-white');
+                    const cancelBadgeClass = cancelled >= 2 ? 'badge bg-danger text-white' : (cancelled === 1 ? 'badge bg-warning text-dark' : 'badge bg-success text-white');
 
                     return `
-                        <div class="card p-2 mb-3 text-start bg-light border-primary shadow-sm" style="font-size: 12px;">
+                        <div class="card p-3 mb-3 text-start bg-light border-0 shadow-sm" style="font-size: 12px; border-left: 4px solid ${data.is_fraud ? '#dc2626' : '#16a34a'} !important;">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <strong class="text-primary"><i class="bi bi-truck me-1"></i> Multi-Courier Verification (সকল কুরিয়ার তথ্য):</strong>
-                                <span class="${cancelBadgeClass}">${data.total_cancelled} Cancelled</span>
+                                <strong class="text-dark"><i class="bi bi-clock-history me-1 text-primary"></i> Order Cancellation & History Analysis:</strong>
+                                <span class="${cancelBadgeClass} px-2 py-1">${cancelled} Cancelled</span>
                             </div>
-                            <div class="row g-2 mb-2 text-center bg-white py-1 rounded border mx-0">
-                                <div class="col-4"><div class="fw-bold fs-6">${data.total_parcels}</div><div class="text-muted" style="font-size:10px;">Total Parcels</div></div>
-                                <div class="col-4"><div class="fw-bold fs-6 text-success">${data.total_delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
-                                <div class="col-4"><div class="fw-bold fs-6 text-danger">${data.total_cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
+                            <div class="row g-2 mb-2 text-center bg-white py-2 rounded border mx-0">
+                                <div class="col-4">
+                                    <div class="fw-bold fs-5 text-dark">${total}</div>
+                                    <div class="text-muted" style="font-size:11px;">Total Orders</div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="fw-bold fs-5 text-success">${delivered}</div>
+                                    <div class="text-muted" style="font-size:11px;">Delivered</div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="fw-bold fs-5 ${cancelled > 0 ? 'text-danger' : 'text-dark'}">${cancelled}</div>
+                                    <div class="text-muted" style="font-size:11px;">Cancelled</div>
+                                </div>
                             </div>
-                            <div class="mb-2 text-center text-muted" style="font-size: 11px;">
-                                Cancellation Rate: <strong class="${data.cancel_rate >= 40 ? 'text-danger' : 'text-dark'}">${data.cancel_rate}%</strong> | Delivery Success: <strong class="text-success">${data.success_rate}%</strong>
-                            </div>
-                            <div class="row g-1">
-                                ${courierCards}
+                            <div class="d-flex justify-content-between align-items-center px-1 text-muted" style="font-size: 11px;">
+                                <span>Cancellation Rate: <strong class="${cancelRate >= 40 ? 'text-danger' : 'text-dark'}">${cancelRate}%</strong></span>
+                                <span>Delivery Success: <strong class="text-success">${successRate}%</strong></span>
                             </div>
                         </div>
                     `;
@@ -678,12 +564,12 @@
                                 fraudBannerHtml = `
                                     <div class="alert alert-danger text-start p-2 mb-3" style="font-size: 12px; background-color: #fee2e2; border: 1px solid #dc2626; color: #991b1b;">
                                         <strong class="d-block mb-1"><i class="bi bi-shield-x-fill text-danger me-1"></i> 🚨 FRAUD DETECTED (অর্ডার ফ্রড চিহ্নিত):</strong>
-                                        <div>কুরিয়ারে পার্সেল বাতিল (ক্যান্সেলেশন) বা ফ্রড রেকর্ড থাকায় এই অর্ডার ফ্রড চিহ্নিত হয়েছে (রো-টি লাল রঙে প্রদর্শিত)।</div>
+                                        <div>পূর্বে কাস্টমারের পার্সেল বাতিল (অর্ডার ক্যান্সেলেশন) বা ফ্রড রেকর্ড থাকায় এই অর্ডার ফ্রড চিহ্নিত হয়েছে (রো-টি লাল রঙে প্রদর্শিত)।</div>
                                     </div>
                                 `;
                             }
 
-                            const multiCourierHtml = renderMultiCourierBox(data);
+                            const cancellationHtml = renderOrderCancellationBox(data);
 
                             Swal.fire({
                                 title: `<span>Fraud Check: ${data.invoice_no}</span>`,
@@ -699,20 +585,7 @@
 
                                     ${fraudBannerHtml}
                                     ${reasonsHtml}
-                                    ${multiCourierHtml}
-
-                                    <div class="card p-2 mb-3 text-start bg-light" style="font-size: 12px;">
-                                        <div class="fw-bold mb-1"><i class="bi bi-clock-history me-1"></i> Store Order History:</div>
-                                        <div class="row g-2 text-center">
-                                            <div class="col-3"><div class="fw-bold fs-6">${data.stats.total}</div><div class="text-muted" style="font-size:10px;">Total</div></div>
-                                            <div class="col-3"><div class="fw-bold fs-6 text-success">${data.stats.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
-                                            <div class="col-3"><div class="fw-bold fs-6 text-danger">${data.stats.cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
-                                            <div class="col-3"><div class="fw-bold fs-6 text-secondary">${data.stats.returned}</div><div class="text-muted" style="font-size:10px;">Returned</div></div>
-                                        </div>
-                                        <div class="mt-2 text-center text-muted" style="font-size: 11px;">
-                                            Delivery Success Rate: <strong class="text-primary">${data.stats.success_rate}%</strong>
-                                        </div>
-                                    </div>
+                                    ${cancellationHtml}
 
                                     <div class="mt-3">
                                         ${ipBlockAction}
@@ -948,12 +821,12 @@
                                 fraudBannerHtml = `
                                     <div class="alert alert-danger text-start p-2 mb-3" style="font-size: 12px; background-color: #fee2e2; border: 1px solid #dc2626; color: #991b1b;">
                                         <strong class="d-block mb-1"><i class="bi bi-shield-x-fill text-danger me-1"></i> 🚨 FRAUD NUMBER DETECTED:</strong>
-                                        <div>কুরিয়ারে অধিক পার্সেল বাতিল (ক্যান্সেলেশন) অথবা পূর্বে ফ্রড রেকর্ড থাকায় এই নাম্বারকে ফ্রড চিহ্নিত করা হয়েছে।</div>
+                                        <div>পূর্বে কাস্টমারের পার্সেল বাতিল (অর্ডার ক্যান্সেলেশন) অথবা ফ্রড রেকর্ড থাকায় এই নাম্বারকে ফ্রড চিহ্নিত করা হয়েছে।</div>
                                     </div>
                                 `;
                             }
 
-                            const multiCourierHtml = renderMultiCourierBox(data);
+                            const cancellationHtml = renderOrderCancellationBox(data);
 
                             Swal.fire({
                                 title: `<span>Phone Risk: ${data.phone}</span>`,
@@ -967,20 +840,7 @@
 
                                     ${fraudBannerHtml}
                                     ${reasonsHtml}
-                                    ${multiCourierHtml}
-
-                                    <div class="card p-2 mb-3 text-start bg-light" style="font-size: 12px;">
-                                        <div class="fw-bold mb-1"><i class="bi bi-clock-history me-1"></i> Store Order History:</div>
-                                        <div class="row g-2 text-center">
-                                            <div class="col-3"><div class="fw-bold fs-6">${data.stats.total}</div><div class="text-muted" style="font-size:10px;">Total</div></div>
-                                            <div class="col-3"><div class="fw-bold fs-6 text-success">${data.stats.delivered}</div><div class="text-muted" style="font-size:10px;">Delivered</div></div>
-                                            <div class="col-3"><div class="fw-bold fs-6 text-danger">${data.stats.cancelled}</div><div class="text-muted" style="font-size:10px;">Cancelled</div></div>
-                                            <div class="col-3"><div class="fw-bold fs-6 text-secondary">${data.stats.returned}</div><div class="text-muted" style="font-size:10px;">Returned</div></div>
-                                        </div>
-                                        <div class="mt-2 text-center text-muted" style="font-size: 11px;">
-                                            Delivery Success Rate: <strong class="text-primary">${data.stats.success_rate}%</strong>
-                                        </div>
-                                    </div>
+                                    ${cancellationHtml}
                                 `,
                                 showCloseButton: true,
                                 confirmButtonText: 'Done',

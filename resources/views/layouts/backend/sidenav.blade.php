@@ -86,7 +86,7 @@
     <a href="{{ route('admin.settings.company') }}" class="{{ request()->routeIs('admin.settings.company') ? 'active' : '' }}"><i class="bi bi-building"></i> Company Settings</a>
   @endcan
   @can('manage-company-settings')
-    <a href="{{ route('admin.settings.courier') }}" class="{{ request()->routeIs('admin.settings.courier') ? 'active' : '' }}"><i class="bi bi-truck"></i> Courier Settings</a>
+    <a href="{{ route('admin.settings.courier') }}" class="{{ request()->routeIs('admin.settings.courier') ? 'active' : '' }}"><i class="bi bi-shield-check"></i> Fraud Settings</a>
   @endcan
   @can('manage-company-settings')
     <a href="{{ route('admin.settings.payment') }}" class="{{ request()->routeIs('admin.settings.payment') ? 'active' : '' }}"><i class="bi bi-credit-card"></i> Payment Settings</a>
